@@ -2,6 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
+import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 
 type Stage = "cover" | "threshold" | "questions" | "complete";
 
@@ -134,92 +137,300 @@ function VoxelWorld({ progress, open }: { progress: number; open: boolean }) {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x061b2b, 0.055);
-    const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
-    camera.position.set(0, 2.3, 11.5);
+    scene.fog = new THREE.FogExp2(0x06131d, 0.035);
+
+    const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+    camera.position.set(0.2, 2.15, 12.4);
+
     const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.7));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.8));
     renderer.setClearColor(0x000000, 0);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.18;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFShadowMap;
 
+    const composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+    const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 1.12, 0.8, 0.12);
+    composer.addPass(bloom);
+
+    const textures: THREE.Texture[] = [];
+    const makeStoneTexture = () => {
+      const surface = document.createElement("canvas");
+      surface.width = 256;
+      surface.height = 256;
+      const context = surface.getContext("2d");
+      if (!context) return null;
+      const image = context.createImageData(256, 256);
+      for (let i = 0; i < image.data.length; i += 4) {
+        const grain = 78 + Math.floor(Math.random() * 58);
+        image.data[i] = grain * 0.58;
+        image.data[i + 1] = grain * 0.82;
+        image.data[i + 2] = grain;
+        image.data[i + 3] = 255;
+      }
+      context.putImageData(image, 0, 0);
+      context.globalAlpha = 0.24;
+      for (let i = 0; i < 120; i += 1) {
+        context.fillStyle = i % 3 ? "#0a2635" : "#83afba";
+        context.fillRect(Math.random() * 256, Math.random() * 256, Math.random() * 28 + 2, Math.random() * 3 + 1);
+      }
+      const texture = new THREE.CanvasTexture(surface);
+      texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+      texture.repeat.set(2.4, 2.4);
+      texture.colorSpace = THREE.SRGBColorSpace;
+      textures.push(texture);
+      return texture;
+    };
+
+    const stoneTexture = makeStoneTexture();
     const root = new THREE.Group();
+    root.position.y = -0.2;
     scene.add(root);
-    const doorGroup = new THREE.Group();
-    doorGroup.position.set(0.8, 0.15, -0.5);
-    root.add(doorGroup);
-    const stone = new THREE.MeshStandardMaterial({ color: 0x16465f, roughness: 0.82, metalness: 0.08 });
-    const trim = new THREE.MeshStandardMaterial({ color: 0x30b5e6, roughness: 0.38, metalness: 0.45 });
-    const wood = new THREE.MeshStandardMaterial({ color: 0x981f59, roughness: 0.75, metalness: 0.05 });
-    const ember = new THREE.MeshStandardMaterial({ color: 0xf08f24, emissive: 0xe7562f, emissiveIntensity: 0.35 });
+
+    const stone = new THREE.MeshStandardMaterial({
+      color: 0x274553,
+      map: stoneTexture,
+      bumpMap: stoneTexture,
+      bumpScale: 0.18,
+      roughness: 0.95,
+      metalness: 0.02,
+    });
+    const stoneDark = new THREE.MeshStandardMaterial({
+      color: 0x102936,
+      map: stoneTexture,
+      bumpMap: stoneTexture,
+      bumpScale: 0.12,
+      roughness: 1,
+    });
+    const iron = new THREE.MeshStandardMaterial({ color: 0x14232c, roughness: 0.34, metalness: 0.88 });
+    const bronze = new THREE.MeshStandardMaterial({ color: 0x8a5425, roughness: 0.32, metalness: 0.82 });
+    const wood = new THREE.MeshStandardMaterial({ color: 0x3f1429, roughness: 0.76, metalness: 0.04 });
+    const cyanMetal = new THREE.MeshPhysicalMaterial({ color: 0x84dfff, roughness: 0.16, metalness: 0.92, clearcoat: 0.8 });
+    const ember = new THREE.MeshStandardMaterial({ color: 0xf08f24, emissive: 0xe7562f, emissiveIntensity: 1.2, roughness: 0.28 });
+
+    const register = <T extends THREE.Mesh>(mesh: T) => {
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      return mesh;
+    };
     const box = (w: number, h: number, d: number, material: THREE.Material, x: number, y: number, z: number) => {
-      const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), material);
+      const mesh = register(new THREE.Mesh(new THREE.BoxGeometry(w, h, d), material));
       mesh.position.set(x, y, z);
       return mesh;
     };
-    doorGroup.add(box(1.05, 4.8, 1.15, stone, -2.05, 0, 0), box(1.05, 4.8, 1.15, stone, 2.05, 0, 0));
-    for (let i = 0; i < 9; i += 1) {
-      const angle = Math.PI - (Math.PI * i) / 8;
-      const archBlock = box(0.86, 0.86, 1.1, stone, Math.cos(angle) * 2.05, Math.sin(angle) * 2.05 + 1.95, 0);
+    const rock = (radius: number, material: THREE.Material, x: number, y: number, z: number, seed: number) => {
+      const mesh = register(new THREE.Mesh(new THREE.DodecahedronGeometry(radius, 1), material));
+      mesh.position.set(x, y, z);
+      mesh.scale.set(1 + (seed % 3) * 0.18, 0.58 + (seed % 4) * 0.12, 0.8 + (seed % 5) * 0.08);
+      mesh.rotation.set(seed * 0.17, seed * 0.31, seed * 0.11);
+      return mesh;
+    };
+
+    const doorGroup = new THREE.Group();
+    doorGroup.position.set(0.72, -0.05, -0.55);
+    root.add(doorGroup);
+
+    doorGroup.add(
+      box(1.38, 5.15, 1.4, stoneDark, -2.2, -0.18, -0.12),
+      box(1.38, 5.15, 1.4, stoneDark, 2.2, -0.18, -0.12),
+      box(0.96, 4.9, 1.62, stone, -2.2, -0.05, 0),
+      box(0.96, 4.9, 1.62, stone, 2.2, -0.05, 0),
+    );
+    doorGroup.add(box(0.14, 4.6, 1.74, bronze, -1.68, -0.05, 0.02), box(0.14, 4.6, 1.74, bronze, 1.68, -0.05, 0.02));
+
+    for (let i = 0; i < 17; i += 1) {
+      const angle = Math.PI - (Math.PI * i) / 16;
+      const archBlock = box(0.62, 0.74, 1.56, i % 4 === 0 ? stoneDark : stone, Math.cos(angle) * 2.2, Math.sin(angle) * 2.2 + 2.12, 0);
       archBlock.rotation.z = -angle + Math.PI / 2;
+      archBlock.rotation.y = Math.sin(i * 1.9) * 0.04;
       doorGroup.add(archBlock);
     }
-    const leftDoor = box(1.85, 4.1, 0.35, wood, 0, 0.1, 0.18);
-    const rightDoor = box(1.85, 4.1, 0.35, wood, 0, 0.1, 0.18);
+
+    const crown = new THREE.Mesh(new THREE.TorusGeometry(2.2, 0.16, 8, 64, Math.PI), bronze);
+    crown.rotation.z = Math.PI;
+    crown.position.set(0, 2.12, 0.85);
+    doorGroup.add(register(crown));
+
+    const leftDoor = box(1.91, 4.22, 0.42, wood, 0, 0.02, 0.27);
+    const rightDoor = box(1.91, 4.22, 0.42, wood, 0, 0.02, 0.27);
     leftDoor.geometry.translate(-0.925, 0, 0);
     rightDoor.geometry.translate(0.925, 0, 0);
     doorGroup.add(leftDoor, rightDoor);
 
+    [-1.36, -0.46, 0.46, 1.36].forEach((y) => {
+      const bandLeft = box(1.76, 0.13, 0.12, iron, -0.94, y, 0.53);
+      const bandRight = box(1.76, 0.13, 0.12, iron, 0.94, y, 0.53);
+      doorGroup.add(bandLeft, bandRight);
+    });
+    [-1.38, -0.55, 0.55, 1.38].forEach((x) => doorGroup.add(box(0.1, 3.98, 0.1, iron, x, 0.02, 0.54)));
+    const seal = register(new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.34, 0.2, 12), bronze));
+    seal.rotation.x = Math.PI / 2;
+    seal.position.set(0, 0.12, 0.69);
+    doorGroup.add(seal);
+
     const runeMaterials: THREE.MeshStandardMaterial[] = [];
+    const runeLights: THREE.PointLight[] = [];
+    const runeGroups: THREE.Group[] = [];
+    const runeStrokes = [
+      [[0, 0, 0.48, 0]],
+      [[-0.09, 0, 0.45, 0], [0.09, 0, 0.45, 0]],
+      [[-0.11, 0, 0.43, -0.58], [0.11, 0, 0.43, 0.58]],
+      [[0, 0, 0.48, 0], [-0.1, 0.09, 0.3, -0.75], [0.1, 0.09, 0.3, 0.75]],
+      [[-0.12, 0.02, 0.4, -0.58], [0.12, 0.02, 0.4, 0.58], [0, -0.11, 0.25, 0]],
+    ];
+
     for (let i = 0; i < 5; i += 1) {
       const active = i < progress;
-      const runeMat = new THREE.MeshStandardMaterial({ color: active ? 0xffd269 : 0x2a6075, emissive: active ? 0xf08f24 : 0x000000, emissiveIntensity: active ? 2 : 0, roughness: 0.35 });
+      const runeMat = new THREE.MeshStandardMaterial({
+        color: active ? 0xffc45e : 0x6b8c91,
+        emissive: 0xf08f24,
+        emissiveIntensity: active ? 3.2 : 0.02,
+        roughness: 0.3,
+        metalness: 0.32,
+      });
       runeMaterials.push(runeMat);
-      const rune = new THREE.Mesh(new THREE.OctahedronGeometry(0.2, 0), runeMat);
-      rune.position.set(-1.25 + i * 0.63, 2.7, 0.8);
-      doorGroup.add(rune);
+
+      const runeGroup = new THREE.Group();
+      runeGroup.position.set(-1.34 + i * 0.67, 2.78, 0.82);
+      const socket = register(new THREE.Mesh(new THREE.CylinderGeometry(0.31, 0.31, 0.16, 6), stoneDark));
+      socket.rotation.x = Math.PI / 2;
+      runeGroup.add(socket);
+      for (const [x, y, length, angle] of runeStrokes[i]) {
+        const stroke = box(0.052, length, 0.07, runeMat, x, y, 0.14);
+        stroke.rotation.z = angle;
+        runeGroup.add(stroke);
+      }
+      const light = new THREE.PointLight(0xf08f24, active ? 8 : 0, 2.2, 2);
+      light.position.set(0, 0, 0.55);
+      runeLights.push(light);
+      runeGroup.add(light);
+      runeGroups.push(runeGroup);
+      doorGroup.add(runeGroup);
+    }
+
+    for (let i = 0; i < 16; i += 1) {
+      const side = i % 2 ? -1 : 1;
+      const x = side * (2.75 + (i % 4) * 0.22);
+      const y = -1.9 + Math.floor(i / 4) * 1.18;
+      doorGroup.add(rock(0.58 + (i % 3) * 0.11, i % 4 === 0 ? stoneDark : stone, x, y, -0.25 - (i % 3) * 0.18, i + 3));
     }
 
     const hero = new THREE.Group();
-    hero.position.set(-3.15, -1.75, 1.15);
+    hero.position.set(-3.42, -2.18, 1.55);
+    hero.rotation.y = 0.18;
     root.add(hero);
-    const skin = new THREE.MeshStandardMaterial({ color: 0xd79a72, roughness: 0.8 });
-    const blue = new THREE.MeshStandardMaterial({ color: 0x0069a7, roughness: 0.65 });
-    const dark = new THREE.MeshStandardMaterial({ color: 0x102638, roughness: 0.6 });
-    const cape = new THREE.MeshStandardMaterial({ color: 0x981f59, roughness: 0.75 });
-    hero.add(box(0.74, 0.67, 0.65, skin, 0, 2.25, 0), box(0.83, 0.24, 0.71, dark, 0, 2.57, 0), box(0.9, 1.18, 0.58, blue, 0, 1.32, 0), box(0.3, 1, 0.36, dark, -0.27, 0.28, 0), box(0.3, 1, 0.36, dark, 0.27, 0.28, 0), box(0.18, 1.45, 0.48, cape, -0.56, 1.25, -0.1));
-    const swordBlade = box(0.12, 1.8, 0.1, trim, 0.9, 1.75, 0.1);
-    swordBlade.rotation.z = -0.32;
-    const swordGuard = box(0.72, 0.14, 0.18, ember, 0.62, 0.93, 0.1);
-    swordGuard.rotation.z = -0.32;
-    hero.add(swordBlade, swordGuard);
+    const skin = new THREE.MeshStandardMaterial({ color: 0xb96f4a, roughness: 0.86 });
+    const blue = new THREE.MeshStandardMaterial({ color: 0x075d86, roughness: 0.58, metalness: 0.12 });
+    const leather = new THREE.MeshStandardMaterial({ color: 0x281a18, roughness: 0.82 });
+    const capeMaterial = new THREE.MeshStandardMaterial({ color: 0x741d4b, roughness: 0.9, side: THREE.DoubleSide });
 
-    const floor = new THREE.Mesh(new THREE.PlaneGeometry(24, 18, 16, 12), new THREE.MeshStandardMaterial({ color: 0x08263a, roughness: 0.95, wireframe: true, transparent: true, opacity: 0.22 }));
+    const torso = register(new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.52, 1.16, 8), blue));
+    torso.position.set(0, 1.35, 0);
+    const head = register(new THREE.Mesh(new THREE.SphereGeometry(0.34, 12, 8), skin));
+    head.position.set(0, 2.26, 0);
+    const hair = register(new THREE.Mesh(new THREE.SphereGeometry(0.36, 8, 5, 0, Math.PI * 2, 0, Math.PI / 2), leather));
+    hair.position.set(0, 2.37, -0.03);
+    const shoulderLeft = register(new THREE.Mesh(new THREE.SphereGeometry(0.27, 8, 5), bronze));
+    shoulderLeft.position.set(-0.48, 1.72, 0);
+    const shoulderRight = shoulderLeft.clone();
+    shoulderRight.position.x = 0.48;
+    const leftLeg = box(0.28, 1.1, 0.32, leather, -0.22, 0.35, 0);
+    const rightLeg = box(0.28, 1.1, 0.32, leather, 0.22, 0.35, 0);
+    const belt = box(0.86, 0.16, 0.62, bronze, 0, 0.92, 0);
+
+    const capeShape = new THREE.Shape();
+    capeShape.moveTo(-0.45, 0.5);
+    capeShape.lineTo(0.45, 0.5);
+    capeShape.lineTo(0.68, -1.1);
+    capeShape.lineTo(0.18, -0.98);
+    capeShape.lineTo(-0.15, -1.15);
+    capeShape.lineTo(-0.58, -0.96);
+    capeShape.closePath();
+    const heroCape = register(new THREE.Mesh(new THREE.ShapeGeometry(capeShape), capeMaterial));
+    heroCape.position.set(-0.12, 1.35, -0.36);
+    heroCape.rotation.x = -0.11;
+    hero.add(torso, head, hair, shoulderLeft, shoulderRight, leftLeg, rightLeg, belt, heroCape);
+
+    const swordBlade = box(0.12, 2.15, 0.08, cyanMetal, 0.96, 1.7, 0.2);
+    swordBlade.rotation.z = -0.35;
+    const swordEdge = box(0.025, 2.06, 0.1, ember, 0.91, 1.71, 0.21);
+    swordEdge.rotation.z = -0.35;
+    const swordGuard = box(0.74, 0.15, 0.2, bronze, 0.64, 0.74, 0.18);
+    swordGuard.rotation.z = -0.35;
+    hero.add(swordBlade, swordEdge, swordGuard);
+
+    const groundTexture = makeStoneTexture();
+    if (groundTexture) groundTexture.repeat.set(7, 7);
+    const floor = register(new THREE.Mesh(
+      new THREE.PlaneGeometry(30, 22, 1, 1),
+      new THREE.MeshStandardMaterial({ color: 0x122933, map: groundTexture, bumpMap: groundTexture, bumpScale: 0.22, roughness: 1 }),
+    ));
     floor.rotation.x = -Math.PI / 2;
-    floor.position.y = -2.27;
+    floor.position.y = -2.38;
     scene.add(floor);
+
+    for (let i = 0; i < 24; i += 1) {
+      const angle = (i / 24) * Math.PI * 2;
+      const radius = 5.1 + (i % 5) * 0.33;
+      scene.add(rock(0.48 + (i % 4) * 0.13, i % 3 ? stone : stoneDark, Math.cos(angle) * radius, -2.15, Math.sin(angle) * radius - 0.6, i + 31));
+    }
+
+    [-1, 1].forEach((side) => {
+      const brazier = new THREE.Group();
+      brazier.position.set(side * 3.48, -1.42, 1.1);
+      brazier.add(box(0.18, 1.35, 0.18, iron, 0, 0, 0), box(0.7, 0.16, 0.7, bronze, 0, 0.64, 0));
+      const flameMaterial = new THREE.MeshBasicMaterial({ color: 0xf08f24, transparent: true, opacity: 0.84, blending: THREE.AdditiveBlending });
+      const flame = new THREE.Mesh(new THREE.ConeGeometry(0.23, 0.76, 7), flameMaterial);
+      flame.position.y = 1.03;
+      brazier.add(flame);
+      const flameLight = new THREE.PointLight(0xe7562f, 28, 6, 2);
+      flameLight.position.y = 1.08;
+      brazier.add(flameLight);
+      scene.add(brazier);
+    });
+
     const particles = new THREE.BufferGeometry();
-    const points = new Float32Array(180 * 3);
+    const points = new Float32Array(420 * 3);
     for (let i = 0; i < points.length; i += 3) {
-      points[i] = (Math.random() - 0.5) * 14;
-      points[i + 1] = (Math.random() - 0.35) * 10;
-      points[i + 2] = (Math.random() - 0.5) * 8;
+      points[i] = (Math.random() - 0.5) * 16;
+      points[i + 1] = (Math.random() - 0.25) * 11;
+      points[i + 2] = (Math.random() - 0.5) * 10;
     }
     particles.setAttribute("position", new THREE.BufferAttribute(points, 3));
-    const dust = new THREE.Points(particles, new THREE.PointsMaterial({ color: 0x8cc23d, size: 0.035, transparent: true, opacity: 0.55 }));
+    const dust = new THREE.Points(particles, new THREE.PointsMaterial({ color: 0xd6b66a, size: 0.028, transparent: true, opacity: 0.58, blending: THREE.AdditiveBlending, depthWrite: false }));
     scene.add(dust);
-    scene.add(new THREE.HemisphereLight(0x9eeaff, 0x06111b, 2.15));
-    const key = new THREE.PointLight(0x30b5e6, 45, 16);
-    key.position.set(-4, 5, 6);
+
+    const beamMaterial = new THREE.MeshBasicMaterial({ color: 0x69c9e8, transparent: true, opacity: 0.035, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending });
+    const beam = new THREE.Mesh(new THREE.ConeGeometry(2.5, 9, 24, 1, true), beamMaterial);
+    beam.position.set(-1.8, 3.2, -1.8);
+    beam.rotation.z = 0.22;
+    scene.add(beam);
+
+    scene.add(new THREE.HemisphereLight(0x8fd5e8, 0x02080d, 1.35));
+    const key = new THREE.DirectionalLight(0x8bdfff, 4.2);
+    key.position.set(-4.5, 7, 6);
+    key.castShadow = true;
+    key.shadow.mapSize.set(1024, 1024);
+    key.shadow.camera.near = 0.5;
+    key.shadow.camera.far = 30;
     scene.add(key);
-    const warm = new THREE.PointLight(0xf08f24, 32, 12);
-    warm.position.set(3, 2, 4);
+    const rim = new THREE.DirectionalLight(0x981f59, 3.4);
+    rim.position.set(5, 2, -4);
+    scene.add(rim);
+    const warm = new THREE.PointLight(0xf08f24, 38, 13, 2);
+    warm.position.set(3.6, 1.5, 4.5);
     scene.add(warm);
 
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
       if (!rect.width || !rect.height) return;
       renderer.setSize(rect.width, rect.height, false);
+      composer.setSize(rect.width, rect.height);
       camera.aspect = rect.width / rect.height;
       camera.updateProjectionMatrix();
     };
@@ -229,26 +440,43 @@ function VoxelWorld({ progress, open }: { progress: number; open: boolean }) {
     let frame = 0;
     let clock = 0;
     const animate = () => {
-      clock += 0.012;
+      clock += 0.011;
       if (!reduced) {
-        root.rotation.y = Math.sin(clock * 0.42) * 0.055;
-        hero.position.y = -1.75 + Math.sin(clock * 2.3) * 0.045;
-        dust.rotation.y += 0.0009;
+        root.rotation.y = Math.sin(clock * 0.35) * 0.025;
+        root.position.y = -0.2 + Math.sin(clock * 0.62) * 0.018;
+        hero.position.y = -2.18 + Math.sin(clock * 2.1) * 0.035;
+        heroCape.rotation.x = -0.11 + Math.sin(clock * 1.8) * 0.035;
+        swordEdge.material = ember;
+        dust.rotation.y += 0.00042;
+        beam.material.opacity = 0.03 + Math.sin(clock * 0.72) * 0.012;
+
         runeMaterials.forEach((material, index) => {
-          if (index < progress) material.emissiveIntensity = 1.5 + Math.sin(clock * 3 + index) * 0.65;
+          const solved = index < progress;
+          const completionWave = open && Math.floor(clock * 2.8) % 5 === index;
+          const waitingPulse = !open && index === Math.min(progress, 4);
+          material.emissiveIntensity = solved
+            ? 2.8 + Math.sin(clock * 3.2 + index * 0.8) * 0.55 + (completionWave ? 2.5 : 0)
+            : waitingPulse ? 0.16 + (Math.sin(clock * 2.2) + 1) * 0.11 : 0.02;
+          runeLights[index].intensity = solved ? 7 + (completionWave ? 11 : 0) : waitingPulse ? 0.7 : 0;
+          runeGroups[index].scale.setScalar(1 + (completionWave ? 0.09 : 0));
         });
+
+        camera.position.x = 0.2 + Math.sin(clock * 0.3) * 0.09;
+        camera.position.y = 2.15 + Math.cos(clock * 0.24) * 0.045;
+        camera.lookAt(0.3, 0.55, -0.7);
       }
       const target = open ? 1.15 : 0;
       leftDoor.rotation.y += (target - leftDoor.rotation.y) * 0.055;
       rightDoor.rotation.y += (-target - rightDoor.rotation.y) * 0.055;
-      if (open) hero.position.z += (-1.25 - hero.position.z) * 0.018;
-      renderer.render(scene, camera);
+      if (open) hero.position.z += (-1.4 - hero.position.z) * 0.012;
+      composer.render();
       frame = window.requestAnimationFrame(animate);
     };
     animate();
     return () => {
       window.removeEventListener("resize", resize);
       window.cancelAnimationFrame(frame);
+      composer.dispose();
       renderer.dispose();
       scene.traverse((object) => {
         if (object instanceof THREE.Mesh) {
@@ -257,6 +485,7 @@ function VoxelWorld({ progress, open }: { progress: number; open: boolean }) {
         }
       });
       particles.dispose();
+      textures.forEach((texture) => texture.dispose());
     };
   }, [progress, open]);
 
@@ -323,7 +552,23 @@ export function QuestExperience() {
 
       {stage === "complete" && <section className="complete-screen">
         <div className="complete-story"><div className="quest-kicker">THE DOOR OPENS</div><h1>Root found.</h1><p className="completion-lead">Five questions, one thread — from a late cart down to a decision made in a purchasing office.</p><ol className="root-chain"><li>The medication cart is late</li><li>↳ why — the order list reaches pharmacy late</li><li>↳ why — the overnight printer jams every morning</li><li>↳ why — the paper curls in the tray</li><li>↳ why — a cheaper stock absorbs the basement&apos;s humidity</li><li>↳ why — purchasing changed suppliers, and no standard required them to tell the people the change would touch</li></ol><p>The root fix costs almost nothing: restore the approved stock, and write the missing rule — <em>any supply change that touches clinical work gets flagged to the people who live with it.</em></p><p>The expensive fixes you were offered — new printers, second carts, earlier shifts — would have treated symptoms forever.</p></div>
-        <div className="reward-column"><div className="world-frame complete-world"><VoxelWorld progress={5} open /></div><div className="weapon-card"><span>WEAPON ACQUIRED</span><div className="sword-glyph" aria-hidden="true">†</div><h2>The Five Whys</h2><p>Every hero is offered easy weapons at the threshold.<br />The true weapon is a question, asked five times.</p></div><div className="completion-meta"><p>Rootfinder — the door barely resisted you</p><strong>This chamber is Box 4 of 9 — Root Cause Analysis.</strong><p>On an A3, masters of improvement spend most of the journey here, understanding the problem, before a single solution is drawn. Spin the wheel again to enter another chamber.</p><button className="primary-button" type="button" onClick={restart}><span>Enter again</span><b>↻</b></button></div></div>
+        <div className="reward-column">
+          <div className="world-frame complete-world">
+            <VoxelWorld progress={5} open />
+            <div className="cinematic-hud" aria-hidden="true">
+              <span>THE FIVE WHYS</span>
+              <b>ALL RUNES AWAKENED</b>
+            </div>
+          </div>
+          <div className="weapon-card">
+            <span>LEGENDARY TOOL DISCOVERED</span>
+            <div className="pixel-sword" aria-hidden="true"><i /><b /><em /></div>
+            <h2><small>THE</small> FIVE WHYS</h2>
+            <p>A hero&apos;s sharpest weapon isn&apos;t steel—it&apos;s curiosity with stamina.</p>
+            <p className="quest-incantation">Ask why. Follow the answer. Repeat until the root has nowhere left to hide.</p>
+          </div>
+          <div className="completion-meta"><p>Rootfinder — the door barely resisted you</p><strong>This chamber is Box 4 of 9 — Root Cause Analysis.</strong><p>On an A3, masters of improvement spend most of the journey here, understanding the problem, before a single solution is drawn. Spin the wheel again to enter another chamber.</p><button className="primary-button" type="button" onClick={restart}><span>Enter again</span><b>↻</b></button></div>
+        </div>
       </section>}
       <footer className="hero-footer"><span>MISSION</span><span>VISION</span><span>VALUES</span><span>CORE PRIORITIES</span><strong>WHO WE ARE</strong></footer>
     </main>

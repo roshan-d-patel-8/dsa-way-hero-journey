@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 import test from "node:test";
 
 async function render() {
@@ -26,18 +26,28 @@ test("server-renders the DSA Way quest", async () => {
 });
 
 test("preserves the full Door of Whys experience and requested capabilities", async () => {
-  const [source, css, packageJson] = await Promise.all([
+  const [source, css, packageJson, layout, ogImage] = await Promise.all([
     readFile(new URL("../app/QuestExperience.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
     readFile(new URL("../package.json", import.meta.url), "utf8"),
+    readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
+    stat(new URL("../public/og.png", import.meta.url)),
   ]);
   assert.match(source, /The medication cart leaves pharmacy late every morning\./);
   assert.match(source, /Who changed the paper — and did anyone check with pharmacy\?/);
   assert.match(source, /That question carried a solution in its sleeve\. Ask what is — not what to do\./);
-  assert.match(source, /The true weapon is a question, asked five times\./);
+  assert.match(source, /curiosity with stamina/);
+  assert.match(source, /ALL RUNES AWAKENED/);
+  assert.match(source, /UnrealBloomPass/);
+  assert.match(source, /runeStrokes/);
   assert.match(source, /import \* as THREE from "three"/);
   assert.match(source, /AudioContext/);
   assert.match(packageJson, /"three":/);
+  assert.match(packageJson, /"@fontsource\/press-start-2p":/);
+  assert.match(css, /"Press Start 2P"/);
+  assert.match(layout, /openGraph:/);
+  assert.match(layout, /twitter:/);
+  assert.ok(ogImage.size > 100_000);
   for (const color of ["#0069a7", "#30b5e6", "#8cc23d", "#f08f24", "#e7562f", "#981f59"]) {
     assert.match(css.toLowerCase(), new RegExp(color));
   }

@@ -143,13 +143,24 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
 .root-chain { list-style: none; padding: 17px 20px; margin: 24px 0; border: 1px solid var(--line); background: rgba(255,255,255,.72); }
 .root-chain li { padding: 7px 0; border-bottom: 1px dashed var(--line); font: 700 .73rem/1.35 "Courier New", monospace; }
 .root-chain li:last-child { border-bottom: 0; color: var(--berry); }
-.reward-column { padding: 28px 36px 36px 0; }
-.complete-world { height: 350px; border: 8px solid var(--ink); }
-.weapon-card { position: relative; margin-top: -48px; margin-left: 34px; margin-right: 18px; z-index: 3; padding: 19px 22px 20px 88px; min-height: 133px; background: var(--orange); color: var(--ink); box-shadow: 8px 8px 0 var(--berry); }
-.weapon-card > span { font: 850 .58rem/1 "Courier New",monospace; letter-spacing: .14em; }
-.weapon-card h2 { margin: 6px 0 5px; font-family: Georgia, "Times New Roman", serif; font-size: 1.8rem; font-weight: 500; }
-.weapon-card p { margin: 0; font-size: .72rem; line-height: 1.35; }
-.sword-glyph { position: absolute; left: 24px; top: 20px; font: 700 4.8rem/.9 Georgia,serif; transform: rotate(35deg); color: var(--berry); text-shadow: 4px 4px 0 rgba(255,255,255,.4); }
+.reward-column { padding: 28px 36px 42px 0; }
+.complete-world { height: 470px; border: 8px solid var(--ink); box-shadow: 0 24px 65px rgba(6,27,43,.3), inset 0 0 80px rgba(0,0,0,.5); background: #030a0e; }
+.complete-world::after { content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; box-shadow: inset 0 0 100px 28px rgba(1,8,12,.72); background: linear-gradient(180deg, rgba(3,10,14,.12), transparent 60%, rgba(3,10,14,.5)); }
+.cinematic-hud { position: absolute; z-index: 4; left: 22px; right: 22px; bottom: 22px; display: flex; justify-content: space-between; align-items: end; color: rgba(255,255,255,.76); text-shadow: 0 2px 12px #000; }
+.cinematic-hud span { font-family: "Press Start 2P", "Courier New", monospace; font-size: .58rem; letter-spacing: .06em; }
+.cinematic-hud b { color: #ffc85a; font: 800 .55rem/1 "Courier New",monospace; letter-spacing: .12em; }
+.weapon-card { position: relative; margin-top: -30px; margin-left: 34px; margin-right: 18px; z-index: 5; padding: 24px 27px 25px 108px; min-height: 182px; overflow: hidden; background: linear-gradient(135deg, #ffae2e 0%, var(--orange) 54%, #e8791e 100%); color: var(--ink); border: 1px solid rgba(255,255,255,.5); box-shadow: 9px 9px 0 var(--berry), 0 22px 45px rgba(152,31,89,.2); }
+.weapon-card::before { content: ""; position: absolute; inset: 0; opacity: .12; pointer-events: none; background: linear-gradient(90deg, transparent 49%, var(--ink) 50%, transparent 51%) 0 0 / 15px 15px, linear-gradient(0deg, transparent 49%, var(--ink) 50%, transparent 51%) 0 0 / 15px 15px; }
+.weapon-card > span { position: relative; z-index: 1; font: 850 .6rem/1 "Courier New",monospace; letter-spacing: .17em; }
+.weapon-card h2 { position: relative; z-index: 1; margin: 13px 0 13px; color: #08283a; font-family: "Press Start 2P", "Courier New", monospace; font-size: clamp(1.25rem,2.2vw,1.75rem); font-weight: 400; line-height: 1.25; letter-spacing: -.055em; text-shadow: 3px 3px 0 rgba(255,255,255,.28); }
+.weapon-card h2 small { display: block; margin-bottom: 6px; color: var(--berry); font-size: .43em; letter-spacing: .14em; }
+.weapon-card p { position: relative; z-index: 1; margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: .78rem; line-height: 1.42; }
+.weapon-card .quest-incantation { margin-top: 6px; color: #6d1c43; font-weight: 700; font-style: italic; }
+.pixel-sword { position: absolute; z-index: 1; left: 29px; top: 37px; width: 58px; height: 96px; transform: rotate(39deg); filter: drop-shadow(5px 5px 0 rgba(255,255,255,.3)); }
+.pixel-sword i, .pixel-sword b, .pixel-sword em { position: absolute; display: block; image-rendering: pixelated; }
+.pixel-sword i { left: 24px; top: 0; width: 13px; height: 64px; background: #fff4cf; box-shadow: inset -5px 0 #30b5e6, 0 -7px 0 -2px #fff4cf; clip-path: polygon(50% 0,100% 9%,100% 100%,0 100%,0 9%); }
+.pixel-sword b { left: 6px; top: 59px; width: 50px; height: 12px; background: var(--berry); box-shadow: inset 0 -5px #641436; }
+.pixel-sword em { left: 24px; top: 69px; width: 13px; height: 25px; background: var(--ink); box-shadow: inset -5px 0 #334d5e; }
 .completion-meta { margin: 26px 18px 0 34px; }
 .completion-meta > p { color: #536b7b; font-size: .75rem; line-height: 1.5; }
 .completion-meta strong { display: block; color: var(--blue); margin: 12px 0; font-size: .8rem; }
@@ -199,9 +210,13 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
   .rune-rail span { width: 34px; height: 34px; }
   .known-panel p { font-size: 1.35rem; }
   .choice-list button { grid-template-columns: 34px 1fr 20px; padding-inline: 10px; }
-  .complete-world { height: 290px; }
+  .complete-world { height: 360px; }
   .reward-column { padding: 18px; }
-  .weapon-card { margin-left: 18px; margin-right: 8px; padding-left: 72px; }
+  .weapon-card { margin-left: 18px; margin-right: 8px; padding: 22px 18px 23px 86px; }
+  .weapon-card h2 { font-size: 1rem; }
+  .weapon-card p { font-size: .7rem; }
+  .pixel-sword { left: 17px; transform: rotate(39deg) scale(.8); transform-origin: top center; }
+  .cinematic-hud b { display: none; }
   .complete-story { padding: 36px 28px 70px; }
   .hero-footer { height: 44px; padding: 0 22px; }
   .hero-footer span:nth-child(-n+3) { display: none; }
