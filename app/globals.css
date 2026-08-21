@@ -145,6 +145,7 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
 .feedback-panel p { margin: 9px 0; font-family: Georgia, "Times New Roman", serif; font-size: .95rem; line-height: 1.5; }
 .feedback-panel blockquote { margin: 11px 0 0; color: #785268; font-size: .8rem; font-style: italic; }
 .rune-ignites { color: #547f17; font: 750 .63rem/1 "Courier New", monospace; letter-spacing: .1em; margin-top: 12px; }
+.choice-instruction { margin-top: 9px; color: #536b7b; font: 700 .62rem/1.35 "Courier New", monospace; letter-spacing: .035em; }
 .next-button { border: 0; background: var(--ink); color: #fff; margin-top: 14px; padding: 11px 12px 11px 15px; cursor: pointer; font: 750 .66rem/1 "Courier New", monospace; letter-spacing: .06em; }
 .next-button span { display: inline-block; color: var(--orange); margin-left: 14px; }
 .question-world { min-height: calc(100svh - 136px); border-left: 9px solid var(--ink); }

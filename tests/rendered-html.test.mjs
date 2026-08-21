@@ -36,6 +36,8 @@ test("preserves the full Door of Whys experience and requested capabilities", as
   assert.match(source, /The medication cart leaves pharmacy late every morning\./);
   assert.match(source, /Who changed the paper — and did anyone check with pharmacy\?/);
   assert.match(source, /That question carried a solution in its sleeve\. Ask what is — not what to do\./);
+  assert.match(source, /Inspect another path, or continue when you are ready\./);
+  assert.match(source, /the rune remains lit/);
   assert.match(source, /curiosity with stamina/);
   assert.match(source, /ALL RUNES AWAKENED/);
   assert.match(source, /UnrealBloomPass/);
