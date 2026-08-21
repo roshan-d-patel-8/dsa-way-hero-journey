@@ -574,7 +574,6 @@ export function QuestExperience() {
       {stage === "cover" && <section className="cover-screen">
         <div className="cover-copy"><div className="eyebrow"><span>04</span> A DSA GI LEARNING QUEST</div><h1><span>The DSA Way:</span>A Hero&apos;s Journey</h1><p>Nine chambers. One way forward. Build the instincts that make this the best place to work—and the best place to get care.</p><button className="primary-button" type="button" onClick={begin}><span>Begin the journey</span><b>→</b></button></div>
         <div className="world-frame cover-world"><VoxelWorld progress={0} open={false} /><div className="world-caption">CHAMBER IV · ROOT CAUSE</div></div>
-        <div className="cover-manifesto"><div><span>MISSION</span><p>Delivering nation leading health care for the patients and communities we serve.</p></div><div><span>VALUES</span><p>Safety · Compassion · Integrity · Excellence · Continuous Improvement</p></div><div><span>WHO WE ARE</span><p>Imagine Possibilities · Unlock Potential · Deliver the Extraordinary</p></div></div>
       </section>}
 
       {stage === "threshold" && <section className="threshold-screen">
@@ -610,7 +609,6 @@ export function QuestExperience() {
           <div className="completion-meta"><p>Rootfinder — the door barely resisted you</p><strong>This chamber is Box 4 of 9 — Root Cause Analysis.</strong><p>On an A3, masters of improvement spend most of the journey here, understanding the problem, before a single solution is drawn. Spin the wheel again to enter another chamber.</p><button className="primary-button" type="button" onClick={restart}><span>Enter again</span><b>↻</b></button></div>
         </div>
       </section>}
-      <footer className="hero-footer"><span>MISSION</span><span>VISION</span><span>VALUES</span><span>CORE PRIORITIES</span><strong>WHO WE ARE</strong></footer>
     </main>
   );
 }

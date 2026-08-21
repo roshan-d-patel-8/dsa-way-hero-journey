@@ -47,6 +47,11 @@ test("preserves the full Door of Whys experience and requested capabilities", as
   assert.match(packageJson, /"three":/);
   assert.match(packageJson, /"@fontsource\/press-start-2p":/);
   assert.match(css, /"Press Start 2P"/);
+  assert.match(css, /ACHIEVEMENT UNLOCKED/);
+  assert.match(css, /legendaryUnlock/);
+  assert.match(css, /--paper: #050d14/);
+  assert.doesNotMatch(source, /hero-footer/);
+  assert.doesNotMatch(source, /cover-manifesto/);
   assert.match(layout, /openGraph:/);
   assert.match(layout, /twitter:/);
   assert.ok(ogImage.size > 100_000);
