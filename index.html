@@ -28,9 +28,39 @@
       content="https://roshan-d-patel-8.github.io/dsa-way-hero-journey/og.png"
     />
     <title>The DSA Way: A Hero's Journey</title>
+    <style>
+      html, body, #root { min-height: 100%; }
+      body { margin: 0; background: #fffaf0; color: #102638; }
+      .boot-screen {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 32px;
+        background:
+          linear-gradient(90deg, rgba(16, 38, 56, .045) 1px, transparent 1px) 0 0 / 34px 34px,
+          linear-gradient(rgba(16, 38, 56, .045) 1px, transparent 1px) 0 0 / 34px 34px,
+          #fffaf0;
+        font-family: "Courier New", monospace;
+        text-align: center;
+      }
+      .boot-card { max-width: 560px; }
+      .boot-runes { color: #f08f24; font-size: 1.55rem; letter-spacing: .42em; }
+      .boot-screen h1 { margin: 22px 0 12px; color: #0069a7; font-size: clamp(2rem, 6vw, 4rem); }
+      .boot-screen p { line-height: 1.6; }
+      .boot-screen a { color: #fff; background: #102638; display: inline-block; margin-top: 18px; padding: 13px 18px; }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <main class="boot-screen" aria-live="polite">
+        <div class="boot-card">
+          <div class="boot-runes" aria-hidden="true">◇ ◇ ◇ ◇ ◇</div>
+          <h1>The DSA Way</h1>
+          <p>Awakening the five runes and preparing your journey…</p>
+          <noscript><p>This quest needs JavaScript enabled to awaken the runes.</p></noscript>
+        </div>
+      </main>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
