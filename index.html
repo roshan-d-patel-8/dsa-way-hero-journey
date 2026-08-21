@@ -47,7 +47,17 @@
       .boot-runes { color: #f08f24; font-size: 1.55rem; letter-spacing: .42em; }
       .boot-screen h1 { margin: 22px 0 12px; color: #0069a7; font-size: clamp(2rem, 6vw, 4rem); }
       .boot-screen p { line-height: 1.6; }
-      .boot-screen a { color: #fff; background: #102638; display: inline-block; margin-top: 18px; padding: 13px 18px; }
+      .boot-screen a, .boot-screen button {
+        color: #fff;
+        background: #102638;
+        border: 0;
+        display: inline-block;
+        margin-top: 18px;
+        padding: 13px 18px;
+        font: inherit;
+        cursor: pointer;
+      }
+      .boot-progress { display: block; color: #981f59; margin-top: 14px; font-size: .78rem; letter-spacing: .1em; }
     </style>
   </head>
   <body>
@@ -56,7 +66,8 @@
         <div class="boot-card">
           <div class="boot-runes" aria-hidden="true">◇ ◇ ◇ ◇ ◇</div>
           <h1>The DSA Way</h1>
-          <p>Awakening the five runes and preparing your journey…</p>
+          <p>Loading the cinematic gateway…</p>
+          <span class="boot-progress">THE TEXT QUEST WILL OPEN FIRST</span>
           <noscript><p>This quest needs JavaScript enabled to awaken the runes.</p></noscript>
         </div>
       </main>
