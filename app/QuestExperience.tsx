@@ -133,10 +133,22 @@ function playTone(kind: "start" | "step" | "wrong" | "rune" | "open", enabled: b
 
 function VoxelWorld({ progress, open }: { progress: number; open: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [renderingFailed, setRenderingFailed] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || renderingFailed) return;
+
+    const useFallback = (error: unknown) => {
+      console.warn("The cinematic 3D scene is unavailable; using the illustrated fallback.", error);
+      setRenderingFailed(true);
+    };
+
+    const onContextLost = (event: Event) => {
+      event.preventDefault();
+      useFallback(new Error("WebGL context lost"));
+    };
+    canvas.addEventListener("webglcontextlost", onContextLost);
 
     const scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2(0x06131d, 0.035);
@@ -144,7 +156,19 @@ function VoxelWorld({ progress, open }: { progress: number; open: boolean }) {
     const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
     camera.position.set(0.2, 2.15, 12.4);
 
-    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    let renderer: THREE.WebGLRenderer;
+    let composer: EffectComposer;
+    try {
+      renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      composer = new EffectComposer(renderer);
+      composer.addPass(new RenderPass(scene, camera));
+      const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 1.12, 0.8, 0.12);
+      composer.addPass(bloom);
+    } catch (error) {
+      canvas.removeEventListener("webglcontextlost", onContextLost);
+      useFallback(error);
+      return;
+    }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.8));
     renderer.setClearColor(0x000000, 0);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -152,11 +176,6 @@ function VoxelWorld({ progress, open }: { progress: number; open: boolean }) {
     renderer.toneMappingExposure = 1.18;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFShadowMap;
-
-    const composer = new EffectComposer(renderer);
-    composer.addPass(new RenderPass(scene, camera));
-    const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 1.12, 0.8, 0.12);
-    composer.addPass(bloom);
 
     const textures: THREE.Texture[] = [];
     const makeStoneTexture = () => {
@@ -469,12 +488,18 @@ function VoxelWorld({ progress, open }: { progress: number; open: boolean }) {
       leftDoor.rotation.y += (target - leftDoor.rotation.y) * 0.055;
       rightDoor.rotation.y += (-target - rightDoor.rotation.y) * 0.055;
       if (open) hero.position.z += (-1.4 - hero.position.z) * 0.012;
-      composer.render();
+      try {
+        composer.render();
+      } catch (error) {
+        useFallback(error);
+        return;
+      }
       frame = window.requestAnimationFrame(animate);
     };
     animate();
     return () => {
       window.removeEventListener("resize", resize);
+      canvas.removeEventListener("webglcontextlost", onContextLost);
       window.cancelAnimationFrame(frame);
       composer.dispose();
       renderer.dispose();
@@ -487,7 +512,23 @@ function VoxelWorld({ progress, open }: { progress: number; open: boolean }) {
       particles.dispose();
       textures.forEach((texture) => texture.dispose());
     };
-  }, [progress, open]);
+  }, [progress, open, renderingFailed]);
+
+  if (renderingFailed) {
+    return (
+      <div className={`voxel-fallback ${open ? "is-open" : ""}`} aria-label="Illustrated rune door">
+        <div className="fallback-moon" aria-hidden="true" />
+        <div className="fallback-door" aria-hidden="true">
+          <div className="fallback-runes">
+            {[0, 1, 2, 3, 4].map((rune) => <i key={rune} className={rune < progress ? "lit" : ""} />)}
+          </div>
+          <b className="fallback-door-left" /><b className="fallback-door-right" />
+        </div>
+        <div className="fallback-hero" aria-hidden="true"><i /><b /><em /></div>
+        <span className="fallback-note">CINEMATIC MODE SIMPLIFIED FOR THIS BROWSER</span>
+      </div>
+    );
+  }
 
   return <canvas ref={canvasRef} className="voxel-world" aria-hidden="true" />;
 }
