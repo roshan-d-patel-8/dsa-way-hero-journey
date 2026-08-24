@@ -72,6 +72,9 @@ test("preserves the full Door of Whys experience and requested capabilities", as
   assert.match(css, /\.a3-tile \{[^}]*border: 0;/);
   assert.match(css, /\.a3-tile::before \{[^}]*box-shadow: inset 0 0 0 2px #000;/);
   assert.match(css, /radial-gradient\(circle at 100% 100%,transparent 0 17px,#000 17\.5px\)/);
+  assert.match(css, /\.a3-tile-overlay small \{[^}]*color: #ffc45e;/);
+  assert.match(css, /\.a3-tile-overlay small \{[^}]*"Press Start 2P"/);
+  assert.match(css, /\.a3-tile-overlay small \{[^}]*clamp\(1\.08rem,1\.75vw,2rem\)/);
   assert.match(css, /:has\(\.a3-tile:is\(:hover,:focus-visible\)\)/);
   assert.match(css, /brightness\(\.27\)/);
   assert.doesNotMatch(source, /hero-footer/);
