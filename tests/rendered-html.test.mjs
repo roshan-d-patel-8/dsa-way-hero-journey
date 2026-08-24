@@ -26,6 +26,7 @@ test("server-renders the DSA Way quest", async () => {
   assert.match(html, /Current State/);
   assert.match(html, /Gap Analysis/);
   assert.match(html, /ENTER THE DOOR OF WHYS/);
+  assert.doesNotMatch(html, /Hover to reveal each chamber\. Select Box 4 to enter The Door of Whys\./);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton|Your site is taking shape/i);
 });
 
@@ -59,6 +60,7 @@ test("preserves the full Door of Whys experience and requested capabilities", as
   assert.match(source, /boxNumber === 4/);
   assert.match(source, /setStage\("threshold"\)/);
   assert.match(source, /a3\/box-\$\{box\.number\}\.jpg/);
+  assert.doesNotMatch(source, /Hover to reveal each chamber\. Select Box 4 to enter The Door of Whys\./);
   assert.match(packageJson, /"three":/);
   assert.match(packageJson, /"@fontsource\/press-start-2p":/);
   assert.match(css, /"Press Start 2P"/);

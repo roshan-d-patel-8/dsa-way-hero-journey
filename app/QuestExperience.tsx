@@ -617,7 +617,7 @@ export function QuestExperience() {
         </div>
         <p className="a3-home-status" aria-live="polite">{previewBox
           ? `The ${A3_BOXES[previewBox - 1].label} activity has not been forged yet. Box 4 is ready to play.`
-          : "Hover to reveal each chamber. Select Box 4 to enter The Door of Whys."}</p>
+          : null}</p>
       </section>}
 
       {stage === "threshold" && <section className="threshold-screen">
