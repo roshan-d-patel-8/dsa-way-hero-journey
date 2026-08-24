@@ -68,6 +68,8 @@ test("preserves the full Door of Whys experience and requested capabilities", as
   assert.match(css, /\.a3-box-1 \{ grid-column: 1; grid-row: 1; \}/);
   assert.match(css, /\.a3-box-4 \{ grid-column: 2; grid-row: 1; \}/);
   assert.match(css, /\.a3-box-7 \{ grid-column: 3; grid-row: 1; \}/);
+  assert.match(css, /\.a3-grid \{[^}]*gap: 0;/);
+  assert.match(css, /\.a3-tile \{[^}]*border: 0;/);
   assert.match(css, /:has\(\.a3-tile:is\(:hover,:focus-visible\)\)/);
   assert.match(css, /brightness\(\.27\)/);
   assert.doesNotMatch(source, /hero-footer/);

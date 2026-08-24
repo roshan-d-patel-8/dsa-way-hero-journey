@@ -80,8 +80,8 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
 .a3-home-heading h1 em { color: #ffc45e; font-style: italic; white-space: nowrap; text-shadow: 0 0 25px rgba(240,143,36,.22); }
 .a3-home-heading > p { margin: 0 0 3px; color: var(--muted); font-family: Georgia, "Times New Roman", serif; font-size: clamp(.92rem,1.15vw,1.1rem); line-height: 1.55; }
 .a3-grid-viewport { max-width: 1520px; margin: 0 auto; position: relative; z-index: 2; }
-.a3-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); grid-template-rows: repeat(3,minmax(0,1fr)); gap: clamp(8px,1.05vw,17px); }
-.a3-tile { min-width: 0; aspect-ratio: 16 / 9; padding: 0; position: relative; overflow: hidden; isolation: isolate; border: 1px solid rgba(255,255,255,.2); background: #07131b; cursor: pointer; box-shadow: 0 12px 35px rgba(0,0,0,.3); transition: opacity .36s ease, transform .36s cubic-bezier(.2,.8,.2,1), border-color .36s ease, box-shadow .36s ease; }
+.a3-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); grid-template-rows: repeat(3,minmax(0,1fr)); gap: 0; overflow: hidden; }
+.a3-tile { min-width: 0; aspect-ratio: 16 / 9; padding: 0; position: relative; overflow: hidden; isolation: isolate; border: 0; background: #07131b; cursor: pointer; box-shadow: none; transition: opacity .36s ease, box-shadow .36s ease; }
 .a3-tile img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; filter: brightness(.88) saturate(.9) contrast(1.04); transition: filter .42s ease, transform .7s cubic-bezier(.2,.8,.2,1); }
 .a3-tile::after { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.2)); transition: background .42s ease; }
 .a3-tile-overlay { position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 18px; color: #fff; text-align: center; opacity: 0; transform: translateY(9px); transition: opacity .32s ease, transform .42s cubic-bezier(.2,.8,.2,1); text-shadow: 0 3px 18px #000, 0 1px 2px #000; }
@@ -89,9 +89,9 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
 .a3-tile-overlay b { max-width: 90%; font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.08rem,1.75vw,2rem); font-weight: 500; line-height: 1.02; letter-spacing: -.025em; text-wrap: balance; }
 .a3-tile-overlay em { margin-top: 12px; color: rgba(255,255,255,.72); font: 700 clamp(.42rem,.48vw,.56rem)/1.2 "Courier New", monospace; font-style: normal; letter-spacing: .11em; }
 .a3-playable-badge { position: absolute; z-index: 4; top: 11px; right: 11px; padding: 7px 8px 6px; color: #07131b; background: #ffc45e; font: 900 clamp(.43rem,.5vw,.57rem)/1 "Courier New", monospace; letter-spacing: .11em; box-shadow: 3px 3px 0 var(--berry); }
-.a3-tile.is-playable { border-color: rgba(255,196,94,.72); box-shadow: 0 0 0 1px rgba(240,143,36,.28), 0 16px 45px rgba(240,143,36,.17); }
-.a3-grid:has(.a3-tile:is(:hover,:focus-visible)) .a3-tile:not(:hover):not(:focus-visible) { opacity: .36; transform: scale(.985); }
-.a3-tile:is(:hover,:focus-visible), .a3-tile.is-previewed { z-index: 5; transform: translateY(-3px) scale(1.012); border-color: rgba(255,255,255,.75); box-shadow: 0 18px 56px rgba(0,0,0,.6), 0 0 0 1px rgba(255,196,94,.35); }
+.a3-tile.is-playable { box-shadow: inset 0 0 42px rgba(240,143,36,.16); }
+.a3-grid:has(.a3-tile:is(:hover,:focus-visible)) .a3-tile:not(:hover):not(:focus-visible) { opacity: .36; }
+.a3-tile:is(:hover,:focus-visible), .a3-tile.is-previewed { z-index: 5; box-shadow: inset 0 0 70px rgba(0,0,0,.58); }
 .a3-tile:is(:hover,:focus-visible) img, .a3-tile.is-previewed img { filter: brightness(.27) saturate(.72) contrast(1.12); transform: scale(1.035); }
 .a3-tile:is(:hover,:focus-visible)::after, .a3-tile.is-previewed::after { background: radial-gradient(circle at 50% 47%,rgba(4,12,18,.16),rgba(2,7,11,.68)); }
 .a3-tile:is(:hover,:focus-visible) .a3-tile-overlay, .a3-tile.is-previewed .a3-tile-overlay { opacity: 1; transform: translateY(0); }
