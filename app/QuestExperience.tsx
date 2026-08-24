@@ -572,7 +572,7 @@ export function QuestExperience() {
       </aside>
 
       {stage === "cover" && <section className="cover-screen">
-        <div className="cover-copy"><div className="eyebrow"><span>04</span> A DSA GI LEARNING QUEST</div><h1><span>The DSA Way:</span>A Hero&apos;s Journey</h1><p>Nine chambers. One way forward. Build the instincts that make this the best place to work—and the best place to get care.</p><button className="primary-button" type="button" onClick={begin}><span>Begin the journey</span><b>→</b></button></div>
+        <div className="cover-copy"><div className="eyebrow"><span>04</span> A DSA LEARNING QUEST</div><h1><span>The DSA Way:</span>A Hero&apos;s Journey</h1><p>Nine chambers. One way forward. Build the instincts that make this the best place to work—and the best place to get care.</p><button className="primary-button" type="button" onClick={begin}><span>Begin the journey</span><b>→</b></button></div>
         <div className="world-frame cover-world"><VoxelWorld progress={0} open={false} /><div className="world-caption">CHAMBER IV · ROOT CAUSE</div></div>
       </section>}
 

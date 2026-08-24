@@ -19,7 +19,7 @@ test("server-renders the DSA Way quest", async () => {
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
   const html = await response.text();
   assert.match(html, /<title>The DSA Way: A Hero(?:&#x27;|')s Journey<\/title>/i);
-  assert.match(html, /A DSA GI LEARNING QUEST/);
+  assert.match(html, /A DSA LEARNING QUEST/);
   assert.match(html, /Begin the journey/);
   assert.match(html, /Nine chambers\. One way forward\./);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton|Your site is taking shape/i);
