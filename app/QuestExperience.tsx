@@ -868,15 +868,21 @@ export function QuestExperience() {
           <blockquote>&quot;A problem a stranger can repeat is ready to rally action.&quot;</blockquote>
         </div>
         <div className="forge-reward-column">
-          <div className="herald-horn-scene" aria-hidden="true">
-            <div className="horn-rings"><i /><i /><i /></div>
-            <div className="herald-horn"><i /><b /><em /></div>
-            <div className="victory-seals">{FORGE_SEALS.map((seal) => <span key={seal.id}>{seal.glyph}</span>)}</div>
+          <div className="herald-horn-scene">
+            <div className="ornate-vault" aria-hidden="true"><i /><i /><i /><i /></div>
+            <div className="bell-radiance" aria-hidden="true"><i /><i /><i /></div>
+            <div className="realm-light" aria-hidden="true"><i /><i /><i /></div>
+            <div className="golden-motes" aria-hidden="true">{Array.from({ length: 18 }, (_, index) => <i key={index} />)}</div>
+            {/* The supplied transparent asset is preserved verbatim and staged with CSS lighting. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className="gjallarhorn-art" src="heralds-horn.png" alt="An ornate gold-and-black legendary horn" width="1200" height="1361" />
+            <div className="victory-seals" aria-label="All six Box 1 seals forged">{FORGE_SEALS.map((seal) => <span key={seal.id}>{seal.glyph}</span>)}</div>
           </div>
           <div className="forge-weapon-card">
             <span>LEGENDARY TOOL ACQUIRED</span>
             <h2><small>THE</small> HERALD&apos;S HORN</h2>
             <p>A case for action that is bounded, measurable, urgent, achievable—and human.</p>
+            <p className="gjallarhorn-reference"><span>MYTHIC ECHO</span> A visual homage to <cite>Gjallarhorn</cite> from <cite>God of War Ragnarök</cite>.</p>
           </div>
           <div className="forged-charter">
             <span>THE SIX-SEALED CHARTER</span>

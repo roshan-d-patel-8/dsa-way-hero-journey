@@ -31,4 +31,7 @@ test("GitHub Pages includes a visible startup shell and deployable assets", asyn
     const imageStats = await stat(new URL(`../dist-pages/a3/${image}`, import.meta.url));
     assert.ok(imageStats.size > 500_000, `${image} should retain detailed 4K source imagery`);
   }
+
+  const hornImage = await stat(new URL("../dist-pages/heralds-horn.png", import.meta.url));
+  assert.ok(hornImage.size > 1_000_000, "the supplied ornate horn artwork should ship intact");
 });
