@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import * as THREE from "three";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 
-type Stage = "cover" | "threshold" | "questions" | "complete";
+type Stage = "cover" | "forge-intro" | "forge-game" | "forge-complete" | "threshold" | "questions" | "complete";
 
 type Question = {
   known: string;
@@ -15,6 +15,23 @@ type Question = {
   correct: number;
   answer: string;
   wrong: Record<number, string>;
+};
+
+type ForgeFragment = {
+  id: string;
+  text: string;
+  rejection: string;
+};
+
+type ForgeSeal = {
+  id: string;
+  glyph: string;
+  name: string;
+  prompt: string;
+  coaching: string;
+  correctId: string;
+  lesson: string;
+  fragments: ForgeFragment[];
 };
 
 const QUESTIONS: Question[] = [
@@ -113,6 +130,93 @@ const A3_BOXES = [
 ] as const;
 
 const CHAMBERS = A3_BOXES.map(({ label }) => label);
+
+const FORGE_SEALS: ForgeSeal[] = [
+  {
+    id: "background",
+    glyph: "⌂",
+    name: "Background",
+    prompt: "Choose the fragment that makes the situation legible to someone outside the clinic.",
+    coaching: "Where, when, for whom — and how big?",
+    correctId: "background-evidence",
+    lesson: "Context forged: the reader can see the setting, the pattern, and the measured pain.",
+    fragments: [
+      { id: "background-blame", text: "Schedulers keep mishandling referrals and creating delays.", rejection: "Blame is not background. It narrows the search to a person before the work is understood." },
+      { id: "background-evidence", text: "Since January, adult new-GI referrals at the East Bay clinic have waited a median 24 days for first review; 42% wait longer than 30 days.", rejection: "" },
+      { id: "background-solution", text: "A centralized referral team would finally give the clinic enough capacity.", rejection: "A countermeasure has entered before the problem is visible. The forge rejects solutions in the background." },
+    ],
+  },
+  {
+    id: "problem",
+    glyph: "!",
+    name: "Problem Statement",
+    prompt: "Forge the measurable gap without hiding a remedy inside it.",
+    coaching: "Is this a gap you can measure, or a solution wearing the problem's clothes?",
+    correctId: "problem-gap",
+    lesson: "Gap forged: specific, time-anchored, recurring, and free of blame or prescribed fixes.",
+    fragments: [
+      { id: "problem-vague", text: "Referral access is terrible and patients are frustrated.", rejection: "The pain may be real, but 'terrible' cannot be measured. The quest still has no trajectory." },
+      { id: "problem-capacity", text: "The clinic does not have enough physicians to review referrals.", rejection: "That names a presumed cause — and smuggles in the solution of adding physicians." },
+      { id: "problem-gap", text: "New-GI referrals are not meeting the 14-day review standard: median review time is 24 days, with 42% waiting more than 30 days.", rejection: "" },
+    ],
+  },
+  {
+    id: "aim",
+    glyph: "◎",
+    name: "Aim",
+    prompt: "Choose an end state with magnitude and time — but no prescribed method.",
+    coaching: "If achieved, would we know — and would patients and staff feel it?",
+    correctId: "aim-outcome",
+    lesson: "Aim forged: a measurable outcome, a deadline, and protection against shifting burden to staff.",
+    fragments: [
+      { id: "aim-project", text: "Hire a referral coordinator and launch a dashboard by November.", rejection: "Those are interventions, not an aim. The destination should survive even if the route changes." },
+      { id: "aim-outcome", text: "Reduce median referral-review time from 24 to 14 days or less by November 30, without increasing physician after-hours work.", rejection: "" },
+      { id: "aim-vague", text: "Improve referral access as soon as possible.", rejection: "No number, no date, no recognizable finish line. The target remains in fog." },
+    ],
+  },
+  {
+    id: "trigger",
+    glyph: "⚡",
+    name: "Trigger",
+    prompt: "Strike the signal that explains why this problem rises above the noise now.",
+    coaching: "What specifically happened that made this the moment to act?",
+    correctId: "trigger-signal",
+    lesson: "Trigger forged: an observable threshold explains why deliberate action begins now.",
+    fragments: [
+      { id: "trigger-drift", text: "People have been unhappy with referrals for quite a while.", rejection: "A long-standing irritation is not a trigger. What crossed a line now?" },
+      { id: "trigger-vendor", text: "A vendor demonstrated a faster referral-triage platform last month.", rejection: "A tool looking for a problem is not a reason for action." },
+      { id: "trigger-signal", text: "For three consecutive months, the over-30-day backlog exceeded 40%, while referral-related patient complaints doubled.", rejection: "" },
+    ],
+  },
+  {
+    id: "scope",
+    glyph: "◇",
+    name: "Scope",
+    prompt: "Set guardrails tight enough to act, but wide enough to contain the recurring problem.",
+    coaching: "What is in play — and what is explicitly excluded?",
+    correctId: "scope-guardrails",
+    lesson: "Scope forged: one coherent process is protected from both mission creep and anecdotal narrowing.",
+    fragments: [
+      { id: "scope-everything", text: "In scope: all access problems, all specialties, and every East Bay site.", rejection: "The rope snaps. This is a portfolio of problems, not one solvable quest." },
+      { id: "scope-guardrails", text: "In: adult new-GI referrals to the East Bay clinic. Out: urgent referrals, procedure scheduling, and established-patient follow-up.", rejection: "" },
+      { id: "scope-anecdote", text: "In scope: the single referral that waited 61 days last Tuesday.", rejection: "One dramatic event cannot define the boundary of a recurring system condition." },
+    ],
+  },
+  {
+    id: "done",
+    glyph: "✓",
+    name: "Done",
+    prompt: "Choose the observable condition that allows the team to close the A3 and hand off ownership.",
+    coaching: "What lets us finish — not merely stop?",
+    correctId: "done-sustained",
+    lesson: "Done forged: the target is sustained, standard work exists, and an owner accepts the process.",
+    fragments: [
+      { id: "done-feeling", text: "Done when everyone agrees the process feels much better.", rejection: "Agreement is valuable, but feeling better cannot prove the problem stayed solved." },
+      { id: "done-launch", text: "Done when the new referral dashboard goes live.", rejection: "A deliverable is not an outcome. Launching a tool may leave the original gap untouched." },
+      { id: "done-sustained", text: "Median review time remains 14 days or less for eight consecutive weeks; standard work is adopted and an operational owner accepts monitoring.", rejection: "" },
+    ],
+  },
+];
 
 function playTone(kind: "start" | "step" | "wrong" | "rune" | "open", enabled: boolean) {
   if (!enabled || typeof window === "undefined") return;
@@ -553,10 +657,32 @@ export function QuestExperience() {
   const [sound, setSound] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const [previewBox, setPreviewBox] = useState<number | null>(null);
+  const [forgeIndex, setForgeIndex] = useState(0);
+  const [forgedSeals, setForgedSeals] = useState<string[]>([]);
+  const [attemptedFragments, setAttemptedFragments] = useState<string[]>([]);
+  const [forgeFeedback, setForgeFeedback] = useState<{ kind: "correct" | "wrong"; text: string } | null>(null);
   const progress = stage === "complete" ? 5 : questionIndex + (correct ? 1 : 0);
   const question = QUESTIONS[questionIndex];
+  const forgeSeal = FORGE_SEALS[forgeIndex];
+  const sealForged = forgedSeals.includes(forgeSeal.id);
+  const inForge = stage === "forge-intro" || stage === "forge-game" || stage === "forge-complete";
+  const activeChamber = inForge ? 0 : stage === "cover" ? null : 3;
+
+  const resetForge = () => {
+    setForgeIndex(0);
+    setForgedSeals([]);
+    setAttemptedFragments([]);
+    setForgeFeedback(null);
+  };
 
   const enterBox = (boxNumber: number) => {
+    if (boxNumber === 1) {
+      resetForge();
+      setPreviewBox(null);
+      setStage("forge-intro");
+      playTone("start", sound);
+      return;
+    }
     if (boxNumber === 4) {
       setPreviewBox(null);
       setStage("threshold");
@@ -564,6 +690,32 @@ export function QuestExperience() {
       return;
     }
     setPreviewBox(boxNumber);
+    playTone("step", sound);
+  };
+  const attemptForge = (fragmentId: string) => {
+    if (sealForged || attemptedFragments.includes(fragmentId)) return;
+    const fragment = forgeSeal.fragments.find(({ id }) => id === fragmentId);
+    if (!fragment) return;
+    if (fragmentId === forgeSeal.correctId) {
+      setForgedSeals((values) => [...values, forgeSeal.id]);
+      setForgeFeedback({ kind: "correct", text: forgeSeal.lesson });
+      playTone("rune", sound);
+      return;
+    }
+    setAttemptedFragments((values) => [...values, fragmentId]);
+    setForgeFeedback({ kind: "wrong", text: fragment.rejection });
+    playTone("wrong", sound);
+  };
+  const advanceForge = () => {
+    if (!sealForged) return;
+    if (forgeIndex === FORGE_SEALS.length - 1) {
+      setStage("forge-complete");
+      playTone("open", sound);
+      return;
+    }
+    setForgeIndex((value) => value + 1);
+    setAttemptedFragments([]);
+    setForgeFeedback(null);
     playTone("step", sound);
   };
   const choose = (index: number) => {
@@ -580,7 +732,7 @@ export function QuestExperience() {
     <main className={`quest-shell stage-${stage}`}>
       <div className="brand-strata" aria-hidden="true"><i /><i /><i /><i /><i /></div><div className="scanlines" aria-hidden="true" />
       <header className="quest-header">
-        <button className="brand-lockup" type="button" onClick={() => setStage("cover")} aria-label="Return to title screen"><span>PERMANENTE MEDICINE</span><small>The Permanente Medical Group</small></button>
+        <button className="brand-lockup" type="button" onClick={() => { setStage("cover"); setMenuOpen(false); }} aria-label="Return to title screen"><span>PERMANENTE MEDICINE</span><small>The Permanente Medical Group</small></button>
         <div className="header-title"><b>the</b> DSA WAY <small>The Hero&apos;s Journey</small></div>
         <div className="header-actions">
           <button className="sound-button" type="button" aria-pressed={sound} onClick={() => setSound((value) => !value)}><span aria-hidden="true">{sound ? "♫" : "×"}</span> SOUND {sound ? "ON" : "OFF"}</button>
@@ -589,35 +741,152 @@ export function QuestExperience() {
       </header>
       <aside className={`quest-map ${menuOpen ? "is-open" : ""}`} aria-label="The Nine Chambers">
         <div className="map-heading"><span>THE NINE CHAMBERS</span><button onClick={() => setMenuOpen(false)} aria-label="Close quest map">×</button></div>
-        <ol>{CHAMBERS.map((chamber, index) => <li className={index === 3 ? "active" : "locked"} key={chamber}><span>{String(index + 1).padStart(2, "0")}</span><b>{chamber}</b><i>{index === 3 ? "ACTIVE" : "LOCKED"}</i></li>)}</ol>
-        <p>Box IV — Gap Analysis — is open. The other A3 chambers are still being forged.</p>
+        <ol>{CHAMBERS.map((chamber, index) => {
+          const active = index === activeChamber;
+          const ready = index === 0 || index === 3;
+          return <li className={active ? "active" : ready ? "ready" : "locked"} key={chamber}><span>{String(index + 1).padStart(2, "0")}</span><b>{chamber}</b><i>{active ? "ACTIVE" : ready ? "READY" : "LOCKED"}</i></li>;
+        })}</ol>
+        <p>{inForge ? "Box I — Reason for Action — The Herald's Forge." : "Boxes I and IV are ready. The other A3 chambers are still being forged."}</p>
       </aside>
 
       {stage === "cover" && <section className="a3-home">
         <div className="a3-home-heading">
           <div><div className="eyebrow"><span>09</span> A DSA LEARNING QUEST</div><h1>The DSA Way: <em>The Hero&apos;s Journey</em></h1></div>
-          <p>Nine chambers shape the A3. Choose a box to reveal its path; Box 4 is ready to play.</p>
+          <p>Nine chambers shape the A3. Choose a box to reveal its path; Boxes 1 and 4 are ready to play.</p>
         </div>
         <div className="a3-grid-viewport">
           <div className="a3-grid" aria-label="The nine boxes of the A3">
             {A3_BOXES.map((box) => <button
-              className={`a3-tile a3-box-${box.number} ${box.number === 4 ? "is-playable" : ""} ${previewBox === box.number ? "is-previewed" : ""}`}
+              className={`a3-tile a3-box-${box.number} ${box.number === 1 || box.number === 4 ? "is-playable" : ""} ${previewBox === box.number ? "is-previewed" : ""}`}
               type="button"
               key={box.number}
               onClick={() => enterBox(box.number)}
-              aria-label={box.number === 4 ? "Box 4: Gap Analysis. Enter The Door of Whys" : `Box ${box.number}: ${box.label}. Activity coming soon`}
+              aria-label={box.number === 1 ? "Box 1: Reason for Action. Enter The Herald's Forge" : box.number === 4 ? "Box 4: Gap Analysis. Enter The Door of Whys" : `Box ${box.number}: ${box.label}. Activity coming soon`}
             >
               {/* Public-path artwork stays compatible with both the app runtime and GitHub Pages. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={`a3/box-${box.number}.jpg`} alt="" width="3840" height="2160" loading={box.number <= 4 ? "eager" : "lazy"} decoding="async" />
-              <span className="a3-tile-overlay"><small>BOX {String(box.number).padStart(2, "0")}</small><b>{box.label}</b><em>{box.number === 4 ? "ENTER THE DOOR OF WHYS" : "ACTIVITY COMING SOON"}</em></span>
-              {box.number === 4 && <span className="a3-playable-badge">PLAYABLE</span>}
+              <span className="a3-tile-overlay"><small>BOX {String(box.number).padStart(2, "0")}</small><b>{box.label}</b><em>{box.number === 1 ? "ENTER THE HERALD'S FORGE" : box.number === 4 ? "ENTER THE DOOR OF WHYS" : "ACTIVITY COMING SOON"}</em></span>
+              {(box.number === 1 || box.number === 4) && <span className="a3-playable-badge">PLAYABLE</span>}
             </button>)}
           </div>
         </div>
         <p className="a3-home-status" aria-live="polite">{previewBox
-          ? `The ${A3_BOXES[previewBox - 1].label} activity has not been forged yet. Box 4 is ready to play.`
+          ? `The ${A3_BOXES[previewBox - 1].label} activity has not been forged yet. Boxes 1 and 4 are ready to play.`
           : null}</p>
+      </section>}
+
+      {stage === "forge-intro" && <section className="forge-intro-screen">
+        <div className="forge-intro-art">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="a3/box-1.jpg" alt="A handcrafted care roundtable surrounded by the evidence of a problem" width="3840" height="2160" />
+          <div className="forge-vignette" aria-hidden="true" />
+          <div className="forge-embers" aria-hidden="true">{Array.from({ length: 18 }, (_, index) => <i key={index} />)}</div>
+          <div className="forge-art-caption"><span>BOX I</span><b>REASON FOR ACTION</b></div>
+        </div>
+        <div className="forge-intro-copy">
+          <div className="quest-kicker">THE NINE CHAMBERS · BOX I</div>
+          <div className="chamber-tag">The summons has failed</div>
+          <h1>The Herald&apos;s<br /><em>Forge</em></h1>
+          <div className="forge-prologue">
+            <p>The proclamation reached every corner of the clinic:</p>
+            <blockquote>&quot;Access is terrible. We need more clinics.&quot;</blockquote>
+            <p>No one rallied. The patient heard a complaint. The physician heard blame. The steward heard an expensive solution searching for a problem.</p>
+            <p>At the old forge wait six seals. Shape the evidence into a case for action that a stranger can understand—and a system can act upon.</p>
+          </div>
+          <div className="forge-seal-preview" aria-label="The six seals of Box 1">{FORGE_SEALS.map((seal, index) => <span key={seal.id}><i>{seal.glyph}</i><b>{String(index + 1).padStart(2, "0")}</b>{seal.name}</span>)}</div>
+          <button className="primary-button" type="button" onClick={() => { setStage("forge-game"); playTone("step", sound); }}><span>Enter the forge</span><b>→</b></button>
+        </div>
+      </section>}
+
+      {stage === "forge-game" && <section className="forge-game-screen">
+        <div className="forge-workbench">
+          <div className="forge-heading-row">
+            <div><div className="quest-kicker">THE HERALD&apos;S FORGE</div><div className="chamber-tag">Seal {forgeIndex + 1} of {FORGE_SEALS.length}</div></div>
+            <div className="forge-seal-meter" role="img" aria-label={`${forgedSeals.length} of 6 seals forged`}>{FORGE_SEALS.map((seal, index) => <span key={seal.id} className={`${forgedSeals.includes(seal.id) ? "lit" : ""} ${index === forgeIndex ? "current" : ""}`}>{seal.glyph}</span>)}</div>
+          </div>
+          <h1><span>{forgeSeal.glyph}</span>{forgeSeal.name}</h1>
+          <p className="forge-prompt">{forgeSeal.prompt}</p>
+          <blockquote className="forge-coaching">Sensei asks: &quot;{forgeSeal.coaching}&quot;</blockquote>
+          <div className="fragment-instruction"><span>DRAG</span> a fragment to the anvil—or tap it to strike.</div>
+          <div className="fragment-rack" aria-label={`${forgeSeal.name} evidence fragments`}>
+            {forgeSeal.fragments.map((fragment, index) => {
+              const attempted = attemptedFragments.includes(fragment.id);
+              const correctFragment = sealForged && fragment.id === forgeSeal.correctId;
+              return <button
+                type="button"
+                draggable={!sealForged && !attempted}
+                disabled={sealForged || attempted}
+                className={`forge-fragment ${attempted ? "is-shattered" : ""} ${correctFragment ? "is-forged" : ""}`}
+                key={fragment.id}
+                data-fragment-id={fragment.id}
+                onDragStart={(event) => event.dataTransfer.setData("text/plain", fragment.id)}
+                onClick={() => attemptForge(fragment.id)}
+              ><span>{String(index + 1).padStart(2, "0")}</span><b>{fragment.text}</b><i aria-hidden="true">◆</i></button>;
+            })}
+          </div>
+        </div>
+        <div className="forge-chamber">
+          <div className="forge-heat" aria-hidden="true" />
+          <div className="forge-sparks" aria-hidden="true">{Array.from({ length: 22 }, (_, index) => <i key={index} />)}</div>
+          <div className="seal-orbit" aria-hidden="true">{FORGE_SEALS.map((seal, index) => <span key={seal.id} className={`${forgedSeals.includes(seal.id) ? "lit" : ""} ${index === forgeIndex ? "current" : ""}`} style={{ "--seal-angle": `${index * 60}deg` } as CSSProperties}><b>{seal.glyph}</b></span>)}</div>
+          <div
+            className={`forge-anvil ${sealForged ? "is-struck" : ""}`}
+            role="region"
+            aria-label="The evidence forge"
+            onDragOver={(event) => event.preventDefault()}
+            onDrop={(event) => { event.preventDefault(); attemptForge(event.dataTransfer.getData("text/plain")); }}
+          >
+            <div className="anvil-mark" aria-hidden="true"><span /><b /><i /></div>
+            <small>{sealForged ? "SEAL FORGED" : "EVIDENCE FORGE"}</small>
+            <strong>{sealForged ? forgeSeal.name : "DROP FRAGMENT"}</strong>
+          </div>
+          <div className="forge-feedback-slot" aria-live="polite">
+            {forgeFeedback && <div className={`forge-feedback ${forgeFeedback.kind}`}>
+              <span>{forgeFeedback.kind === "correct" ? "THE SEAL HOLDS" : "THE METAL FRACTURES"}</span>
+              <p>{forgeFeedback.text}</p>
+              {forgeFeedback.kind === "correct" && <button type="button" onClick={advanceForge}>{forgeIndex === FORGE_SEALS.length - 1 ? "Sound the Herald's Horn" : "Strike the next seal"}<b>→</b></button>}
+            </div>}
+          </div>
+        </div>
+      </section>}
+
+      {stage === "forge-complete" && <section className="forge-complete-screen">
+        <div className="forge-complete-story">
+          <div className="quest-kicker">THE STRANGER TEST · PASSED</div>
+          <h1>The summons<br /><em>holds.</em></h1>
+          <p className="forge-completion-lead">Six seals, one coherent case for action. The proclamation can now be repeated by someone who has never entered the clinic.</p>
+          <div className="stranger-echo">
+            <span>THE OUTSIDER ECHOES BACK</span>
+            <dl>
+              <div><dt>Where and whom?</dt><dd>Adult new-GI referrals at the East Bay clinic.</dd></div>
+              <div><dt>How large?</dt><dd>Median 24 days; 42% wait beyond 30 days.</dd></div>
+              <div><dt>Why now?</dt><dd>Three months above the threshold; complaints doubled.</dd></div>
+              <div><dt>What counts as done?</dt><dd>14 days or less for eight weeks, with standard work and an owner.</dd></div>
+            </dl>
+          </div>
+          <blockquote>&quot;A problem a stranger can repeat is ready to rally action.&quot;</blockquote>
+        </div>
+        <div className="forge-reward-column">
+          <div className="herald-horn-scene" aria-hidden="true">
+            <div className="horn-rings"><i /><i /><i /></div>
+            <div className="herald-horn"><i /><b /><em /></div>
+            <div className="victory-seals">{FORGE_SEALS.map((seal) => <span key={seal.id}>{seal.glyph}</span>)}</div>
+          </div>
+          <div className="forge-weapon-card">
+            <span>LEGENDARY TOOL ACQUIRED</span>
+            <h2><small>THE</small> HERALD&apos;S HORN</h2>
+            <p>A case for action that is bounded, measurable, urgent, achievable—and human.</p>
+          </div>
+          <div className="forged-charter">
+            <span>THE SIX-SEALED CHARTER</span>
+            <ol>{FORGE_SEALS.map((seal) => <li key={seal.id}><b>{seal.name}</b><p>{seal.fragments.find(({ id }) => id === seal.correctId)?.text}</p></li>)}</ol>
+          </div>
+          <div className="forge-complete-actions">
+            <button className="primary-button" type="button" onClick={() => { resetForge(); setStage("forge-intro"); playTone("start", sound); }}><span>Forge another summons</span><b>↻</b></button>
+            <button className="map-return-button" type="button" onClick={() => setStage("cover")}>Return to the nine chambers</button>
+          </div>
+        </div>
       </section>}
 
       {stage === "threshold" && <section className="threshold-screen">

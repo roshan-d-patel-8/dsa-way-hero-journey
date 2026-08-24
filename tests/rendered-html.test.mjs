@@ -25,12 +25,13 @@ test("server-renders the DSA Way quest", async () => {
   assert.match(html, /Reason for Action/);
   assert.match(html, /Current State/);
   assert.match(html, /Gap Analysis/);
+  assert.match(html, /ENTER THE HERALD(?:&#x27;|')S FORGE/);
   assert.match(html, /ENTER THE DOOR OF WHYS/);
   assert.doesNotMatch(html, /Hover to reveal each chamber\. Select Box 4 to enter The Door of Whys\./);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton|Your site is taking shape/i);
 });
 
-test("preserves the full Door of Whys experience and requested capabilities", async () => {
+test("includes the Herald's Forge and preserves the full Door of Whys experience", async () => {
   const [source, css, packageJson, layout, ogImage] = await Promise.all([
     readFile(new URL("../app/QuestExperience.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
@@ -58,6 +59,20 @@ test("preserves the full Door of Whys experience and requested capabilities", as
   assert.match(source, /Confirmed State/);
   assert.match(source, /Insights/);
   assert.match(source, /boxNumber === 4/);
+  assert.match(source, /boxNumber === 1/);
+  assert.match(source, /setStage\("forge-intro"\)/);
+  assert.match(source, /The Herald(?:&apos;|')s Forge/);
+  assert.match(source, /Background/);
+  assert.match(source, /Problem Statement/);
+  assert.match(source, /Aim/);
+  assert.match(source, /Trigger/);
+  assert.match(source, /Scope/);
+  assert.match(source, /Done/);
+  assert.match(source, /THE STRANGER TEST/);
+  assert.match(source, /HERALD(?:&apos;|')S HORN/);
+  assert.match(source, /draggable=/);
+  assert.match(source, /onDrop=/);
+  assert.match(source, /data-fragment-id=/);
   assert.match(source, /setStage\("threshold"\)/);
   assert.match(source, /a3\/box-\$\{box\.number\}\.jpg/);
   assert.doesNotMatch(source, /Hover to reveal each chamber\. Select Box 4 to enter The Door of Whys\./);
@@ -79,6 +94,12 @@ test("preserves the full Door of Whys experience and requested capabilities", as
   assert.match(css, /\.a3-tile-overlay small \{[^}]*clamp\(1\.08rem,1\.75vw,2rem\)/);
   assert.match(css, /:has\(\.a3-tile:is\(:hover,:focus-visible\)\)/);
   assert.match(css, /brightness\(\.27\)/);
+  assert.match(css, /\.forge-intro-screen/);
+  assert.match(css, /\.forge-game-screen/);
+  assert.match(css, /\.forge-complete-screen/);
+  assert.match(css, /@keyframes emberRise/);
+  assert.match(css, /@keyframes anvilStrike/);
+  assert.match(css, /@keyframes hornWave/);
   assert.doesNotMatch(source, /hero-footer/);
   assert.doesNotMatch(source, /cover-manifesto/);
   assert.match(layout, /openGraph:/);
