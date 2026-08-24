@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
@@ -100,7 +100,19 @@ const QUESTIONS: Question[] = [
   },
 ];
 
-const CHAMBERS = ["Mission", "Vision", "Values", "Root Cause", "People", "Care Availability", "Quality & Safety", "Care Experience", "Financial Health"];
+const A3_BOXES = [
+  { number: 1, label: "Reason for Action" },
+  { number: 2, label: "Current State" },
+  { number: 3, label: "Target State" },
+  { number: 4, label: "Gap Analysis" },
+  { number: 5, label: "Solutions Approach" },
+  { number: 6, label: "Rapid Experiments" },
+  { number: 7, label: "Completion Plan" },
+  { number: 8, label: "Confirmed State" },
+  { number: 9, label: "Insights" },
+] as const;
+
+const CHAMBERS = A3_BOXES.map(({ label }) => label);
 
 function playTone(kind: "start" | "step" | "wrong" | "rune" | "open", enabled: boolean) {
   if (!enabled || typeof window === "undefined") return;
@@ -139,14 +151,14 @@ function VoxelWorld({ progress, open }: { progress: number; open: boolean }) {
     const canvas = canvasRef.current;
     if (!canvas || renderingFailed) return;
 
-    const useFallback = (error: unknown) => {
+    const activateFallback = (error: unknown) => {
       console.warn("The cinematic 3D scene is unavailable; using the illustrated fallback.", error);
       setRenderingFailed(true);
     };
 
     const onContextLost = (event: Event) => {
       event.preventDefault();
-      useFallback(new Error("WebGL context lost"));
+      activateFallback(new Error("WebGL context lost"));
     };
     canvas.addEventListener("webglcontextlost", onContextLost);
 
@@ -166,7 +178,7 @@ function VoxelWorld({ progress, open }: { progress: number; open: boolean }) {
       composer.addPass(bloom);
     } catch (error) {
       canvas.removeEventListener("webglcontextlost", onContextLost);
-      useFallback(error);
+      activateFallback(error);
       return;
     }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.8));
@@ -491,7 +503,7 @@ function VoxelWorld({ progress, open }: { progress: number; open: boolean }) {
       try {
         composer.render();
       } catch (error) {
-        useFallback(error);
+        activateFallback(error);
         return;
       }
       frame = window.requestAnimationFrame(animate);
@@ -540,10 +552,20 @@ export function QuestExperience() {
   const [correct, setCorrect] = useState(false);
   const [sound, setSound] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [previewBox, setPreviewBox] = useState<number | null>(null);
   const progress = stage === "complete" ? 5 : questionIndex + (correct ? 1 : 0);
   const question = QUESTIONS[questionIndex];
 
-  const begin = useCallback(() => { playTone("start", sound); setStage("threshold"); }, [sound]);
+  const enterBox = (boxNumber: number) => {
+    if (boxNumber === 4) {
+      setPreviewBox(null);
+      setStage("threshold");
+      playTone("start", sound);
+      return;
+    }
+    setPreviewBox(boxNumber);
+    playTone("step", sound);
+  };
   const choose = (index: number) => {
     if (index === question.correct) { setWrongChoice(null); setCorrect(true); playTone("rune", sound); }
     else { setWrongChoice(index); playTone("wrong", sound); }
@@ -559,7 +581,7 @@ export function QuestExperience() {
       <div className="brand-strata" aria-hidden="true"><i /><i /><i /><i /><i /></div><div className="scanlines" aria-hidden="true" />
       <header className="quest-header">
         <button className="brand-lockup" type="button" onClick={() => setStage("cover")} aria-label="Return to title screen"><span>PERMANENTE MEDICINE</span><small>The Permanente Medical Group</small></button>
-        <div className="header-title"><b>the</b> DSA WAY <small>A Hero&apos;s Journey</small></div>
+        <div className="header-title"><b>the</b> DSA WAY <small>The Hero&apos;s Journey</small></div>
         <div className="header-actions">
           <button className="sound-button" type="button" aria-pressed={sound} onClick={() => setSound((value) => !value)}><span aria-hidden="true">{sound ? "♫" : "×"}</span> SOUND {sound ? "ON" : "OFF"}</button>
           <button className="map-button" type="button" aria-expanded={menuOpen} onClick={() => setMenuOpen((value) => !value)}>QUEST MAP</button>
@@ -568,16 +590,38 @@ export function QuestExperience() {
       <aside className={`quest-map ${menuOpen ? "is-open" : ""}`} aria-label="The Nine Chambers">
         <div className="map-heading"><span>THE NINE CHAMBERS</span><button onClick={() => setMenuOpen(false)} aria-label="Close quest map">×</button></div>
         <ol>{CHAMBERS.map((chamber, index) => <li className={index === 3 ? "active" : "locked"} key={chamber}><span>{String(index + 1).padStart(2, "0")}</span><b>{chamber}</b><i>{index === 3 ? "ACTIVE" : "LOCKED"}</i></li>)}</ol>
-        <p>Chamber IV is Box 4 of 9 — Root Cause Analysis.</p>
+        <p>Box IV — Gap Analysis — is open. The other A3 chambers are still being forged.</p>
       </aside>
 
-      {stage === "cover" && <section className="cover-screen">
-        <div className="cover-copy"><div className="eyebrow"><span>04</span> A DSA LEARNING QUEST</div><h1><span>The DSA Way:</span>A Hero&apos;s Journey</h1><p>Nine chambers. One way forward. Build the instincts that make this the best place to work—and the best place to get care.</p><button className="primary-button" type="button" onClick={begin}><span>Begin the journey</span><b>→</b></button></div>
-        <div className="world-frame cover-world"><VoxelWorld progress={0} open={false} /><div className="world-caption">CHAMBER IV · ROOT CAUSE</div></div>
+      {stage === "cover" && <section className="a3-home">
+        <div className="a3-home-heading">
+          <div><div className="eyebrow"><span>09</span> A DSA LEARNING QUEST</div><h1>The DSA Way: <em>The Hero&apos;s Journey</em></h1></div>
+          <p>Nine chambers shape the A3. Choose a box to reveal its path; Box 4 is ready to play.</p>
+        </div>
+        <div className="a3-grid-viewport">
+          <div className="a3-grid" aria-label="The nine boxes of the A3">
+            {A3_BOXES.map((box) => <button
+              className={`a3-tile a3-box-${box.number} ${box.number === 4 ? "is-playable" : ""} ${previewBox === box.number ? "is-previewed" : ""}`}
+              type="button"
+              key={box.number}
+              onClick={() => enterBox(box.number)}
+              aria-label={box.number === 4 ? "Box 4: Gap Analysis. Enter The Door of Whys" : `Box ${box.number}: ${box.label}. Activity coming soon`}
+            >
+              {/* Public-path artwork stays compatible with both the app runtime and GitHub Pages. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={`a3/box-${box.number}.jpg`} alt="" width="3840" height="2160" loading={box.number <= 4 ? "eager" : "lazy"} decoding="async" />
+              <span className="a3-tile-overlay"><small>BOX {String(box.number).padStart(2, "0")}</small><b>{box.label}</b><em>{box.number === 4 ? "ENTER THE DOOR OF WHYS" : "ACTIVITY COMING SOON"}</em></span>
+              {box.number === 4 && <span className="a3-playable-badge">PLAYABLE</span>}
+            </button>)}
+          </div>
+        </div>
+        <p className="a3-home-status" aria-live="polite">{previewBox
+          ? `The ${A3_BOXES[previewBox - 1].label} activity has not been forged yet. Box 4 is ready to play.`
+          : "Hover to reveal each chamber. Select Box 4 to enter The Door of Whys."}</p>
       </section>}
 
       {stage === "threshold" && <section className="threshold-screen">
-        <div className="story-column"><div className="quest-kicker">THE NINE CHAMBERS · A CAREER-FAIR QUEST</div><div className="chamber-tag">The wheel has chosen — Chamber IV: Root Cause</div><h1 className="chamber-title">The Door<br />of Whys</h1><div className="threshold-prose"><p>For the third week running, the morning medication cart reaches the ward late. Nurses scramble. Doses slip.</p><p>Tonight the old door sealed behind you, and words appeared in the wood:</p><blockquote>&quot;I open only for the root. I listen only to questions — but beware: some questions are solutions in disguise, and those bounce off me all the same.&quot;</blockquote><p>Somewhere above, a sensei&apos;s voice: <em>&quot;Most locks are five questions deep.&quot;</em></p></div><button className="primary-button" type="button" onClick={() => { setStage("questions"); playTone("step", sound); }}><span>Cross the threshold</span><b>→</b></button></div>
+        <div className="story-column"><div className="quest-kicker">THE NINE CHAMBERS · A CAREER-FAIR QUEST</div><div className="chamber-tag">Box IV · Gap Analysis</div><h1 className="chamber-title">The Door<br />of Whys</h1><div className="threshold-prose"><p>For the third week running, the morning medication cart reaches the ward late. Nurses scramble. Doses slip.</p><p>Tonight the old door sealed behind you, and words appeared in the wood:</p><blockquote>&quot;I open only for the root. I listen only to questions — but beware: some questions are solutions in disguise, and those bounce off me all the same.&quot;</blockquote><p>Somewhere above, a sensei&apos;s voice: <em>&quot;Most locks are five questions deep.&quot;</em></p></div><button className="primary-button" type="button" onClick={() => { setStage("questions"); playTone("step", sound); }}><span>Cross the threshold</span><b>→</b></button></div>
         <div className="world-frame"><VoxelWorld progress={0} open={false} /><RuneRail progress={0} /></div>
       </section>}
 
@@ -606,7 +650,7 @@ export function QuestExperience() {
             <p>A hero&apos;s sharpest weapon isn&apos;t steel—it&apos;s curiosity with stamina.</p>
             <p className="quest-incantation">Ask why. Follow the answer. Repeat until the root has nowhere left to hide.</p>
           </div>
-          <div className="completion-meta"><p>Rootfinder — the door barely resisted you</p><strong>This chamber is Box 4 of 9 — Root Cause Analysis.</strong><p>On an A3, masters of improvement spend most of the journey here, understanding the problem, before a single solution is drawn. Spin the wheel again to enter another chamber.</p><button className="primary-button" type="button" onClick={restart}><span>Enter again</span><b>↻</b></button></div>
+          <div className="completion-meta"><p>Rootfinder — the door barely resisted you</p><strong>This chamber is Box 4 of 9 — Gap Analysis.</strong><p>On an A3, masters of improvement spend most of the journey here, understanding the problem, before a single solution is drawn. Return to the map when you are ready to explore another chamber.</p><button className="primary-button" type="button" onClick={restart}><span>Enter again</span><b>↻</b></button></div>
         </div>
       </section>}
     </main>

@@ -7,7 +7,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const requestHeaders = await headers();
   const host = requestHeaders.get("host") ?? "dsa-way-hero-journey.roshan-patel.chatgpt.site";
   const origin = `${host.startsWith("localhost") ? "http" : "https"}://${host}`;
-  const title = "The DSA Way: A Hero's Journey";
+  const title = "The DSA Way: The Hero's Journey";
   const description = "A cinematic, game-inspired journey through the DSA Way and the Five Whys.";
 
   return {

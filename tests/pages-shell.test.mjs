@@ -8,7 +8,7 @@ test("GitHub Pages includes a visible startup shell and deployable assets", asyn
   assert.match(html, /Loading the cinematic gateway/);
   assert.match(html, /THE TEXT QUEST WILL OPEN FIRST/);
   assert.match(html, /class="boot-screen"/);
-  assert.match(html, /The DSA Way: A Hero's Journey/);
+  assert.match(html, /The DSA Way: The Hero's Journey/);
 
   const scriptPath = html.match(/src="(\/dsa-way-hero-journey\/assets\/[^"]+\.js)"/)?.[1];
   const stylePath = html.match(/href="(\/dsa-way-hero-journey\/assets\/[^"]+\.css)"/)?.[1];
@@ -24,4 +24,11 @@ test("GitHub Pages includes a visible startup shell and deployable assets", asyn
 
   const assets = await readdir(new URL("../dist-pages/assets/", import.meta.url));
   assert.ok(assets.filter((file) => file.endsWith(".js")).length >= 2, "cinematic world should be code-split");
+
+  const a3Images = (await readdir(new URL("../dist-pages/a3/", import.meta.url))).filter((file) => file.endsWith(".jpg"));
+  assert.deepEqual(a3Images.sort(), Array.from({ length: 9 }, (_, index) => `box-${index + 1}.jpg`));
+  for (const image of a3Images) {
+    const imageStats = await stat(new URL(`../dist-pages/a3/${image}`, import.meta.url));
+    assert.ok(imageStats.size > 500_000, `${image} should retain detailed 4K source imagery`);
+  }
 });
