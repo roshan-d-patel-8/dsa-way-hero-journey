@@ -1346,6 +1346,24 @@ export function QuestExperience() {
   const inKeep = stage === "keep-intro" || stage === "keep-game" || stage === "keep-complete";
   const activeChamber = inForge ? 0 : inKeep ? 1 : stage === "cover" ? null : 3;
 
+  useEffect(() => {
+    if (!inKeep) return;
+    const frame = window.requestAnimationFrame(() => {
+      const selector = stage === "keep-game"
+        ? ".keep-world-stage"
+        : stage === "keep-complete"
+          ? ".keep-complete-map"
+          : ".keep-intro-world";
+      const world = document.querySelector<HTMLElement>(selector);
+      if (window.matchMedia("(max-width: 900px)").matches && world) {
+        world.scrollIntoView({ block: "start", behavior: "auto" });
+      } else {
+        window.scrollTo({ top: 0, behavior: "auto" });
+      }
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [inKeep, keepIndex, stage]);
+
   const resetForge = () => {
     setForgeIndex(0);
     setForgedSeals([]);

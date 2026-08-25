@@ -89,6 +89,8 @@ test("includes the Herald's Forge and preserves the full Door of Whys experience
   assert.match(source, /lanternVolume/);
   assert.match(source, /materializing/);
   assert.match(source, /OBSERVE AT GEMBA/);
+  assert.match(source, /scrollIntoView\(\{ block: "start", behavior: "auto" \}\)/);
+  assert.match(source, /window\.matchMedia\("\(max-width: 900px\)"\)/);
   assert.match(source, /keepFeedback\?\.kind === "wrong"/);
   assert.match(source, /Inspect another corridor, or continue when you are ready\./);
   assert.match(source, /setStage\("forge-intro"\)/);
