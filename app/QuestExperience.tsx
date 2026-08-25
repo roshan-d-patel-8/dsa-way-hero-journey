@@ -794,7 +794,7 @@ export function QuestExperience() {
             <p>No one rallied. The patient heard a complaint. The physician heard blame. The steward heard an expensive solution searching for a problem.</p>
             <p>At the old forge wait six seals. Shape the evidence into a case for action that a stranger can understand—and a system can act upon.</p>
           </div>
-          <div className="forge-seal-preview" aria-label="The six seals of Box 1">{FORGE_SEALS.map((seal, index) => <span key={seal.id}><i>{seal.glyph}</i><b>{String(index + 1).padStart(2, "0")}</b>{seal.name}</span>)}</div>
+          <div className="forge-seal-preview" aria-label="The six seals of Box 1">{FORGE_SEALS.map((seal, index) => <span key={seal.id}><i>{seal.glyph}</i><b>{String(index + 1).padStart(2, "0")}</b><em className="seal-name">{seal.name}</em></span>)}</div>
           <button className="primary-button" type="button" onClick={() => { setStage("forge-game"); playTone("step", sound); }}><span>Enter the forge</span><b>→</b></button>
         </div>
       </section>}
