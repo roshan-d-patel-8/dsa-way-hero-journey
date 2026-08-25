@@ -50,6 +50,7 @@ type KeepObservation = {
   correctId: string;
   lesson: string;
   mapFact: string;
+  sceneCue: string;
   fragments: KeepFragment[];
 };
 
@@ -248,6 +249,7 @@ const KEEP_OBSERVATIONS: KeepObservation[] = [
     correctId: "arrival-observed",
     lesson: "The first chamber appears. You recorded the real thing, the real place, and a timestamp—without guessing what it means.",
     mapFact: "08:07 · Routine referral enters the GI workqueue",
+    sceneCue: "08:07 · referral enters the shared queue · owner field blank",
     fragments: [
       { id: "arrival-blame", text: "The referral coordinator probably ignored the new request.", rejection: "A false corridor forms around a person. You did not observe neglect; you observed a referral entering a queue." },
       { id: "arrival-observed", text: "At 08:07, one routine referral appears in the shared GI workqueue with no named owner displayed.", rejection: "" },
@@ -264,6 +266,7 @@ const KEEP_OBSERVATIONS: KeepObservation[] = [
     correctId: "waiting-measured",
     lesson: "The gallery lengthens to its true size. Waiting time and touch time are now visible instead of being blended into one average.",
     mapFact: "03h 35m wait · 02m touch",
+    sceneCue: "queue entered 08:07 · first opened 11:42 · active touch 02:00",
     fragments: [
       { id: "waiting-rounded", text: "Referrals usually sit for about four hours before anyone looks at them.", rejection: "The lantern rejects a rounded recollection. Box 2 needs the timestamps from this observed journey, not a plausible estimate." },
       { id: "waiting-cause", text: "The referral waits because the team is understaffed in the morning.", rejection: "You have named a cause without testing it. The wait is visible; its reason belongs to a later chamber." },
@@ -280,6 +283,7 @@ const KEEP_OBSERVATIONS: KeepObservation[] = [
     correctId: "handoffs-traced",
     lesson: "Three bridges rise from the dark. The map now shows the actual sequence of ownership rather than the org chart.",
     mapFact: "Coordinator → MA → physician → scheduler",
+    sceneCue: "coordinator → MA → physician → scheduler · 3 transfers",
     fragments: [
       { id: "handoffs-policy", text: "The standard pathway is coordinator directly to physician, then scheduler.", rejection: "That is the written route. You are walking the route this referral actually traveled." },
       { id: "handoffs-traced", text: "The observed referral moves from coordinator to MA to physician to scheduler—three responsibility transfers.", rejection: "" },
@@ -296,6 +300,7 @@ const KEEP_OBSERVATIONS: KeepObservation[] = [
     correctId: "rework-observed",
     lesson: "The hidden stair burns red. Rework is now drawn as movement through the system—not explained away or blamed on a person.",
     mapFact: "1 return · missing outside records · +2 days",
+    sceneCue: "missing outside records · referral returns · +2 days",
     fragments: [
       { id: "rework-observed", text: "At physician review, missing outside records send the referral back to the coordinator; it returns to the physician queue two days later.", rejection: "" },
       { id: "rework-training", text: "The coordinator needs better training on collecting outside records.", rejection: "You may eventually test that theory, but the walk did not establish it. Causes do not belong on this map." },
@@ -312,6 +317,7 @@ const KEEP_OBSERVATIONS: KeepObservation[] = [
     correctId: "voice-verbatim",
     lesson: "The alcove answers in the traveler’s voice. Experience has become evidence without being translated into an executive assumption.",
     mapFact: "Patient: “I called twice and still didn’t know if you had it.”",
+    sceneCue: "patient: “I called twice and still didn’t know if you had received it.”",
     fragments: [
       { id: "voice-verbatim", text: "Patient: “I called twice and still didn’t know whether you had received the referral.”", rejection: "" },
       { id: "voice-interpreted", text: "Patients feel abandoned because the referral department does not communicate.", rejection: "That may be an interpretation, but it is not the customer’s voice. Preserve what was actually said." },
@@ -328,6 +334,7 @@ const KEEP_OBSERVATIONS: KeepObservation[] = [
     correctId: "map-current",
     lesson: "The Unmapped Keep is unmapped no longer. The actual journey is visible, measurable, and ready for the next chamber.",
     mapFact: "6 steps · 3 handoffs · 2 queues · 1 rework loop",
+    sceneCue: "6 steps · 3 handoffs · 2 queues · 1 rework loop",
     fragments: [
       { id: "map-current", text: "Observed journey: 6 process steps, 3 handoffs, 2 queues, 1 rework loop, at least 51 hours 35 minutes waiting, and 18 minutes touch time.", rejection: "" },
       { id: "map-root", text: "The root problem is fragmented ownership and insufficient referral staffing.", rejection: "The map fractures at the word ‘root.’ Causes belong in Box 4, after the current condition is fully visible." },
@@ -363,6 +370,86 @@ function playTone(kind: "start" | "step" | "wrong" | "rune" | "open", enabled: b
     oscillator.stop(now + index * 0.075 + 0.24);
   });
   window.setTimeout(() => void ctx.close(), 900);
+}
+
+type KeepSound = "footsteps" | "stopwatch" | "handoff" | "rework" | "voices" | "parchment" | "lantern";
+const KEEP_SOUND_CUES: KeepSound[] = ["footsteps", "stopwatch", "handoff", "rework", "voices", "parchment"];
+
+function playKeepSound(kind: KeepSound, enabled: boolean) {
+  if (!enabled || typeof window === "undefined") return;
+  const AudioCtor = window.AudioContext ??
+    (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+  if (!AudioCtor) return;
+  const ctx = new AudioCtor();
+  const now = ctx.currentTime;
+  const master = ctx.createGain();
+  master.gain.setValueAtTime(0.72, now);
+  master.connect(ctx.destination);
+
+  const note = (frequency: number, start: number, duration: number, volume: number, wave: OscillatorType = "triangle", endFrequency?: number) => {
+    const oscillator = ctx.createOscillator();
+    const gain = ctx.createGain();
+    oscillator.type = wave;
+    oscillator.frequency.setValueAtTime(frequency, now + start);
+    if (endFrequency) oscillator.frequency.exponentialRampToValueAtTime(endFrequency, now + start + duration);
+    gain.gain.setValueAtTime(0.0001, now + start);
+    gain.gain.exponentialRampToValueAtTime(volume, now + start + 0.012);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + start + duration);
+    oscillator.connect(gain).connect(master);
+    oscillator.start(now + start);
+    oscillator.stop(now + start + duration + 0.03);
+  };
+
+  const noise = (start: number, duration: number, volume: number, filterType: BiquadFilterType, frequency: number) => {
+    const buffer = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * duration), ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let index = 0; index < data.length; index += 1) data[index] = (Math.random() * 2 - 1) * (1 - index / data.length * 0.28);
+    const source = ctx.createBufferSource();
+    const filter = ctx.createBiquadFilter();
+    const gain = ctx.createGain();
+    source.buffer = buffer;
+    filter.type = filterType;
+    filter.frequency.value = frequency;
+    filter.Q.value = 1.1;
+    gain.gain.setValueAtTime(0.0001, now + start);
+    gain.gain.exponentialRampToValueAtTime(volume, now + start + 0.035);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + start + duration);
+    source.connect(filter).connect(gain).connect(master);
+    source.start(now + start);
+  };
+
+  if (kind === "footsteps") {
+    [0, .28, .62, .94, 1.29].forEach((start, index) => {
+      noise(start, .14, .055, "lowpass", 180);
+      note(index % 2 ? 72 : 82, start, .13, .045, "sine", 46);
+    });
+    noise(0, 1.75, .012, "bandpass", 520);
+  } else if (kind === "stopwatch") {
+    [0, .34, .68, 1.02, 1.36, 1.7].forEach((start) => {
+      note(1420, start, .035, .045, "square", 920);
+      note(96, start + .018, .055, .018, "sine", 68);
+    });
+  } else if (kind === "handoff") {
+    [261.63, 329.63, 392, 523.25].forEach((frequency, index) => note(frequency, index * .19, .34, .035, "triangle"));
+    [0.05, .26, .47].forEach((start) => noise(start, .17, .026, "highpass", 1550));
+  } else if (kind === "rework") {
+    note(430, 0, 1.25, .055, "sawtooth", 92);
+    noise(.08, 1.1, .035, "bandpass", 360);
+    note(123, .82, .48, .04, "square", 82);
+  } else if (kind === "voices") {
+    noise(0, 2.6, .018, "bandpass", 690);
+    [138, 176, 218].forEach((frequency, index) => {
+      note(frequency, index * .18, 2.15 - index * .12, .012, "sine", frequency * 1.05);
+      note(frequency * 2.02, .11 + index * .15, 1.7, .006, "triangle", frequency * 1.94);
+    });
+  } else if (kind === "parchment") {
+    [0, .18, .38, .58, .83, 1.07].forEach((start, index) => noise(start, .28, .018 + index * .002, "highpass", 1850));
+    note(196, 0, 1.55, .02, "triangle", 392);
+  } else {
+    [261.63, 392, 523.25, 783.99].forEach((frequency, index) => note(frequency, index * .075, .65, .036, "sine"));
+    noise(0, .95, .017, "highpass", 2100);
+  }
+  window.setTimeout(() => void ctx.close(), kind === "voices" ? 3100 : 2400);
 }
 
 function VoxelWorld({ progress, open }: { progress: number; open: boolean }) {
@@ -767,7 +854,7 @@ function VoxelWorld({ progress, open }: { progress: number; open: boolean }) {
   return <canvas ref={canvasRef} className="voxel-world" aria-hidden="true" />;
 }
 
-function UnmappedKeepWorld({ progress, fracture = false, complete = false }: { progress: number; fracture?: boolean; complete?: boolean }) {
+function UnmappedKeepWorld({ progress, focus, fracture = false, complete = false }: { progress: number; focus?: number; fracture?: boolean; complete?: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [renderingFailed, setRenderingFailed] = useState(false);
 
@@ -797,7 +884,7 @@ function UnmappedKeepWorld({ progress, fracture = false, complete = false }: { p
       renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
       composer = new EffectComposer(renderer);
       composer.addPass(new RenderPass(scene, camera));
-      composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), complete ? 1.35 : 1.05, 0.82, 0.1));
+      composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), complete ? 1.12 : 0.94, 0.76, 0.13));
     } catch (error) {
       canvas.removeEventListener("webglcontextlost", onContextLost);
       fail(error);
@@ -831,6 +918,25 @@ function UnmappedKeepWorld({ progress, fracture = false, complete = false }: { p
       mesh.position.set(x, y, z);
       return mesh;
     };
+    const pawnMaterial = (color: number) => new THREE.MeshStandardMaterial({ color, roughness: 0.68, metalness: 0.08 });
+    const skin = pawnMaterial(0xb9714b);
+    const makePawn = (color: number, x: number, z: number, scale = 1) => {
+      const pawn = new THREE.Group();
+      const bodyMaterial = pawnMaterial(color);
+      const body = register(new THREE.Mesh(new THREE.CylinderGeometry(0.19, 0.28, 0.62, 8), bodyMaterial));
+      body.position.y = 0.43;
+      const head = register(new THREE.Mesh(new THREE.SphereGeometry(0.17, 10, 8), skin));
+      head.position.y = 0.88;
+      const base = register(new THREE.Mesh(new THREE.CylinderGeometry(0.31, 0.34, 0.1, 10), stoneEdge));
+      base.position.y = 0.02;
+      pawn.add(body, head, base);
+      pawn.position.set(x, 0.02, z);
+      pawn.scale.setScalar(scale);
+      pawn.userData.baseY = pawn.position.y;
+      pawn.userData.phase = Math.random() * Math.PI * 2;
+      root.add(pawn);
+      return pawn;
+    };
 
     const floor = register(new THREE.Mesh(new THREE.PlaneGeometry(15, 11), new THREE.MeshStandardMaterial({ color: 0x081519, roughness: 1, metalness: 0 })));
     floor.rotation.x = -Math.PI / 2;
@@ -861,6 +967,7 @@ function UnmappedKeepWorld({ progress, fracture = false, complete = false }: { p
       new THREE.Vector3(5.1, 0.04, -2.25),
     ];
     const pathMaterials: THREE.MeshStandardMaterial[] = [];
+    const pathMeshes: THREE.Mesh[] = [];
     const nodeMaterials: THREE.MeshStandardMaterial[] = [];
     const nodeLights: THREE.PointLight[] = [];
 
@@ -900,7 +1007,13 @@ function UnmappedKeepWorld({ progress, fracture = false, complete = false }: { p
         const pathMaterial = (index <= progress ? revealed : dormant).clone();
         pathMaterial.emissiveIntensity = index <= progress ? 1.35 : 0.03;
         pathMaterials.push(pathMaterial);
-        root.add(corridor(points[index - 1], point, pathMaterial));
+        const pathMesh = corridor(points[index - 1], point, pathMaterial);
+        if (index === progress) {
+          pathMesh.scale.x = 0.025;
+          pathMesh.userData.materializing = true;
+        }
+        pathMeshes.push(pathMesh);
+        root.add(pathMesh);
       }
     });
 
@@ -915,14 +1028,162 @@ function UnmappedKeepWorld({ progress, fracture = false, complete = false }: { p
     falseNode.position.y = 0.2;
     root.add(falseNode);
 
+    const focusIndex = focus ?? Math.max(progress - 1, 0);
+    const showObservedWork = focus !== undefined || complete;
+    const staffPawns = [
+      makePawn(0x1786a0, points[0].x - 0.74, points[0].z + 0.3, 0.82),
+      makePawn(0x8d3d73, points[2].x - 0.15, points[2].z - 0.72, 0.82),
+      makePawn(0x1f7791, points[3].x + 0.15, points[3].z + 0.76, 0.82),
+      makePawn(0x9a5b2b, points[5].x - 0.66, points[5].z + 0.16, 0.82),
+    ];
+    staffPawns.forEach((pawn, index) => {
+      pawn.visible = showObservedWork && (complete || focusIndex >= Math.max(0, index - 1));
+    });
+    const patientPawn = makePawn(0x7d285c, points[4].x + 0.72, points[4].z - 0.22, 0.88);
+    patientPawn.visible = showObservedWork && (complete || focusIndex === 4 || focusIndex === 5);
+
+    const queuePawns = [-0.64, 0, 0.64].map((offset, index) => {
+      const queuePawn = makePawn(index === 1 ? 0xf08f24 : 0x537b83, points[1].x + offset, points[1].z + 0.68, 0.56);
+      queuePawn.visible = showObservedWork && (complete || focusIndex === 1 || focusIndex === 5);
+      return queuePawn;
+    });
+
+    const referralMaterial = new THREE.MeshStandardMaterial({ color: 0xffc45e, emissive: 0xf08f24, emissiveIntensity: 2.1, roughness: 0.3, metalness: 0.32 });
+    const referralToken = new THREE.Group();
+    const referralScroll = register(new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.06, 0.48), referralMaterial));
+    referralScroll.rotation.y = 0.28;
+    const referralSeal = register(new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.075, 0.09, 8), gold));
+    referralSeal.rotation.x = Math.PI / 2;
+    referralSeal.position.set(0, 0.08, 0);
+    referralToken.add(referralScroll, referralSeal);
+    referralToken.position.copy(points[Math.min(focusIndex, 5)]);
+    referralToken.position.y = 0.66;
+    referralToken.visible = showObservedWork;
+    root.add(referralToken);
+
+    const stopwatch = new THREE.Group();
+    stopwatch.position.set(points[1].x - 0.82, 0.69, points[1].z - 0.62);
+    const watchFace = register(new THREE.Mesh(new THREE.CylinderGeometry(0.39, 0.39, 0.09, 22), new THREE.MeshStandardMaterial({ color: 0xddebee, roughness: 0.34, metalness: 0.62 })));
+    watchFace.rotation.x = Math.PI / 2;
+    const watchRim = register(new THREE.Mesh(new THREE.TorusGeometry(0.39, 0.055, 8, 24), stoneEdge));
+    watchRim.rotation.x = Math.PI / 2;
+    const watchHand = block(0.035, 0.04, 0.31, falsePath, 0, 0.08, -0.09);
+    watchHand.geometry.translate(0, 0, 0.12);
+    stopwatch.add(watchFace, watchRim, watchHand);
+    stopwatch.visible = showObservedWork && (complete || focusIndex === 1 || focusIndex === 5);
+    root.add(stopwatch);
+
+    const handoffOrb = register(new THREE.Mesh(new THREE.OctahedronGeometry(0.2, 0), gold));
+    handoffOrb.visible = showObservedWork && (complete || focusIndex === 2 || focusIndex === 5);
+    root.add(handoffOrb);
+    const handoffCurve = new THREE.CatmullRomCurve3([points[1], points[2], points[3], points[5]].map((point) => point.clone().setY(0.72)));
+    const journeyCurve = new THREE.CatmullRomCurve3(points.map((point) => point.clone().setY(0.68)));
+
+    const reworkCurve = new THREE.CatmullRomCurve3([
+      points[3].clone().setY(0.17),
+      points[3].clone().add(new THREE.Vector3(-0.2, 0.38, -1.35)),
+      points[2].clone().add(new THREE.Vector3(0.65, 0.2, -1.08)),
+      points[2].clone().setY(0.17),
+    ]);
+    const reworkMaterial = new THREE.MeshStandardMaterial({ color: 0xe75657, emissive: 0xb12245, emissiveIntensity: 2.5, transparent: true, opacity: complete || focusIndex === 3 || focusIndex === 5 ? 0.92 : 0.06, roughness: 0.3 });
+    const reworkTube = register(new THREE.Mesh(new THREE.TubeGeometry(reworkCurve, 44, 0.075, 8, false), reworkMaterial));
+    reworkTube.visible = showObservedWork && (complete || focusIndex === 3 || focusIndex === 5);
+    root.add(reworkTube);
+    const reworkToken = register(new THREE.Mesh(new THREE.OctahedronGeometry(0.17, 0), reworkMaterial));
+    reworkToken.visible = reworkTube.visible;
+    root.add(reworkToken);
+
+    const listeningHorn = new THREE.Group();
+    listeningHorn.position.set(points[4].x + 0.82, 0.77, points[4].z + 0.48);
+    listeningHorn.rotation.set(-0.08, -0.72, -0.28);
+    const hornBody = register(new THREE.Mesh(new THREE.ConeGeometry(0.34, 0.85, 18, 1, true), new THREE.MeshStandardMaterial({ color: 0xc0802f, roughness: 0.28, metalness: 0.86, side: THREE.DoubleSide })));
+    hornBody.rotation.z = Math.PI / 2;
+    const hornMouth = register(new THREE.Mesh(new THREE.TorusGeometry(0.34, 0.055, 8, 24), gold));
+    hornMouth.rotation.y = Math.PI / 2;
+    hornMouth.position.x = 0.42;
+    listeningHorn.add(hornBody, hornMouth);
+    const voiceWaves: THREE.Mesh[] = [];
+    [0.58, 0.86, 1.14].forEach((distance, index) => {
+      const wave = register(new THREE.Mesh(new THREE.TorusGeometry(0.28 + index * 0.12, 0.025, 6, 30, Math.PI), new THREE.MeshBasicMaterial({ color: 0xffd47d, transparent: true, opacity: 0.58 - index * 0.12, blending: THREE.AdditiveBlending, side: THREE.DoubleSide })));
+      wave.rotation.set(Math.PI / 2, 0, Math.PI / 2);
+      wave.position.x = distance;
+      voiceWaves.push(wave);
+      listeningHorn.add(wave);
+    });
+    listeningHorn.visible = showObservedWork && (complete || focusIndex === 4 || focusIndex === 5);
+    root.add(listeningHorn);
+
+    const parchmentCanvas = document.createElement("canvas");
+    parchmentCanvas.width = 768;
+    parchmentCanvas.height = 420;
+    const parchmentContext = parchmentCanvas.getContext("2d");
+    const parchmentDepth = complete ? 6 : Math.max(progress, focus !== undefined ? focus + 1 : 0);
+    if (parchmentContext) {
+      const gradient = parchmentContext.createLinearGradient(0, 0, 768, 420);
+      gradient.addColorStop(0, "#e0bb78");
+      gradient.addColorStop(.55, "#c99653");
+      gradient.addColorStop(1, "#8b5a31");
+      parchmentContext.fillStyle = gradient;
+      parchmentContext.fillRect(0, 0, 768, 420);
+      parchmentContext.globalAlpha = .18;
+      for (let index = 0; index < 170; index += 1) {
+        parchmentContext.fillStyle = index % 3 ? "#4f2b1d" : "#fff1b5";
+        parchmentContext.fillRect(Math.random() * 768, Math.random() * 420, Math.random() * 9 + 1, 1);
+      }
+      parchmentContext.globalAlpha = 1;
+      parchmentContext.strokeStyle = "#4f2c22";
+      parchmentContext.lineWidth = 5;
+      parchmentContext.strokeRect(24, 24, 720, 372);
+      parchmentContext.font = "700 23px Georgia";
+      parchmentContext.fillStyle = "#3b211b";
+      parchmentContext.fillText("THE ACTUAL PATH", 48, 65);
+      const mapPoints = [[78, 302], [193, 218], [324, 262], [446, 170], [565, 228], [690, 118]];
+      parchmentContext.lineCap = "round";
+      parchmentContext.lineJoin = "round";
+      for (let index = 1; index < Math.min(parchmentDepth, mapPoints.length); index += 1) {
+        parchmentContext.strokeStyle = index === 3 ? "#9d2e3f" : "#18738a";
+        parchmentContext.lineWidth = 12;
+        parchmentContext.beginPath();
+        parchmentContext.moveTo(mapPoints[index - 1][0], mapPoints[index - 1][1]);
+        parchmentContext.lineTo(mapPoints[index][0], mapPoints[index][1]);
+        parchmentContext.stroke();
+      }
+      mapPoints.forEach(([x, y], index) => {
+        parchmentContext.fillStyle = index < parchmentDepth ? "#ffd86b" : "#6a4935";
+        parchmentContext.beginPath();
+        parchmentContext.arc(x, y, 17, 0, Math.PI * 2);
+        parchmentContext.fill();
+        parchmentContext.fillStyle = "#3b211b";
+        parchmentContext.font = "700 15px monospace";
+        parchmentContext.fillText(String(index + 1).padStart(2, "0"), x - 10, y + 5);
+      });
+    }
+    const parchmentTexture = new THREE.CanvasTexture(parchmentCanvas);
+    parchmentTexture.colorSpace = THREE.SRGBColorSpace;
+    const parchmentMaterial = new THREE.MeshStandardMaterial({ map: parchmentTexture, roughness: 0.78, metalness: 0, emissive: 0x5e3218, emissiveIntensity: complete || focusIndex === 5 ? 0.24 : 0.08, side: THREE.DoubleSide });
+    const parchment = register(new THREE.Mesh(new THREE.PlaneGeometry(4.9, 2.68, 8, 4), parchmentMaterial));
+    parchment.position.set(0, 2.1, -4.72);
+    parchment.rotation.x = -0.05;
+    parchment.scale.setScalar(complete || focusIndex === 5 ? 1 : .88);
+    root.add(parchment);
+
     const lantern = new THREE.Group();
     const lanternGlow = register(new THREE.Mesh(new THREE.SphereGeometry(0.22, 16, 12), gold));
     const lanternFrame = register(new THREE.Mesh(new THREE.TorusGeometry(0.34, 0.055, 8, 22), new THREE.MeshStandardMaterial({ color: 0xb87b2f, roughness: 0.32, metalness: 0.86 })));
     lanternFrame.rotation.x = Math.PI / 2;
     lantern.add(lanternGlow, lanternFrame);
-    const lanternLight = new THREE.PointLight(0xffb543, 19, 5.6, 1.8);
+    const lanternLight = new THREE.PointLight(0xffb543, 13, 5.2, 1.8);
     lantern.add(lanternLight);
-    lantern.position.copy(points[Math.min(Math.max(progress - 1, 0), 5)]);
+    const lanternVolumeMaterial = new THREE.MeshBasicMaterial({ color: 0xffc45e, transparent: true, opacity: 0.075, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending });
+    const lanternVolume = new THREE.Mesh(new THREE.ConeGeometry(1.45, 2.5, 28, 1, true), lanternVolumeMaterial);
+    lanternVolume.position.y = -1.17;
+    lantern.add(lanternVolume);
+    const lanternSpot = new THREE.SpotLight(0xffc45e, 24, 5.4, Math.PI / 3.4, .72, 1.7);
+    lanternSpot.position.set(0, 0.1, 0);
+    lantern.add(lanternSpot);
+    lantern.add(lanternSpot.target);
+    lanternSpot.target.position.set(0, -1.6, 0);
+    lantern.position.copy(points[Math.min(Math.max(focusIndex, progress - 1, 0), 5)]);
     lantern.position.y = 0.78;
     root.add(lantern);
 
@@ -958,6 +1219,7 @@ function UnmappedKeepWorld({ progress, fracture = false, complete = false }: { p
     resize();
     window.addEventListener("resize", resize);
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const cameraFocus = points[focusIndex].clone().multiplyScalar(0.16);
     let frame = 0;
     let clock = 0;
     const animate = () => {
@@ -968,19 +1230,56 @@ function UnmappedKeepWorld({ progress, fracture = false, complete = false }: { p
         lantern.rotation.y += 0.008;
         gold.emissiveIntensity = 3.1 + Math.sin(clock * 3.4) * 0.8;
         lanternLight.intensity = 17 + Math.sin(clock * 2.8) * 4;
+        lanternSpot.intensity = 21 + Math.sin(clock * 2.25) * 4;
+        lanternVolumeMaterial.opacity = 0.032 + (Math.sin(clock * 1.8) + 1) * 0.012;
         motes.rotation.y += 0.0007;
         falsePath.emissiveIntensity = fracture ? 3.2 + Math.sin(clock * 8) * 1.4 : 0;
         falsePath.opacity = fracture ? 0.68 + Math.sin(clock * 7) * 0.22 : 0;
+        pathMeshes.forEach((mesh) => {
+          if (mesh.userData.materializing) mesh.scale.x += (1 - mesh.scale.x) * 0.055;
+        });
+        [...staffPawns, ...queuePawns, patientPawn].forEach((pawn, index) => {
+          pawn.position.y = pawn.userData.baseY + Math.sin(clock * 2.25 + pawn.userData.phase) * (index < 4 ? .035 : .018);
+          pawn.rotation.y = Math.sin(clock * .72 + index) * .13;
+        });
+        const travel = (clock * .18) % 1;
+        if (referralToken.visible) {
+          if (complete || focusIndex === 5) referralToken.position.copy(journeyCurve.getPoint(travel));
+          else if (focusIndex === 0) referralToken.position.copy(points[0].clone().lerp(points[0].clone().add(new THREE.Vector3(-1.45, .62, .42)), Math.max(0, Math.sin(clock * .72) * .5 + .5))).setY(.66);
+          else if (focusIndex === 1) referralToken.position.set(points[1].x + Math.sin(clock * .7) * .08, .66, points[1].z + .05);
+          else if (focusIndex === 2) referralToken.position.copy(handoffCurve.getPoint(travel));
+          else if (focusIndex === 3) referralToken.position.copy(reworkCurve.getPoint(travel)).setY(.7);
+          else referralToken.position.set(points[4].x + .18, .68 + Math.sin(clock * 1.5) * .04, points[4].z - .1);
+          referralToken.rotation.y += .018;
+        }
+        if (handoffOrb.visible) {
+          handoffOrb.position.copy(handoffCurve.getPoint((travel + .18) % 1));
+          handoffOrb.rotation.x += .025;
+          handoffOrb.rotation.y += .036;
+        }
+        if (reworkToken.visible) {
+          reworkToken.position.copy(reworkCurve.getPoint((clock * .22) % 1)).setY(.72);
+          reworkToken.rotation.y += .04;
+        }
+        if (stopwatch.visible) watchHand.rotation.y = -clock * 4.2;
+        voiceWaves.forEach((wave, index) => {
+          const pulse = (Math.sin(clock * 2.4 - index * .8) + 1) * .5;
+          wave.scale.setScalar(.9 + pulse * .26);
+          (wave.material as THREE.MeshBasicMaterial).opacity = .18 + pulse * (.42 - index * .06);
+        });
+        parchment.rotation.z = Math.sin(clock * .34) * .006;
+        parchment.position.y = 2.1 + Math.sin(clock * .48) * .025;
+        parchmentMaterial.emissiveIntensity = (complete || focusIndex === 5 ? .22 : .07) + (Math.sin(clock * 1.5) + 1) * .025;
         nodeMaterials.forEach((material, index) => {
           if (index < progress) material.emissiveIntensity = 1.45 + Math.sin(clock * 2.6 + index) * 0.35;
-          nodeLights[index].intensity = index < progress ? 4.2 + Math.sin(clock * 2.2 + index) * 1.2 : 0.05;
+          nodeLights[index].intensity = index < progress ? 2.8 + Math.sin(clock * 2.2 + index) * 0.72 : 0.05;
         });
         pathMaterials.forEach((material, index) => {
           if (index < progress) material.emissiveIntensity = 1.15 + Math.sin(clock * 2.1 + index) * 0.22;
         });
         camera.position.x = Math.sin(clock * 0.22) * 0.18;
         camera.position.z = 9.2 + Math.cos(clock * 0.25) * 0.12;
-        camera.lookAt(0, 0, 0);
+        camera.lookAt(cameraFocus.x, 0, cameraFocus.z);
       }
       try {
         composer.render();
@@ -1005,8 +1304,9 @@ function UnmappedKeepWorld({ progress, fracture = false, complete = false }: { p
         }
       });
       particles.dispose();
+      parchmentTexture.dispose();
     };
-  }, [progress, fracture, complete, renderingFailed]);
+  }, [progress, focus, fracture, complete, renderingFailed]);
 
   if (renderingFailed) {
     return <div className="keep-world-fallback" aria-label={`${progress} of 6 rooms mapped`}>
@@ -1092,7 +1392,7 @@ export function QuestExperience() {
     if (fragmentId === keepObservation.correctId) {
       if (!observationCharted) setChartedObservations((values) => [...values, keepObservation.id]);
       setKeepFeedback({ kind: "correct", text: keepObservation.lesson });
-      playTone("rune", sound);
+      playKeepSound("lantern", sound);
       return;
     }
     setAttemptedSightings((values) => [...values, fragmentId]);
@@ -1109,7 +1409,7 @@ export function QuestExperience() {
     setKeepIndex((value) => value + 1);
     setAttemptedSightings([]);
     setKeepFeedback(null);
-    playTone("step", sound);
+    playKeepSound(KEEP_SOUND_CUES[keepIndex + 1], sound);
   };
   const attemptForge = (fragmentId: string) => {
     if (sealForged || attemptedFragments.includes(fragmentId)) return;
@@ -1217,7 +1517,7 @@ export function QuestExperience() {
             <p>Take the darkened Lantern of Gemba. Follow one referral through the actual work. See it. Time it. Count it. Hear it. Then draw what is true.</p>
           </div>
           <div className="keep-observation-preview" aria-label="The six observations of Box 2">{KEEP_OBSERVATIONS.map((observation, index) => <span key={observation.id}><i>{observation.glyph}</i><b>{String(index + 1).padStart(2, "0")}</b><em>{observation.name}</em></span>)}</div>
-          <button className="primary-button" type="button" onClick={() => { setStage("keep-game"); playTone("step", sound); }}><span>Leave the throne room</span><b>→</b></button>
+          <button className="primary-button" type="button" onClick={() => { setStage("keep-game"); playKeepSound("footsteps", sound); }}><span>Leave the throne room</span><b>→</b></button>
         </div>
         <div className="keep-intro-world">
           <UnmappedKeepWorld progress={0} />
@@ -1259,7 +1559,13 @@ export function QuestExperience() {
         </div>
         <div className={`keep-map-panel ${keepFeedback?.kind === "wrong" ? "is-fractured" : ""}`}>
           <div className="keep-world-stage">
-            <UnmappedKeepWorld progress={chartedObservations.length} fracture={keepFeedback?.kind === "wrong"} />
+            <UnmappedKeepWorld progress={chartedObservations.length} focus={keepIndex} fracture={keepFeedback?.kind === "wrong"} />
+            <div className="keep-gemba-cue">
+              <span>OBSERVE AT GEMBA</span>
+              <b>{keepObservation.place}</b>
+              <p>{keepObservation.sceneCue}</p>
+              <small><i aria-hidden="true">♫</i> {KEEP_SOUND_CUES[keepIndex]}</small>
+            </div>
             <div className="keep-map-hud"><span>GEMBA ATLAS · LIVE</span><b>{String(chartedObservations.length).padStart(2, "0")} / 06 CHAMBERS DRAWN</b></div>
             <div className="keep-lantern-meter" aria-hidden="true"><i style={{ height: `${Math.max(8, chartedObservations.length * (100 / 6))}%` }} /><span>ᛟ</span></div>
           </div>
@@ -1272,7 +1578,7 @@ export function QuestExperience() {
 
       {stage === "keep-complete" && <section className="keep-complete-screen">
         <div className="keep-complete-map">
-          <UnmappedKeepWorld progress={6} complete />
+          <UnmappedKeepWorld progress={6} focus={5} complete />
           <div className="keep-map-hud"><span>THE ACTUAL PATH</span><b>ALL CHAMBERS OBSERVED</b></div>
           <div className="keep-complete-sigils" aria-label="All six observations mapped">{KEEP_OBSERVATIONS.map((observation) => <span key={observation.id}>{observation.glyph}</span>)}</div>
         </div>
