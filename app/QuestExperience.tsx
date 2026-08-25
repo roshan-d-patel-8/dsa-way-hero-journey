@@ -6,7 +6,7 @@ import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 
-type Stage = "cover" | "forge-intro" | "forge-game" | "forge-complete" | "threshold" | "questions" | "complete";
+type Stage = "cover" | "forge-intro" | "forge-game" | "forge-complete" | "keep-intro" | "keep-game" | "keep-complete" | "threshold" | "questions" | "complete";
 
 type Question = {
   known: string;
@@ -32,6 +32,25 @@ type ForgeSeal = {
   correctId: string;
   lesson: string;
   fragments: ForgeFragment[];
+};
+
+type KeepFragment = {
+  id: string;
+  text: string;
+  rejection: string;
+};
+
+type KeepObservation = {
+  id: string;
+  glyph: string;
+  name: string;
+  place: string;
+  prompt: string;
+  coaching: string;
+  correctId: string;
+  lesson: string;
+  mapFact: string;
+  fragments: KeepFragment[];
 };
 
 const QUESTIONS: Question[] = [
@@ -214,6 +233,105 @@ const FORGE_SEALS: ForgeSeal[] = [
       { id: "done-feeling", text: "Done when everyone agrees the process feels much better.", rejection: "Agreement is valuable, but feeling better cannot prove the problem stayed solved." },
       { id: "done-launch", text: "Done when the new referral dashboard goes live.", rejection: "A deliverable is not an outcome. Launching a tool may leave the original gap untouched." },
       { id: "done-sustained", text: "Median review time remains 14 days or less for eight consecutive weeks; standard work is adopted and an operational owner accepts monitoring.", rejection: "" },
+    ],
+  },
+];
+
+const KEEP_OBSERVATIONS: KeepObservation[] = [
+  {
+    id: "arrival",
+    glyph: "⌁",
+    name: "Arrival",
+    place: "The Receiving Gate",
+    prompt: "The official atlas says every referral enters a clear, owned path. What can the lantern actually place on the map?",
+    coaching: "What did you see enter the process—and at what exact time?",
+    correctId: "arrival-observed",
+    lesson: "The first chamber appears. You recorded the real thing, the real place, and a timestamp—without guessing what it means.",
+    mapFact: "08:07 · Routine referral enters the GI workqueue",
+    fragments: [
+      { id: "arrival-blame", text: "The referral coordinator probably ignored the new request.", rejection: "A false corridor forms around a person. You did not observe neglect; you observed a referral entering a queue." },
+      { id: "arrival-observed", text: "At 08:07, one routine referral appears in the shared GI workqueue with no named owner displayed.", rejection: "" },
+      { id: "arrival-fix", text: "The system should automatically assign every referral on arrival.", rejection: "A gleaming shortcut appears—but it leads to Box 5. This chamber maps what is, not what should be." },
+    ],
+  },
+  {
+    id: "waiting",
+    glyph: "◴",
+    name: "Waiting",
+    place: "The Silent Gallery",
+    prompt: "The referral remains still while work moves around it. Which inscription belongs on the current-state map?",
+    coaching: "How long did the work wait, and how long was someone actually touching it?",
+    correctId: "waiting-measured",
+    lesson: "The gallery lengthens to its true size. Waiting time and touch time are now visible instead of being blended into one average.",
+    mapFact: "03h 35m wait · 02m touch",
+    fragments: [
+      { id: "waiting-rounded", text: "Referrals usually sit for about four hours before anyone looks at them.", rejection: "The lantern rejects a rounded recollection. Box 2 needs the timestamps from this observed journey, not a plausible estimate." },
+      { id: "waiting-cause", text: "The referral waits because the team is understaffed in the morning.", rejection: "You have named a cause without testing it. The wait is visible; its reason belongs to a later chamber." },
+      { id: "waiting-measured", text: "The referral is first opened at 11:42: 3 hours 35 minutes waiting, followed by 2 minutes of active review.", rejection: "" },
+    ],
+  },
+  {
+    id: "handoffs",
+    glyph: "⇄",
+    name: "Handoffs",
+    place: "The Bridge of Many Hands",
+    prompt: "The throne-room map shows one smooth crossing. Follow the referral itself. What path did it take?",
+    coaching: "Who actually touched the work, in what sequence, and where did responsibility transfer?",
+    correctId: "handoffs-traced",
+    lesson: "Three bridges rise from the dark. The map now shows the actual sequence of ownership rather than the org chart.",
+    mapFact: "Coordinator → MA → physician → scheduler",
+    fragments: [
+      { id: "handoffs-policy", text: "The standard pathway is coordinator directly to physician, then scheduler.", rejection: "That is the written route. You are walking the route this referral actually traveled." },
+      { id: "handoffs-traced", text: "The observed referral moves from coordinator to MA to physician to scheduler—three responsibility transfers.", rejection: "" },
+      { id: "handoffs-merge", text: "The coordinator and MA steps should be consolidated into one role.", rejection: "A tempting bridge reaches toward a countermeasure. Box 2 records the transfers; it does not redesign them." },
+    ],
+  },
+  {
+    id: "rework",
+    glyph: "↺",
+    name: "Rework",
+    place: "The Returning Stair",
+    prompt: "A red stair curls back toward an earlier room. What did you witness on this loop?",
+    coaching: "Where did the work reverse direction, and what observable event marked the return?",
+    correctId: "rework-observed",
+    lesson: "The hidden stair burns red. Rework is now drawn as movement through the system—not explained away or blamed on a person.",
+    mapFact: "1 return · missing outside records · +2 days",
+    fragments: [
+      { id: "rework-observed", text: "At physician review, missing outside records send the referral back to the coordinator; it returns to the physician queue two days later.", rejection: "" },
+      { id: "rework-training", text: "The coordinator needs better training on collecting outside records.", rejection: "You may eventually test that theory, but the walk did not establish it. Causes do not belong on this map." },
+      { id: "rework-checklist", text: "Add a mandatory records checklist before referrals can advance.", rejection: "A repair has appeared before the current condition is complete. Save it for the countermeasure chamber." },
+    ],
+  },
+  {
+    id: "voice",
+    glyph: "◖",
+    name: "Voice",
+    place: "The Listening Alcove",
+    prompt: "The brass horn carries the traveler’s own words. Which statement preserves the Voice of the Customer?",
+    coaching: "What did the customer say—not what do we think they felt?",
+    correctId: "voice-verbatim",
+    lesson: "The alcove answers in the traveler’s voice. Experience has become evidence without being translated into an executive assumption.",
+    mapFact: "Patient: “I called twice and still didn’t know if you had it.”",
+    fragments: [
+      { id: "voice-verbatim", text: "Patient: “I called twice and still didn’t know whether you had received the referral.”", rejection: "" },
+      { id: "voice-interpreted", text: "Patients feel abandoned because the referral department does not communicate.", rejection: "That may be an interpretation, but it is not the customer’s voice. Preserve what was actually said." },
+      { id: "voice-portal", text: "Patients need a real-time referral tracker in the portal.", rejection: "The horn goes silent. A proposed feature cannot substitute for listening to the present experience." },
+    ],
+  },
+  {
+    id: "map",
+    glyph: "▦",
+    name: "Current Map",
+    place: "The Cartographer’s Table",
+    prompt: "The Keep will accept one final inscription. Which summary describes the observed journey without diagnosing or repairing it?",
+    coaching: "Can every mark on this map be traced back to something you saw, timed, counted, or heard?",
+    correctId: "map-current",
+    lesson: "The Unmapped Keep is unmapped no longer. The actual journey is visible, measurable, and ready for the next chamber.",
+    mapFact: "6 steps · 3 handoffs · 2 queues · 1 rework loop",
+    fragments: [
+      { id: "map-current", text: "Observed journey: 6 process steps, 3 handoffs, 2 queues, 1 rework loop, at least 51 hours 35 minutes waiting, and 18 minutes touch time.", rejection: "" },
+      { id: "map-root", text: "The root problem is fragmented ownership and insufficient referral staffing.", rejection: "The map fractures at the word ‘root.’ Causes belong in Box 4, after the current condition is fully visible." },
+      { id: "map-future", text: "Create one centralized referral team with a single queue and automated patient updates.", rejection: "A beautiful future-state map has replaced the current one. Box 2 must remain honest about today." },
     ],
   },
 ];
@@ -649,6 +767,257 @@ function VoxelWorld({ progress, open }: { progress: number; open: boolean }) {
   return <canvas ref={canvasRef} className="voxel-world" aria-hidden="true" />;
 }
 
+function UnmappedKeepWorld({ progress, fracture = false, complete = false }: { progress: number; fracture?: boolean; complete?: boolean }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [renderingFailed, setRenderingFailed] = useState(false);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || renderingFailed) return;
+
+    const fail = (error: unknown) => {
+      console.warn("The Unmapped Keep could not summon its 3D map; using the illustrated atlas.", error);
+      setRenderingFailed(true);
+    };
+    const onContextLost = (event: Event) => {
+      event.preventDefault();
+      fail(new Error("WebGL context lost"));
+    };
+    canvas.addEventListener("webglcontextlost", onContextLost);
+
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x02080b, 0.048);
+    const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 80);
+    camera.position.set(0, 8.7, 9.2);
+    camera.lookAt(0, 0, 0);
+
+    let renderer: THREE.WebGLRenderer;
+    let composer: EffectComposer;
+    try {
+      renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      composer = new EffectComposer(renderer);
+      composer.addPass(new RenderPass(scene, camera));
+      composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), complete ? 1.35 : 1.05, 0.82, 0.1));
+    } catch (error) {
+      canvas.removeEventListener("webglcontextlost", onContextLost);
+      fail(error);
+      return;
+    }
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.7));
+    renderer.setClearColor(0x000000, 0);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.12;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    const root = new THREE.Group();
+    root.rotation.y = -0.08;
+    scene.add(root);
+    const stone = new THREE.MeshStandardMaterial({ color: 0x172c31, roughness: 0.9, metalness: 0.08 });
+    const stoneEdge = new THREE.MeshStandardMaterial({ color: 0x28464a, roughness: 0.78, metalness: 0.18 });
+    const dormant = new THREE.MeshStandardMaterial({ color: 0x17272c, emissive: 0x06171c, emissiveIntensity: 0.08, roughness: 0.86 });
+    const revealed = new THREE.MeshStandardMaterial({ color: 0x69d5e2, emissive: 0x1d839a, emissiveIntensity: 1.7, roughness: 0.28, metalness: 0.45 });
+    const gold = new THREE.MeshStandardMaterial({ color: 0xffcf68, emissive: 0xf08f24, emissiveIntensity: 3.4, roughness: 0.25, metalness: 0.48 });
+    const falsePath = new THREE.MeshStandardMaterial({ color: 0xe7569a, emissive: 0x981f59, emissiveIntensity: fracture ? 4.2 : 0, transparent: true, opacity: fracture ? 0.92 : 0, roughness: 0.32 });
+
+    const register = <T extends THREE.Mesh>(mesh: T) => {
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      return mesh;
+    };
+    const block = (w: number, h: number, d: number, material: THREE.Material, x: number, y: number, z: number) => {
+      const mesh = register(new THREE.Mesh(new THREE.BoxGeometry(w, h, d), material));
+      mesh.position.set(x, y, z);
+      return mesh;
+    };
+
+    const floor = register(new THREE.Mesh(new THREE.PlaneGeometry(15, 11), new THREE.MeshStandardMaterial({ color: 0x081519, roughness: 1, metalness: 0 })));
+    floor.rotation.x = -Math.PI / 2;
+    floor.position.y = -0.18;
+    root.add(floor);
+
+    const grid = new THREE.GridHelper(14, 28, 0x365b5d, 0x172b2f);
+    grid.position.y = -0.165;
+    (grid.material as THREE.Material).transparent = true;
+    (grid.material as THREE.Material).opacity = 0.34;
+    root.add(grid);
+
+    for (let i = -7; i <= 7; i += 1) {
+      root.add(block(0.42, 0.66 + (Math.abs(i) % 3) * 0.18, 0.62, i % 2 ? stone : stoneEdge, i, 0.12, -5.18));
+      root.add(block(0.42, 0.66 + (Math.abs(i + 1) % 3) * 0.18, 0.62, i % 2 ? stoneEdge : stone, i, 0.12, 5.18));
+    }
+    for (let i = -4; i <= 4; i += 1) {
+      root.add(block(0.62, 0.66 + (Math.abs(i) % 3) * 0.18, 0.42, i % 2 ? stone : stoneEdge, -7.18, 0.12, i * 1.16));
+      root.add(block(0.62, 0.66 + (Math.abs(i + 1) % 3) * 0.18, 0.42, i % 2 ? stoneEdge : stone, 7.18, 0.12, i * 1.16));
+    }
+
+    const points = [
+      new THREE.Vector3(-5.25, 0.04, 2.35),
+      new THREE.Vector3(-3.15, 0.04, 0.55),
+      new THREE.Vector3(-0.65, 0.04, 1.55),
+      new THREE.Vector3(1.2, 0.04, -0.35),
+      new THREE.Vector3(3.2, 0.04, 0.85),
+      new THREE.Vector3(5.1, 0.04, -2.25),
+    ];
+    const pathMaterials: THREE.MeshStandardMaterial[] = [];
+    const nodeMaterials: THREE.MeshStandardMaterial[] = [];
+    const nodeLights: THREE.PointLight[] = [];
+
+    const corridor = (start: THREE.Vector3, end: THREE.Vector3, material: THREE.Material, width = 0.24) => {
+      const midpoint = start.clone().add(end).multiplyScalar(0.5);
+      const distance = start.distanceTo(end);
+      const mesh = block(distance, 0.11, width, material, midpoint.x, 0.05, midpoint.z);
+      mesh.rotation.y = -Math.atan2(end.z - start.z, end.x - start.x);
+      return mesh;
+    };
+
+    points.forEach((point, index) => {
+      const lit = index < progress;
+      const material = lit ? revealed.clone() : dormant.clone();
+      material.emissiveIntensity = lit ? 1.65 : 0.05;
+      nodeMaterials.push(material);
+      const plinth = register(new THREE.Mesh(new THREE.CylinderGeometry(0.56, 0.68, 0.2, 8), stoneEdge));
+      plinth.position.copy(point);
+      plinth.position.y = 0;
+      root.add(plinth);
+      const node = register(new THREE.Mesh(new THREE.TorusGeometry(0.38, 0.09, 8, 24), material));
+      node.rotation.x = Math.PI / 2;
+      node.position.copy(point);
+      node.position.y = 0.18;
+      root.add(node);
+      const rune = register(new THREE.Mesh(new THREE.OctahedronGeometry(0.17, 0), material));
+      rune.position.copy(point);
+      rune.position.y = 0.28;
+      rune.rotation.y = index * 0.7;
+      root.add(rune);
+      const light = new THREE.PointLight(lit ? 0x55d9ec : 0x203a41, lit ? 5 : 0.05, 3.4, 2);
+      light.position.copy(point);
+      light.position.y = 0.75;
+      nodeLights.push(light);
+      root.add(light);
+      if (index > 0) {
+        const pathMaterial = (index <= progress ? revealed : dormant).clone();
+        pathMaterial.emissiveIntensity = index <= progress ? 1.35 : 0.03;
+        pathMaterials.push(pathMaterial);
+        root.add(corridor(points[index - 1], point, pathMaterial));
+      }
+    });
+
+    const branchStart = points[Math.min(progress, 5)];
+    const branchEnd = branchStart.clone().add(new THREE.Vector3(progress % 2 ? 1.35 : -1.25, 0, -1.5));
+    const falseCorridor = corridor(branchStart, branchEnd, falsePath, 0.18);
+    falseCorridor.position.y = 0.1;
+    root.add(falseCorridor);
+    const falseNode = register(new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.07, 7, 20), falsePath));
+    falseNode.rotation.x = Math.PI / 2;
+    falseNode.position.copy(branchEnd);
+    falseNode.position.y = 0.2;
+    root.add(falseNode);
+
+    const lantern = new THREE.Group();
+    const lanternGlow = register(new THREE.Mesh(new THREE.SphereGeometry(0.22, 16, 12), gold));
+    const lanternFrame = register(new THREE.Mesh(new THREE.TorusGeometry(0.34, 0.055, 8, 22), new THREE.MeshStandardMaterial({ color: 0xb87b2f, roughness: 0.32, metalness: 0.86 })));
+    lanternFrame.rotation.x = Math.PI / 2;
+    lantern.add(lanternGlow, lanternFrame);
+    const lanternLight = new THREE.PointLight(0xffb543, 19, 5.6, 1.8);
+    lantern.add(lanternLight);
+    lantern.position.copy(points[Math.min(Math.max(progress - 1, 0), 5)]);
+    lantern.position.y = 0.78;
+    root.add(lantern);
+
+    const particles = new THREE.BufferGeometry();
+    const particlePositions = new Float32Array(260 * 3);
+    for (let i = 0; i < particlePositions.length; i += 3) {
+      particlePositions[i] = (Math.random() - 0.5) * 14;
+      particlePositions[i + 1] = Math.random() * 4.8;
+      particlePositions[i + 2] = (Math.random() - 0.5) * 10;
+    }
+    particles.setAttribute("position", new THREE.BufferAttribute(particlePositions, 3));
+    const motes = new THREE.Points(particles, new THREE.PointsMaterial({ color: 0xffcf73, size: 0.035, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false }));
+    root.add(motes);
+
+    scene.add(new THREE.HemisphereLight(0x76dbe8, 0x020506, 1.4));
+    const moon = new THREE.DirectionalLight(0x82d9ed, 4.5);
+    moon.position.set(-5, 9, 6);
+    moon.castShadow = true;
+    moon.shadow.mapSize.set(1024, 1024);
+    scene.add(moon);
+    const emberLight = new THREE.DirectionalLight(0xf08f24, 2.6);
+    emberLight.position.set(7, 4, -4);
+    scene.add(emberLight);
+
+    const resize = () => {
+      const rect = canvas.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      renderer.setSize(rect.width, rect.height, false);
+      composer.setSize(rect.width, rect.height);
+      camera.aspect = rect.width / rect.height;
+      camera.updateProjectionMatrix();
+    };
+    resize();
+    window.addEventListener("resize", resize);
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let frame = 0;
+    let clock = 0;
+    const animate = () => {
+      clock += 0.012;
+      if (!reduced) {
+        root.rotation.y = -0.08 + Math.sin(clock * 0.35) * 0.018;
+        lantern.position.y = 0.78 + Math.sin(clock * 2.2) * 0.09;
+        lantern.rotation.y += 0.008;
+        gold.emissiveIntensity = 3.1 + Math.sin(clock * 3.4) * 0.8;
+        lanternLight.intensity = 17 + Math.sin(clock * 2.8) * 4;
+        motes.rotation.y += 0.0007;
+        falsePath.emissiveIntensity = fracture ? 3.2 + Math.sin(clock * 8) * 1.4 : 0;
+        falsePath.opacity = fracture ? 0.68 + Math.sin(clock * 7) * 0.22 : 0;
+        nodeMaterials.forEach((material, index) => {
+          if (index < progress) material.emissiveIntensity = 1.45 + Math.sin(clock * 2.6 + index) * 0.35;
+          nodeLights[index].intensity = index < progress ? 4.2 + Math.sin(clock * 2.2 + index) * 1.2 : 0.05;
+        });
+        pathMaterials.forEach((material, index) => {
+          if (index < progress) material.emissiveIntensity = 1.15 + Math.sin(clock * 2.1 + index) * 0.22;
+        });
+        camera.position.x = Math.sin(clock * 0.22) * 0.18;
+        camera.position.z = 9.2 + Math.cos(clock * 0.25) * 0.12;
+        camera.lookAt(0, 0, 0);
+      }
+      try {
+        composer.render();
+      } catch (error) {
+        fail(error);
+        return;
+      }
+      frame = window.requestAnimationFrame(animate);
+    };
+    animate();
+
+    return () => {
+      window.removeEventListener("resize", resize);
+      canvas.removeEventListener("webglcontextlost", onContextLost);
+      window.cancelAnimationFrame(frame);
+      composer.dispose();
+      renderer.dispose();
+      scene.traverse((object) => {
+        if (object instanceof THREE.Mesh) {
+          object.geometry.dispose();
+          (Array.isArray(object.material) ? object.material : [object.material]).forEach((material) => material.dispose());
+        }
+      });
+      particles.dispose();
+    };
+  }, [progress, fracture, complete, renderingFailed]);
+
+  if (renderingFailed) {
+    return <div className="keep-world-fallback" aria-label={`${progress} of 6 rooms mapped`}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="a3/box-2.jpg" alt="" width="3840" height="2160" />
+      <span style={{ "--keep-progress": `${progress / 6}` } as CSSProperties} />
+    </div>;
+  }
+  return <canvas ref={canvasRef} className="unmapped-keep-world" aria-label={`The Unmapped Keep: ${progress} of 6 rooms mapped`} />;
+}
+
 export function QuestExperience() {
   const [stage, setStage] = useState<Stage>("cover");
   const [questionIndex, setQuestionIndex] = useState(0);
@@ -662,13 +1031,20 @@ export function QuestExperience() {
   const [attemptedFragments, setAttemptedFragments] = useState<string[]>([]);
   const [forgeFeedback, setForgeFeedback] = useState<{ kind: "correct" | "wrong"; text: string } | null>(null);
   const [hornRevealed, setHornRevealed] = useState(false);
+  const [keepIndex, setKeepIndex] = useState(0);
+  const [chartedObservations, setChartedObservations] = useState<string[]>([]);
+  const [attemptedSightings, setAttemptedSightings] = useState<string[]>([]);
+  const [keepFeedback, setKeepFeedback] = useState<{ kind: "correct" | "wrong"; text: string } | null>(null);
   const hornAudioRef = useRef<HTMLAudioElement>(null);
   const progress = stage === "complete" ? 5 : questionIndex + (correct ? 1 : 0);
   const question = QUESTIONS[questionIndex];
   const forgeSeal = FORGE_SEALS[forgeIndex];
   const sealForged = forgedSeals.includes(forgeSeal.id);
+  const keepObservation = KEEP_OBSERVATIONS[keepIndex];
+  const observationCharted = chartedObservations.includes(keepObservation.id);
   const inForge = stage === "forge-intro" || stage === "forge-game" || stage === "forge-complete";
-  const activeChamber = inForge ? 0 : stage === "cover" ? null : 3;
+  const inKeep = stage === "keep-intro" || stage === "keep-game" || stage === "keep-complete";
+  const activeChamber = inForge ? 0 : inKeep ? 1 : stage === "cover" ? null : 3;
 
   const resetForge = () => {
     setForgeIndex(0);
@@ -676,6 +1052,13 @@ export function QuestExperience() {
     setAttemptedFragments([]);
     setForgeFeedback(null);
     setHornRevealed(false);
+  };
+
+  const resetKeep = () => {
+    setKeepIndex(0);
+    setChartedObservations([]);
+    setAttemptedSightings([]);
+    setKeepFeedback(null);
   };
 
   const enterBox = (boxNumber: number) => {
@@ -686,6 +1069,13 @@ export function QuestExperience() {
       playTone("start", sound);
       return;
     }
+    if (boxNumber === 2) {
+      resetKeep();
+      setPreviewBox(null);
+      setStage("keep-intro");
+      playTone("start", sound);
+      return;
+    }
     if (boxNumber === 4) {
       setPreviewBox(null);
       setStage("threshold");
@@ -693,6 +1083,32 @@ export function QuestExperience() {
       return;
     }
     setPreviewBox(boxNumber);
+    playTone("step", sound);
+  };
+  const attemptKeep = (fragmentId: string) => {
+    if (attemptedSightings.includes(fragmentId)) return;
+    const fragment = keepObservation.fragments.find(({ id }) => id === fragmentId);
+    if (!fragment) return;
+    if (fragmentId === keepObservation.correctId) {
+      if (!observationCharted) setChartedObservations((values) => [...values, keepObservation.id]);
+      setKeepFeedback({ kind: "correct", text: keepObservation.lesson });
+      playTone("rune", sound);
+      return;
+    }
+    setAttemptedSightings((values) => [...values, fragmentId]);
+    setKeepFeedback({ kind: "wrong", text: fragment.rejection });
+    playTone("wrong", sound);
+  };
+  const advanceKeep = () => {
+    if (!observationCharted) return;
+    if (keepIndex === KEEP_OBSERVATIONS.length - 1) {
+      setStage("keep-complete");
+      playTone("open", sound);
+      return;
+    }
+    setKeepIndex((value) => value + 1);
+    setAttemptedSightings([]);
+    setKeepFeedback(null);
     playTone("step", sound);
   };
   const attemptForge = (fragmentId: string) => {
@@ -756,37 +1172,130 @@ export function QuestExperience() {
         <div className="map-heading"><span>THE NINE CHAMBERS</span><button onClick={() => setMenuOpen(false)} aria-label="Close quest map">×</button></div>
         <ol>{CHAMBERS.map((chamber, index) => {
           const active = index === activeChamber;
-          const ready = index === 0 || index === 3;
+          const ready = index === 0 || index === 1 || index === 3;
           return <li className={active ? "active" : ready ? "ready" : "locked"} key={chamber}><span>{String(index + 1).padStart(2, "0")}</span><b>{chamber}</b><i>{active ? "ACTIVE" : ready ? "READY" : "LOCKED"}</i></li>;
         })}</ol>
-        <p>{inForge ? "Box I — Reason for Action — The Herald's Forge." : "Boxes I and IV are ready. The other A3 chambers are still being forged."}</p>
+        <p>{inForge ? "Box I — Reason for Action — The Herald's Forge." : inKeep ? "Box II — Current State — The Unmapped Keep." : "Boxes I, II, and IV are ready. The other A3 chambers are still being forged."}</p>
       </aside>
 
       {stage === "cover" && <section className="a3-home">
         <div className="a3-home-heading">
           <div><div className="eyebrow"><span>09</span> A DSA LEARNING QUEST</div><h1>The DSA Way: <em>The Hero&apos;s Journey</em></h1></div>
-          <p>Nine chambers shape the A3. Choose a box to reveal its path; Boxes 1 and 4 are ready to play.</p>
+          <p>Nine chambers shape the A3. Choose a box to reveal its path; Boxes 1, 2, and 4 are ready to play.</p>
         </div>
         <div className="a3-grid-viewport">
           <div className="a3-grid" aria-label="The nine boxes of the A3">
             {A3_BOXES.map((box) => <button
-              className={`a3-tile a3-box-${box.number} ${box.number === 1 || box.number === 4 ? "is-playable" : ""} ${previewBox === box.number ? "is-previewed" : ""}`}
+              className={`a3-tile a3-box-${box.number} ${box.number === 1 || box.number === 2 || box.number === 4 ? "is-playable" : ""} ${previewBox === box.number ? "is-previewed" : ""}`}
               type="button"
               key={box.number}
               onClick={() => enterBox(box.number)}
-              aria-label={box.number === 1 ? "Box 1: Reason for Action. Enter The Herald's Forge" : box.number === 4 ? "Box 4: Gap Analysis. Enter The Door of Whys" : `Box ${box.number}: ${box.label}. Activity coming soon`}
+              aria-label={box.number === 1 ? "Box 1: Reason for Action. Enter The Herald's Forge" : box.number === 2 ? "Box 2: Current State. Enter The Unmapped Keep" : box.number === 4 ? "Box 4: Gap Analysis. Enter The Door of Whys" : `Box ${box.number}: ${box.label}. Activity coming soon`}
             >
               {/* Public-path artwork stays compatible with both the app runtime and GitHub Pages. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={`a3/box-${box.number}.jpg`} alt="" width="3840" height="2160" loading={box.number <= 4 ? "eager" : "lazy"} decoding="async" />
-              <span className="a3-tile-overlay"><small>BOX {String(box.number).padStart(2, "0")}</small><b>{box.label}</b><em>{box.number === 1 ? "ENTER THE HERALD'S FORGE" : box.number === 4 ? "ENTER THE DOOR OF WHYS" : "ACTIVITY COMING SOON"}</em></span>
-              {(box.number === 1 || box.number === 4) && <span className="a3-playable-badge">PLAYABLE</span>}
+              <span className="a3-tile-overlay"><small>BOX {String(box.number).padStart(2, "0")}</small><b>{box.label}</b><em>{box.number === 1 ? "ENTER THE HERALD'S FORGE" : box.number === 2 ? "ENTER THE UNMAPPED KEEP" : box.number === 4 ? "ENTER THE DOOR OF WHYS" : "ACTIVITY COMING SOON"}</em></span>
+              {(box.number === 1 || box.number === 2 || box.number === 4) && <span className="a3-playable-badge">PLAYABLE</span>}
             </button>)}
           </div>
         </div>
         <p className="a3-home-status" aria-live="polite">{previewBox
-          ? `The ${A3_BOXES[previewBox - 1].label} activity has not been forged yet. Boxes 1 and 4 are ready to play.`
+          ? `The ${A3_BOXES[previewBox - 1].label} activity has not been forged yet. Boxes 1, 2, and 4 are ready to play.`
           : null}</p>
+      </section>}
+
+      {stage === "keep-intro" && <section className="keep-intro-screen">
+        <div className="keep-intro-copy">
+          <div className="quest-kicker">THE NINE CHAMBERS · BOX II</div>
+          <div className="chamber-tag">The official map is immaculate—and wrong</div>
+          <h1>The Unmapped<br /><em>Keep</em></h1>
+          <div className="keep-prologue">
+            <p>From the throne room, the referral road appears flawless: received, reviewed, scheduled. No queues. No loops. No traveler lost.</p>
+            <p>But the Herald&apos;s numbers tell of a different kingdom.</p>
+            <blockquote>&quot;This Keep draws only what you witness. Assumptions build false corridors. Solutions open doors to rooms you have not yet earned.&quot;</blockquote>
+            <p>Take the darkened Lantern of Gemba. Follow one referral through the actual work. See it. Time it. Count it. Hear it. Then draw what is true.</p>
+          </div>
+          <div className="keep-observation-preview" aria-label="The six observations of Box 2">{KEEP_OBSERVATIONS.map((observation, index) => <span key={observation.id}><i>{observation.glyph}</i><b>{String(index + 1).padStart(2, "0")}</b><em>{observation.name}</em></span>)}</div>
+          <button className="primary-button" type="button" onClick={() => { setStage("keep-game"); playTone("step", sound); }}><span>Leave the throne room</span><b>→</b></button>
+        </div>
+        <div className="keep-intro-world">
+          <UnmappedKeepWorld progress={0} />
+          <div className="keep-atlas-label"><span>OFFICIAL ATLAS</span><b>THE PROCESS AS IMAGINED</b><small>Beautiful · orderly · unobserved</small></div>
+          <div className="keep-lantern-seal" aria-hidden="true"><i /><b>ᛟ</b><span /></div>
+        </div>
+      </section>}
+
+      {stage === "keep-game" && <section className="keep-game-screen">
+        <div className="keep-observation-panel">
+          <div className="keep-heading-row">
+            <div><div className="quest-kicker">THE UNMAPPED KEEP</div><div className="chamber-tag">Observation {keepIndex + 1} of {KEEP_OBSERVATIONS.length} · {keepObservation.place}</div></div>
+            <div className="keep-progress" role="img" aria-label={`${chartedObservations.length} of 6 observations mapped`}>{KEEP_OBSERVATIONS.map((observation, index) => <span key={observation.id} className={`${chartedObservations.includes(observation.id) ? "lit" : ""} ${index === keepIndex ? "current" : ""}`}>{observation.glyph}</span>)}</div>
+          </div>
+          <h1><span>{keepObservation.glyph}</span>{keepObservation.name}</h1>
+          <p className="keep-prompt">{keepObservation.prompt}</p>
+          <blockquote className="keep-coaching">Sensei asks: &quot;{keepObservation.coaching}&quot;</blockquote>
+          <div className="keep-instruction"><span>CHOOSE</span> only what was seen, timed, counted, or heard.</div>
+          <div className="keep-choice-list" aria-label={`${keepObservation.name} observations`}>
+            {keepObservation.fragments.map((fragment, index) => {
+              const attempted = attemptedSightings.includes(fragment.id);
+              const isCorrect = observationCharted && fragment.id === keepObservation.correctId;
+              return <button
+                type="button"
+                key={fragment.id}
+                disabled={attempted || isCorrect}
+                className={`${attempted ? "is-false" : ""} ${isCorrect ? "is-charted" : ""}`}
+                onClick={() => attemptKeep(fragment.id)}
+              ><span>{String(index + 1).padStart(2, "0")}</span><b>{fragment.text}</b><i aria-hidden="true">⌁</i></button>;
+            })}
+          </div>
+          <div className="keep-feedback-slot" aria-live="polite">
+            {keepFeedback && <div className={`keep-feedback ${keepFeedback.kind}`}>
+              <span>{keepFeedback.kind === "correct" ? "THE KEEP REMEMBERS" : "A FALSE CORRIDOR FORMS"}</span>
+              <p>{keepFeedback.text}</p>
+              {observationCharted && <><small>{keepFeedback.kind === "correct" ? "Inspect another corridor, or continue when you are ready." : "The true chamber remains illuminated."}</small><button type="button" onClick={advanceKeep}>{keepIndex === KEEP_OBSERVATIONS.length - 1 ? "Reveal the current-state map" : "Walk to the next chamber"}<b>→</b></button></>}
+            </div>}
+          </div>
+        </div>
+        <div className={`keep-map-panel ${keepFeedback?.kind === "wrong" ? "is-fractured" : ""}`}>
+          <div className="keep-world-stage">
+            <UnmappedKeepWorld progress={chartedObservations.length} fracture={keepFeedback?.kind === "wrong"} />
+            <div className="keep-map-hud"><span>GEMBA ATLAS · LIVE</span><b>{String(chartedObservations.length).padStart(2, "0")} / 06 CHAMBERS DRAWN</b></div>
+            <div className="keep-lantern-meter" aria-hidden="true"><i style={{ height: `${Math.max(8, chartedObservations.length * (100 / 6))}%` }} /><span>ᛟ</span></div>
+          </div>
+          <div className="keep-map-ledger">
+            <span>THE MAP DRAWS ITSELF</span>
+            <ol>{KEEP_OBSERVATIONS.map((observation, index) => <li key={observation.id} className={`${chartedObservations.includes(observation.id) ? "is-drawn" : ""} ${index === keepIndex ? "is-current" : ""}`}><i>{observation.glyph}</i><b>{observation.name}</b><p>{chartedObservations.includes(observation.id) ? observation.mapFact : "Unobserved chamber"}</p></li>)}</ol>
+          </div>
+        </div>
+      </section>}
+
+      {stage === "keep-complete" && <section className="keep-complete-screen">
+        <div className="keep-complete-map">
+          <UnmappedKeepWorld progress={6} complete />
+          <div className="keep-map-hud"><span>THE ACTUAL PATH</span><b>ALL CHAMBERS OBSERVED</b></div>
+          <div className="keep-complete-sigils" aria-label="All six observations mapped">{KEEP_OBSERVATIONS.map((observation) => <span key={observation.id}>{observation.glyph}</span>)}</div>
+        </div>
+        <div className="keep-complete-story">
+          <div className="quest-kicker">CURRENT CONDITION · REVEALED</div>
+          <h1>Reality<br /><em>mapped.</em></h1>
+          <p className="keep-completion-lead">The throne-room atlas showed a straight road. Your walk revealed six steps, three handoffs, two queues, one rework loop—and the traveler&apos;s own voice.</p>
+          <div className="keep-truth-table">
+            <span>THE OBSERVED JOURNEY</span>
+            <ol>{KEEP_OBSERVATIONS.map((observation) => <li key={observation.id}><i>{observation.glyph}</i><div><b>{observation.name}</b><p>{observation.mapFact}</p></div></li>)}</ol>
+          </div>
+          <blockquote>&quot;Reports describe the kingdom. Gemba reveals it.&quot;</blockquote>
+          <div className="keep-weapon-card">
+            <div className="pixel-lantern" aria-hidden="true"><i /><b /><em /><span /></div>
+            <span>LEGENDARY TOOL ACQUIRED</span>
+            <h2><small>THE</small> LANTERN OF GEMBA</h2>
+            <p>Its light cannot reveal what should happen, why it happens, or how to fix it. It illuminates only what is actually there.</p>
+          </div>
+          <div className="keep-complete-actions">
+            <button className="primary-button" type="button" onClick={() => { resetKeep(); setStage("keep-intro"); playTone("start", sound); }}><span>Walk the Keep again</span><b>↻</b></button>
+            <button className="map-return-button" type="button" onClick={() => setStage("cover")}>Return to the nine chambers</button>
+          </div>
+        </div>
       </section>}
 
       {stage === "forge-intro" && <section className="forge-intro-screen">
