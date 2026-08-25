@@ -34,4 +34,6 @@ test("GitHub Pages includes a visible startup shell and deployable assets", asyn
 
   const hornImage = await stat(new URL("../dist-pages/heralds-horn.png", import.meta.url));
   assert.ok(hornImage.size > 1_000_000, "the supplied ornate horn artwork should ship intact");
+  const hornAudio = await stat(new URL("../dist-pages/gjallarhorn-reveal.mp3", import.meta.url));
+  assert.ok(hornAudio.size > 100_000, "the faded Gjallarhorn reveal clip should ship intact");
 });

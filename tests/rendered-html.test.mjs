@@ -32,13 +32,14 @@ test("server-renders the DSA Way quest", async () => {
 });
 
 test("includes the Herald's Forge and preserves the full Door of Whys experience", async () => {
-  const [source, css, packageJson, layout, ogImage, hornImage] = await Promise.all([
+  const [source, css, packageJson, layout, ogImage, hornImage, hornAudio] = await Promise.all([
     readFile(new URL("../app/QuestExperience.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
     readFile(new URL("../package.json", import.meta.url), "utf8"),
     readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
     stat(new URL("../public/og.png", import.meta.url)),
     stat(new URL("../public/heralds-horn.png", import.meta.url)),
+    stat(new URL("../public/gjallarhorn-reveal.mp3", import.meta.url)),
   ]);
   assert.match(source, /The medication cart leaves pharmacy late every morning\./);
   assert.match(source, /Who changed the paper — and did anyone check with pharmacy\?/);
@@ -73,6 +74,10 @@ test("includes the Herald's Forge and preserves the full Door of Whys experience
   assert.match(source, /THE STRANGER TEST/);
   assert.match(source, /HERALD(?:&apos;|')S HORN/);
   assert.match(source, /heralds-horn\.png/);
+  assert.match(source, /gjallarhorn-reveal\.mp3/);
+  assert.match(source, /hornRevealed/);
+  assert.match(source, /revealHorn/);
+  assert.match(source, /Awaken the secret legendary tool/);
   assert.match(source, /Gjallarhorn/);
   assert.match(source, /God of War Ragnarök/);
   assert.match(source, /draggable=/);
@@ -112,6 +117,10 @@ test("includes the Herald's Forge and preserves the full Door of Whys experience
   assert.match(css, /\.bell-radiance/);
   assert.match(css, /\.realm-light/);
   assert.match(css, /\.ornate-vault/);
+  assert.match(css, /\.horn-reveal-button/);
+  assert.match(css, /\.herald-horn-scene\.is-sealed/);
+  assert.match(css, /@keyframes hornMaterialize/);
+  assert.match(css, /@keyframes sealedOrbit/);
   assert.match(css, /@keyframes radianceWave/);
   assert.match(css, /@keyframes realmFlicker/);
   assert.doesNotMatch(source, /hero-footer/);
@@ -120,6 +129,7 @@ test("includes the Herald's Forge and preserves the full Door of Whys experience
   assert.match(layout, /twitter:/);
   assert.ok(ogImage.size > 100_000);
   assert.ok(hornImage.size > 1_000_000);
+  assert.ok(hornAudio.size > 100_000);
   for (const color of ["#0069a7", "#30b5e6", "#8cc23d", "#f08f24", "#e7562f", "#981f59"]) {
     assert.match(css.toLowerCase(), new RegExp(color));
   }

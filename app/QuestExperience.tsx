@@ -661,6 +661,8 @@ export function QuestExperience() {
   const [forgedSeals, setForgedSeals] = useState<string[]>([]);
   const [attemptedFragments, setAttemptedFragments] = useState<string[]>([]);
   const [forgeFeedback, setForgeFeedback] = useState<{ kind: "correct" | "wrong"; text: string } | null>(null);
+  const [hornRevealed, setHornRevealed] = useState(false);
+  const hornAudioRef = useRef<HTMLAudioElement>(null);
   const progress = stage === "complete" ? 5 : questionIndex + (correct ? 1 : 0);
   const question = QUESTIONS[questionIndex];
   const forgeSeal = FORGE_SEALS[forgeIndex];
@@ -673,6 +675,7 @@ export function QuestExperience() {
     setForgedSeals([]);
     setAttemptedFragments([]);
     setForgeFeedback(null);
+    setHornRevealed(false);
   };
 
   const enterBox = (boxNumber: number) => {
@@ -709,14 +712,24 @@ export function QuestExperience() {
   const advanceForge = () => {
     if (!sealForged) return;
     if (forgeIndex === FORGE_SEALS.length - 1) {
+      setHornRevealed(false);
       setStage("forge-complete");
-      playTone("open", sound);
       return;
     }
     setForgeIndex((value) => value + 1);
     setAttemptedFragments([]);
     setForgeFeedback(null);
     playTone("step", sound);
+  };
+  const revealHorn = () => {
+    if (hornRevealed) return;
+    setHornRevealed(true);
+    if (!sound || !hornAudioRef.current) return;
+    hornAudioRef.current.currentTime = 0;
+    hornAudioRef.current.volume = 1;
+    void hornAudioRef.current.play().catch((error: unknown) => {
+      console.warn("The legendary-tool audio could not play in this browser.", error);
+    });
   };
   const choose = (index: number) => {
     if (index === question.correct) { setWrongChoice(null); setCorrect(true); playTone("rune", sound); }
@@ -866,24 +879,32 @@ export function QuestExperience() {
             </dl>
           </div>
           <blockquote>&quot;A problem a stranger can repeat is ready to rally action.&quot;</blockquote>
-        </div>
-        <div className="forge-reward-column">
-          <div className="herald-horn-scene">
-            <div className="ornate-vault" aria-hidden="true"><i /><i /><i /><i /></div>
-            <div className="bell-radiance" aria-hidden="true"><i /><i /><i /></div>
-            <div className="realm-light" aria-hidden="true"><i /><i /><i /></div>
-            <div className="golden-motes" aria-hidden="true">{Array.from({ length: 18 }, (_, index) => <i key={index} />)}</div>
-            {/* The supplied transparent asset is preserved verbatim and staged with CSS lighting. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="gjallarhorn-art" src="heralds-horn.png" alt="An ornate gold-and-black legendary horn" width="1200" height="1361" />
-            <div className="victory-seals" aria-label="All six Box 1 seals forged">{FORGE_SEALS.map((seal) => <span key={seal.id}>{seal.glyph}</span>)}</div>
           </div>
-          <div className="forge-weapon-card">
+        <div className="forge-reward-column">
+          <div className={`herald-horn-scene ${hornRevealed ? "is-revealed" : "is-sealed"}`}>
+            {/* This six-second effect contains no speech or dialogue to caption. */}
+            {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+            <audio ref={hornAudioRef} src="gjallarhorn-reveal.mp3" preload="auto" />
+            {!hornRevealed && <button className="horn-reveal-button" type="button" onClick={revealHorn} aria-label="Awaken the secret legendary tool">
+              <span aria-hidden="true">ᚷ</span><b>SEALED RELIC</b><small>AWAKEN</small>
+            </button>}
+            {hornRevealed && <>
+              <div className="ornate-vault" aria-hidden="true"><i /><i /><i /><i /></div>
+              <div className="bell-radiance" aria-hidden="true"><i /><i /><i /></div>
+              <div className="realm-light" aria-hidden="true"><i /><i /><i /></div>
+              <div className="golden-motes" aria-hidden="true">{Array.from({ length: 18 }, (_, index) => <i key={index} />)}</div>
+              {/* The supplied transparent asset is preserved verbatim and staged with CSS lighting. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img className="gjallarhorn-art" src="heralds-horn.png" alt="An ornate gold-and-black legendary horn" width="1200" height="1361" />
+              <div className="victory-seals" aria-label="All six Box 1 seals forged">{FORGE_SEALS.map((seal) => <span key={seal.id}>{seal.glyph}</span>)}</div>
+            </>}
+          </div>
+          {hornRevealed ? <div className="forge-weapon-card">
             <span>LEGENDARY TOOL ACQUIRED</span>
             <h2><small>THE</small> HERALD&apos;S HORN</h2>
             <p>A case for action that is bounded, measurable, urgent, achievable—and human.</p>
             <p className="gjallarhorn-reference"><span>MYTHIC ECHO</span> A visual homage to <cite>Gjallarhorn</cite> from <cite>God of War Ragnarök</cite>.</p>
-          </div>
+          </div> : <div className="sealed-reward-card"><span>LEGENDARY TOOL SEALED</span><b>???</b><p>The six seals have opened one final mystery.</p></div>}
           <div className="forged-charter">
             <span>THE SIX-SEALED CHARTER</span>
             <ol>{FORGE_SEALS.map((seal) => <li key={seal.id}><b>{seal.name}</b><p>{seal.fragments.find(({ id }) => id === seal.correctId)?.text}</p></li>)}</ol>
