@@ -103,6 +103,8 @@ test("includes the Herald's Forge and preserves the full Door of Whys experience
   assert.match(css, /\.forge-seal-preview > span \{[^}]*clamp\(\.86rem,\.95vw,\.96rem\)/);
   assert.match(css, /\.forge-seal-preview i \{[^}]*font-size:\s*1\.6rem/);
   assert.match(css, /\.forge-seal-preview \.seal-name \{[^}]*min-height:2\.5em/);
+  assert.match(css, /\.forge-seal-preview \.seal-name \{[^}]*overflow-wrap:normal;word-break:normal;hyphens:none/);
+  assert.doesNotMatch(css, /\.forge-seal-preview \.seal-name \{[^}]*overflow-wrap:anywhere/);
   assert.match(css, /\.forge-game-screen/);
   assert.match(css, /\.forge-complete-screen/);
   assert.match(css, /@keyframes emberRise/);
