@@ -870,7 +870,9 @@ function UnmappedKeepWorld({ progress, focus, fracture = false, complete = false
       event.preventDefault();
       fail(new Error("WebGL context lost"));
     };
+    const onContextCreationError = () => fail(new Error("WebGL context creation failed"));
     canvas.addEventListener("webglcontextlost", onContextLost);
+    canvas.addEventListener("webglcontextcreationerror", onContextCreationError);
 
     const scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2(0x02080b, 0.048);
@@ -879,16 +881,22 @@ function UnmappedKeepWorld({ progress, focus, fracture = false, complete = false
     camera.lookAt(0, 0, 0);
 
     let renderer: THREE.WebGLRenderer;
-    let composer: EffectComposer;
+    let composer: EffectComposer | null = null;
     try {
       renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    } catch (error) {
+      canvas.removeEventListener("webglcontextlost", onContextLost);
+      canvas.removeEventListener("webglcontextcreationerror", onContextCreationError);
+      fail(error);
+      return;
+    }
+    try {
       composer = new EffectComposer(renderer);
       composer.addPass(new RenderPass(scene, camera));
       composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), complete ? 1.12 : 0.94, 0.76, 0.13));
     } catch (error) {
-      canvas.removeEventListener("webglcontextlost", onContextLost);
-      fail(error);
-      return;
+      console.warn("Bloom is unavailable; continuing with the direct Three.js renderer.", error);
+      composer = null;
     }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.7));
     renderer.setClearColor(0x000000, 0);
@@ -896,7 +904,7 @@ function UnmappedKeepWorld({ progress, focus, fracture = false, complete = false
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.12;
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.shadowMap.type = THREE.PCFShadowMap;
 
     const root = new THREE.Group();
     root.rotation.y = -0.08;
@@ -906,7 +914,11 @@ function UnmappedKeepWorld({ progress, focus, fracture = false, complete = false
     const dormant = new THREE.MeshStandardMaterial({ color: 0x17272c, emissive: 0x06171c, emissiveIntensity: 0.08, roughness: 0.86 });
     const revealed = new THREE.MeshStandardMaterial({ color: 0x69d5e2, emissive: 0x1d839a, emissiveIntensity: 1.7, roughness: 0.28, metalness: 0.45 });
     const gold = new THREE.MeshStandardMaterial({ color: 0xffcf68, emissive: 0xf08f24, emissiveIntensity: 3.4, roughness: 0.25, metalness: 0.48 });
+    const timber = new THREE.MeshStandardMaterial({ color: 0x5f3c27, roughness: 0.82, metalness: 0.04 });
+    const paper = new THREE.MeshStandardMaterial({ color: 0xe7d9ac, roughness: 0.92, metalness: 0 });
+    const warning = new THREE.MeshStandardMaterial({ color: 0xe75657, emissive: 0x9f213e, emissiveIntensity: 1.8, roughness: 0.42 });
     const falsePath = new THREE.MeshStandardMaterial({ color: 0xe7569a, emissive: 0x981f59, emissiveIntensity: fracture ? 4.2 : 0, transparent: true, opacity: fracture ? 0.92 : 0, roughness: 0.32 });
+    const labelTextures: THREE.CanvasTexture[] = [];
 
     const register = <T extends THREE.Mesh>(mesh: T) => {
       mesh.castShadow = true;
@@ -917,6 +929,33 @@ function UnmappedKeepWorld({ progress, focus, fracture = false, complete = false
       const mesh = register(new THREE.Mesh(new THREE.BoxGeometry(w, h, d), material));
       mesh.position.set(x, y, z);
       return mesh;
+    };
+    const makeWorldLabel = (title: string, detail: string, x: number, y: number, z: number, accent = "#75e2e6") => {
+      const labelCanvas = document.createElement("canvas");
+      labelCanvas.width = 640;
+      labelCanvas.height = 170;
+      const context = labelCanvas.getContext("2d");
+      if (context) {
+        context.fillStyle = "rgba(2,10,14,.91)";
+        context.fillRect(4, 4, 632, 162);
+        context.strokeStyle = accent;
+        context.lineWidth = 6;
+        context.strokeRect(4, 4, 632, 162);
+        context.fillStyle = accent;
+        context.font = "800 38px monospace";
+        context.fillText(title, 28, 68);
+        context.fillStyle = "#d9eef0";
+        context.font = "700 23px monospace";
+        context.fillText(detail, 28, 119);
+      }
+      const texture = new THREE.CanvasTexture(labelCanvas);
+      texture.colorSpace = THREE.SRGBColorSpace;
+      labelTextures.push(texture);
+      const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: true, depthWrite: false }));
+      sprite.position.set(x, y, z);
+      sprite.scale.set(2.25, .6, 1);
+      root.add(sprite);
+      return sprite;
     };
     const pawnMaterial = (color: number) => new THREE.MeshStandardMaterial({ color, roughness: 0.68, metalness: 0.08 });
     const skin = pawnMaterial(0xb9714b);
@@ -966,6 +1005,65 @@ function UnmappedKeepWorld({ progress, focus, fracture = false, complete = false
       new THREE.Vector3(3.2, 0.04, 0.85),
       new THREE.Vector3(5.1, 0.04, -2.25),
     ];
+
+    const processZones = [
+      ["RECEIVING GATE", "08:07 · REFERRAL ARRIVES"],
+      ["SHARED QUEUE", "OWNER: —  ·  STATUS: WAITING"],
+      ["COORDINATOR", "HANDOFF 01"],
+      ["MA REVIEW", "HANDOFF 02"],
+      ["PHYSICIAN REVIEW", "MISSING OUTSIDE RECORDS"],
+      ["SCHEDULING", "HANDOFF 03"],
+    ] as const;
+    processZones.forEach(([title, detail], index) => {
+      const point = points[index];
+      makeWorldLabel(title, detail, point.x, 1.63, point.z - .62, index === 1 || index === 4 ? "#ffc45e" : "#75e2e6");
+    });
+
+    const receivingGate = new THREE.Group();
+    receivingGate.add(
+      block(.42, 2.2, .52, stoneEdge, -.78, .92, 0),
+      block(.42, 2.2, .52, stoneEdge, .78, .92, 0),
+      block(2, .38, .58, stone, 0, 1.88, 0),
+    );
+    receivingGate.position.set(points[0].x, 0, points[0].z + .72);
+    receivingGate.rotation.y = -.38;
+    root.add(receivingGate);
+
+    [2, 3, 4, 5].forEach((pointIndex, deskIndex) => {
+      const point = points[pointIndex];
+      const workstation = new THREE.Group();
+      const deskTop = block(1.25, .13, .64, timber, 0, .58, 0);
+      const deskLegLeft = block(.12, .58, .56, timber, -.48, .26, 0);
+      const deskLegRight = block(.12, .58, .56, timber, .48, .26, 0);
+      const monitor = block(.5, .36, .08, stoneEdge, .08, .86, -.12);
+      const screen = block(.4, .25, .025, deskIndex === 2 ? warning : revealed, .08, .86, -.17);
+      workstation.add(deskTop, deskLegLeft, deskLegRight, monitor, screen);
+      workstation.position.set(point.x, 0, point.z + .65);
+      workstation.rotation.y = deskIndex % 2 ? -.18 : .18;
+      root.add(workstation);
+    });
+
+    const queueRack = new THREE.Group();
+    queueRack.position.set(points[1].x, 0, points[1].z + .55);
+    queueRack.add(block(2.15, .12, .92, timber, 0, .18, 0));
+    queueRack.add(block(.12, .82, .92, timber, -1.03, .53, 0));
+    queueRack.add(block(.12, .82, .92, timber, 1.03, .53, 0));
+    const queueFiles: THREE.Mesh[] = [];
+    [-.78, -.42, -.06, .3, .66].forEach((offset, index) => {
+      const file = block(.27, .08 + index * .035, .62, index === 4 ? warning : paper, offset, .31 + index * .018, 0);
+      file.rotation.z = (index - 2) * .035;
+      file.userData.baseY = file.position.y;
+      queueFiles.push(file);
+      queueRack.add(file);
+    });
+    root.add(queueRack);
+    makeWorldLabel("OWNERLESS WORK", "5 FILES · NO NAMED OWNER", points[1].x, 1.05, points[1].z + 1.25, "#e75657");
+
+    const patientBench = new THREE.Group();
+    patientBench.position.set(3.9, 0, -3.46);
+    patientBench.add(block(1.42, .16, .56, timber, 0, .39, 0), block(.13, .78, .5, timber, -.58, .08, 0), block(.13, .78, .5, timber, .58, .08, 0));
+    root.add(patientBench);
+    makeWorldLabel("PATIENT WAITING", "2 CALLS · RECEIPT UNKNOWN", 3.9, 1.3, -3.85, "#f276ad");
     const pathMaterials: THREE.MeshStandardMaterial[] = [];
     const pathMeshes: THREE.Mesh[] = [];
     const nodeMaterials: THREE.MeshStandardMaterial[] = [];
@@ -1031,22 +1129,16 @@ function UnmappedKeepWorld({ progress, focus, fracture = false, complete = false
     const focusIndex = focus ?? Math.max(progress - 1, 0);
     const showObservedWork = focus !== undefined || complete;
     const staffPawns = [
-      makePawn(0x1786a0, points[0].x - 0.74, points[0].z + 0.3, 0.82),
-      makePawn(0x8d3d73, points[2].x - 0.15, points[2].z - 0.72, 0.82),
-      makePawn(0x1f7791, points[3].x + 0.15, points[3].z + 0.76, 0.82),
-      makePawn(0x9a5b2b, points[5].x - 0.66, points[5].z + 0.16, 0.82),
+      makePawn(0x1786a0, points[2].x - 0.08, points[2].z + 1.18, 0.82),
+      makePawn(0x8d3d73, points[3].x + 0.08, points[3].z + 1.2, 0.82),
+      makePawn(0x1f7791, points[4].x + 0.08, points[4].z + 1.2, 0.82),
+      makePawn(0x9a5b2b, points[5].x - 0.08, points[5].z + 1.18, 0.82),
     ];
     staffPawns.forEach((pawn, index) => {
-      pawn.visible = showObservedWork && (complete || focusIndex >= Math.max(0, index - 1));
+      pawn.visible = showObservedWork && (complete || focusIndex >= Math.max(0, index));
     });
-    const patientPawn = makePawn(0x7d285c, points[4].x + 0.72, points[4].z - 0.22, 0.88);
-    patientPawn.visible = showObservedWork && (complete || focusIndex === 4 || focusIndex === 5);
-
-    const queuePawns = [-0.64, 0, 0.64].map((offset, index) => {
-      const queuePawn = makePawn(index === 1 ? 0xf08f24 : 0x537b83, points[1].x + offset, points[1].z + 0.68, 0.56);
-      queuePawn.visible = showObservedWork && (complete || focusIndex === 1 || focusIndex === 5);
-      return queuePawn;
-    });
+    const patientPawn = makePawn(0x7d285c, 3.9, -3.23, 0.88);
+    patientPawn.visible = showObservedWork;
 
     const referralMaterial = new THREE.MeshStandardMaterial({ color: 0xffc45e, emissive: 0xf08f24, emissiveIntensity: 2.1, roughness: 0.3, metalness: 0.32 });
     const referralToken = new THREE.Group();
@@ -1076,13 +1168,13 @@ function UnmappedKeepWorld({ progress, focus, fracture = false, complete = false
     const handoffOrb = register(new THREE.Mesh(new THREE.OctahedronGeometry(0.2, 0), gold));
     handoffOrb.visible = showObservedWork && (complete || focusIndex === 2 || focusIndex === 5);
     root.add(handoffOrb);
-    const handoffCurve = new THREE.CatmullRomCurve3([points[1], points[2], points[3], points[5]].map((point) => point.clone().setY(0.72)));
+    const handoffCurve = new THREE.CatmullRomCurve3([points[2], points[3], points[4], points[5]].map((point) => point.clone().setY(0.72)));
     const journeyCurve = new THREE.CatmullRomCurve3(points.map((point) => point.clone().setY(0.68)));
 
     const reworkCurve = new THREE.CatmullRomCurve3([
-      points[3].clone().setY(0.17),
-      points[3].clone().add(new THREE.Vector3(-0.2, 0.38, -1.35)),
-      points[2].clone().add(new THREE.Vector3(0.65, 0.2, -1.08)),
+      points[4].clone().setY(0.17),
+      points[4].clone().add(new THREE.Vector3(-0.25, 0.38, -1.55)),
+      points[2].clone().add(new THREE.Vector3(0.65, 0.2, -1.15)),
       points[2].clone().setY(0.17),
     ]);
     const reworkMaterial = new THREE.MeshStandardMaterial({ color: 0xe75657, emissive: 0xb12245, emissiveIntensity: 2.5, transparent: true, opacity: complete || focusIndex === 3 || focusIndex === 5 ? 0.92 : 0.06, roughness: 0.3 });
@@ -1094,7 +1186,7 @@ function UnmappedKeepWorld({ progress, focus, fracture = false, complete = false
     root.add(reworkToken);
 
     const listeningHorn = new THREE.Group();
-    listeningHorn.position.set(points[4].x + 0.82, 0.77, points[4].z + 0.48);
+    listeningHorn.position.set(4.56, 0.77, -3.22);
     listeningHorn.rotation.set(-0.08, -0.72, -0.28);
     const hornBody = register(new THREE.Mesh(new THREE.ConeGeometry(0.34, 0.85, 18, 1, true), new THREE.MeshStandardMaterial({ color: 0xc0802f, roughness: 0.28, metalness: 0.86, side: THREE.DoubleSide })));
     hornBody.rotation.z = Math.PI / 2;
@@ -1212,7 +1304,7 @@ function UnmappedKeepWorld({ progress, focus, fracture = false, complete = false
       const rect = canvas.getBoundingClientRect();
       if (!rect.width || !rect.height) return;
       renderer.setSize(rect.width, rect.height, false);
-      composer.setSize(rect.width, rect.height);
+      composer?.setSize(rect.width, rect.height);
       camera.aspect = rect.width / rect.height;
       camera.updateProjectionMatrix();
     };
@@ -1238,14 +1330,18 @@ function UnmappedKeepWorld({ progress, focus, fracture = false, complete = false
         pathMeshes.forEach((mesh) => {
           if (mesh.userData.materializing) mesh.scale.x += (1 - mesh.scale.x) * 0.055;
         });
-        [...staffPawns, ...queuePawns, patientPawn].forEach((pawn, index) => {
+        [...staffPawns, patientPawn].forEach((pawn, index) => {
           pawn.position.y = pawn.userData.baseY + Math.sin(clock * 2.25 + pawn.userData.phase) * (index < 4 ? .035 : .018);
           pawn.rotation.y = Math.sin(clock * .72 + index) * .13;
+        });
+        queueFiles.forEach((file, index) => {
+          file.position.y = file.userData.baseY + Math.sin(clock * 1.7 + index * .55) * .012;
+          if (index === queueFiles.length - 1) file.rotation.z = .07 + Math.sin(clock * 2.2) * .035;
         });
         const travel = (clock * .18) % 1;
         if (referralToken.visible) {
           if (complete || focusIndex === 5) referralToken.position.copy(journeyCurve.getPoint(travel));
-          else if (focusIndex === 0) referralToken.position.copy(points[0].clone().lerp(points[0].clone().add(new THREE.Vector3(-1.45, .62, .42)), Math.max(0, Math.sin(clock * .72) * .5 + .5))).setY(.66);
+          else if (focusIndex === 0) referralToken.position.copy(points[0].clone().lerp(points[1], Math.max(0, Math.sin(clock * .72) * .5 + .5))).setY(.66);
           else if (focusIndex === 1) referralToken.position.set(points[1].x + Math.sin(clock * .7) * .08, .66, points[1].z + .05);
           else if (focusIndex === 2) referralToken.position.copy(handoffCurve.getPoint(travel));
           else if (focusIndex === 3) referralToken.position.copy(reworkCurve.getPoint(travel)).setY(.7);
@@ -1282,10 +1378,18 @@ function UnmappedKeepWorld({ progress, focus, fracture = false, complete = false
         camera.lookAt(cameraFocus.x, 0, cameraFocus.z);
       }
       try {
-        composer.render();
+        if (composer) composer.render();
+        else renderer.render(scene, camera);
       } catch (error) {
-        fail(error);
-        return;
+        if (composer) {
+          console.warn("Bloom render failed; switching to the direct Three.js renderer.", error);
+          composer.dispose();
+          composer = null;
+          renderer.render(scene, camera);
+        } else {
+          fail(error);
+          return;
+        }
       }
       frame = window.requestAnimationFrame(animate);
     };
@@ -1294,8 +1398,9 @@ function UnmappedKeepWorld({ progress, focus, fracture = false, complete = false
     return () => {
       window.removeEventListener("resize", resize);
       canvas.removeEventListener("webglcontextlost", onContextLost);
+      canvas.removeEventListener("webglcontextcreationerror", onContextCreationError);
       window.cancelAnimationFrame(frame);
-      composer.dispose();
+      composer?.dispose();
       renderer.dispose();
       scene.traverse((object) => {
         if (object instanceof THREE.Mesh) {
@@ -1305,6 +1410,7 @@ function UnmappedKeepWorld({ progress, focus, fracture = false, complete = false
       });
       particles.dispose();
       parchmentTexture.dispose();
+      labelTextures.forEach((texture) => texture.dispose());
     };
   }, [progress, focus, fracture, complete, renderingFailed]);
 
@@ -1315,7 +1421,19 @@ function UnmappedKeepWorld({ progress, focus, fracture = false, complete = false
       <span style={{ "--keep-progress": `${progress / 6}` } as CSSProperties} />
     </div>;
   }
-  return <canvas ref={canvasRef} className="unmapped-keep-world" aria-label={`The Unmapped Keep: ${progress} of 6 rooms mapped`} />;
+  return <div className={`unmapped-keep-stack keep-focus-${focus ?? "atlas"}`}>
+    <div className="keep-world-blueprint" aria-hidden="true">
+      <div className="blueprint-route" />
+      <span className="blueprint-zone zone-intake"><b>RECEIVING</b><small>08:07</small></span>
+      <span className="blueprint-zone zone-queue"><b>SHARED QUEUE</b><small>OWNER —</small><i /><i /><i /><i /><i /></span>
+      <span className="blueprint-zone zone-coordinator"><b>COORDINATOR</b><small>HANDOFF 01</small></span>
+      <span className="blueprint-zone zone-ma"><b>MA REVIEW</b><small>HANDOFF 02</small></span>
+      <span className="blueprint-zone zone-physician"><b>PHYSICIAN</b><small>RECORDS MISSING</small></span>
+      <span className="blueprint-zone zone-scheduling"><b>SCHEDULING</b><small>HANDOFF 03</small></span>
+      <span className="blueprint-patient"><b>PATIENT</b><small>2 CALLS · RECEIPT UNKNOWN</small></span>
+    </div>
+    <canvas ref={canvasRef} className="unmapped-keep-world" aria-label={`The Unmapped Keep: ${progress} of 6 rooms mapped`} />
+  </div>;
 }
 
 export function QuestExperience() {

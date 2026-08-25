@@ -80,7 +80,7 @@ test("includes the Herald's Forge and preserves the full Door of Whys experience
   assert.match(source, /playKeepSound/);
   assert.match(source, /"footsteps" \| "stopwatch" \| "handoff" \| "rework" \| "voices" \| "parchment" \| "lantern"/);
   assert.match(source, /makePawn/);
-  assert.match(source, /queuePawns/);
+  assert.match(source, /queueFiles/);
   assert.match(source, /patientPawn/);
   assert.match(source, /handoffCurve/);
   assert.match(source, /reworkCurve/);
@@ -89,6 +89,16 @@ test("includes the Herald's Forge and preserves the full Door of Whys experience
   assert.match(source, /lanternVolume/);
   assert.match(source, /materializing/);
   assert.match(source, /OBSERVE AT GEMBA/);
+  assert.match(source, /RECEIVING GATE/);
+  assert.match(source, /OWNERLESS WORK/);
+  assert.match(source, /PATIENT WAITING/);
+  assert.match(source, /workstation/);
+  assert.match(source, /queueRack/);
+  assert.match(source, /keep-world-blueprint/);
+  assert.match(source, /webglcontextcreationerror/);
+  assert.match(source, /continuing with the direct Three\.js renderer/);
+  assert.match(source, /renderer\.render\(scene, camera\)/);
+  assert.match(source, /PCFShadowMap/);
   assert.match(source, /scrollIntoView\(\{ block: "start", behavior: "auto" \}\)/);
   assert.match(source, /window\.matchMedia\("\(max-width: 900px\)"\)/);
   assert.match(source, /keepFeedback\?\.kind === "wrong"/);
@@ -147,6 +157,9 @@ test("includes the Herald's Forge and preserves the full Door of Whys experience
   assert.match(css, /\.keep-game-screen/);
   assert.match(css, /\.keep-complete-screen/);
   assert.match(css, /\.unmapped-keep-world/);
+  assert.match(css, /\.unmapped-keep-stack/);
+  assert.match(css, /\.keep-world-blueprint/);
+  assert.match(css, /\.blueprint-patient/);
   assert.match(css, /\.keep-map-panel\.is-fractured/);
   assert.match(css, /\.keep-gemba-cue/);
   assert.match(css, /@keyframes mapFracture/);
