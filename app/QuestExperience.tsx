@@ -343,6 +343,15 @@ const KEEP_OBSERVATIONS: KeepObservation[] = [
   },
 ];
 
+const KEEP_LENS_FINDINGS = [
+  { id: "arrival", x: 12, y: 30, official: "Every referral is received into an owned queue.", observed: "08:07 · The referral enters a shared queue. The owner field is blank." },
+  { id: "waiting", x: 29, y: 67, official: "Review begins promptly after receipt.", observed: "3 hours 35 minutes waiting · 2 minutes of active review." },
+  { id: "handoffs", x: 51, y: 29, official: "One coordinated review hands directly to scheduling.", observed: "Coordinator → MA → physician → scheduler · 3 transfers." },
+  { id: "rework", x: 69, y: 69, official: "Complete information moves forward once.", observed: "Missing outside records send the referral backward · +2 days." },
+  { id: "voice", x: 88, y: 29, official: "The patient is informed throughout the journey.", observed: "Patient: “I called twice and still didn’t know if you had it.”" },
+  { id: "map", x: 88, y: 78, official: "Received → reviewed → scheduled.", observed: "6 steps · 3 handoffs · 2 queues · 1 rework loop · 51h 35m waiting." },
+] as const;
+
 function playTone(kind: "start" | "step" | "wrong" | "rune" | "open", enabled: boolean) {
   if (!enabled || typeof window === "undefined") return;
   const AudioCtor = window.AudioContext ??
@@ -854,6 +863,8 @@ function VoxelWorld({ progress, open }: { progress: number; open: boolean }) {
   return <canvas ref={canvasRef} className="voxel-world" aria-hidden="true" />;
 }
 
+// Kept as a progressive-enhancement reference while Box II moves to the DOM-based lens game.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function UnmappedKeepWorld({ progress, focus, fracture = false, complete = false }: { progress: number; focus?: number; fracture?: boolean; complete?: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [renderingFailed, setRenderingFailed] = useState(false);
@@ -1436,6 +1447,83 @@ function UnmappedKeepWorld({ progress, focus, fracture = false, complete = false
   </div>;
 }
 
+function GembaLensMap({
+  lensActive,
+  discovered,
+  currentId,
+  complete = false,
+  onDiscover,
+}: {
+  lensActive: boolean;
+  discovered: string[];
+  currentId?: string;
+  complete?: boolean;
+  onDiscover?: (id: string) => void;
+}) {
+  const [lensPosition, setLensPosition] = useState({ x: 50, y: 50 });
+  const revealTerritory = lensActive || complete;
+  const moveLens = (clientX: number, clientY: number, element: HTMLElement) => {
+    const rect = element.getBoundingClientRect();
+    setLensPosition({
+      x: Math.max(5, Math.min(95, ((clientX - rect.left) / rect.width) * 100)),
+      y: Math.max(8, Math.min(92, ((clientY - rect.top) / rect.height) * 100)),
+    });
+  };
+
+  return <div
+    className={`gemba-lens-board ${revealTerritory ? "is-lens-active" : ""} ${complete ? "is-complete" : ""}`}
+    style={{ "--lens-x": `${lensPosition.x}%`, "--lens-y": `${lensPosition.y}%` } as CSSProperties}
+    onPointerMove={(event) => {
+      if (lensActive && event.pointerType !== "touch") moveLens(event.clientX, event.clientY, event.currentTarget);
+    }}
+  >
+    <div className="official-atlas-layer" aria-label="Official process map: received, reviewed, scheduled">
+      <div className="atlas-cartouche"><span>APPROVED PROCESS MAP</span><b>REFERRAL PATHWAY · REV 4.2</b><small>OWNER: CLINICAL OPERATIONS</small></div>
+      <svg className="official-route-art" viewBox="0 0 1000 600" aria-hidden="true">
+        <path d="M120 306 L500 306 L880 306" />
+        <circle cx="120" cy="306" r="13" /><circle cx="500" cy="306" r="13" /><circle cx="880" cy="306" r="13" />
+      </svg>
+      <div className="official-node official-received"><i>01</i><b>RECEIVED</b><span>Owned queue</span><small>✓ STANDARD</small></div>
+      <div className="official-node official-reviewed"><i>02</i><b>REVIEWED</b><span>One clinical review</span><small>✓ ON TIME</small></div>
+      <div className="official-node official-scheduled"><i>03</i><b>SCHEDULED</b><span>Patient notified</span><small>✓ COMPLETE</small></div>
+      <div className="atlas-assurance">NO DELAYS · NO RETURNS · CLEAR OWNERSHIP</div>
+    </div>
+
+    <div className="observed-territory-layer" aria-hidden={!revealTerritory}>
+      <div className="territory-title"><span>GEMBA LENS · LIVE</span><b>THE PROCESS AS PRACTICED</b><small>ONE REFERRAL · FOLLOWED END TO END</small></div>
+      <svg className="territory-route-art" viewBox="0 0 1000 600" aria-hidden="true">
+        <path className="territory-main-route" d="M95 185 C165 185 155 390 265 390 S370 180 455 180 S555 380 630 380 S760 180 840 180 S860 420 910 440" />
+        <path className="territory-rework-route" d="M650 380 C790 550 835 310 705 330 C620 342 574 446 650 498" />
+        <path className="territory-wait-route" d="M190 390 C210 470 310 470 330 390" />
+      </svg>
+      <div className="territory-node territory-queue"><b>SHARED QUEUE</b><span>OWNER —</span><small>08:07</small><i /><i /><i /><i /><i /></div>
+      <div className="territory-node territory-coordinator"><b>COORDINATOR</b><span>11:42 · 02m</span></div>
+      <div className="territory-node territory-ma"><b>MA</b><span>HANDOFF 02</span></div>
+      <div className="territory-node territory-physician"><b>PHYSICIAN</b><span>RECORDS MISSING</span></div>
+      <div className="territory-node territory-scheduler"><b>SCHEDULER</b><span>HANDOFF 03</span></div>
+      <div className="territory-patient"><i>◉</i><b>PATIENT</b><span>2 CALLS · “DID YOU GET IT?”</span></div>
+      <div className="moving-referral" aria-hidden="true"><span>REF</span></div>
+      {KEEP_LENS_FINDINGS.map((finding) => {
+        const observation = KEEP_OBSERVATIONS.find(({ id }) => id === finding.id)!;
+        const found = discovered.includes(finding.id);
+        return <button
+          type="button"
+          className={`territory-hotspot ${found ? "is-found" : ""} ${currentId === finding.id ? "is-current" : ""}`}
+          style={{ left: `${finding.x}%`, top: `${finding.y}%` }}
+          disabled={!revealTerritory || complete}
+          aria-label={`${found ? "Observed" : "Inspect"}: ${observation.name}`}
+          key={finding.id}
+          onFocus={() => setLensPosition({ x: finding.x, y: finding.y })}
+          onClick={() => onDiscover?.(finding.id)}
+        ><i>{observation.glyph}</i><span>{found ? "PINNED" : "INSPECT"}</span></button>;
+      })}
+    </div>
+
+    {lensActive && !complete && <div className="gemba-lens-ring" aria-hidden="true"><i>ᛟ</i><span>OBSERVE</span></div>}
+    <div className="map-territory-status"><i className={revealTerritory ? "territory" : "map"} /><span>{revealTerritory ? "TERRITORY" : "MAP"}</span><b>{revealTerritory ? "Observed work" : "Documented work"}</b></div>
+  </div>;
+}
+
 export function QuestExperience() {
   const [stage, setStage] = useState<Stage>("cover");
   const [questionIndex, setQuestionIndex] = useState(0);
@@ -1451,15 +1539,14 @@ export function QuestExperience() {
   const [hornRevealed, setHornRevealed] = useState(false);
   const [keepIndex, setKeepIndex] = useState(0);
   const [chartedObservations, setChartedObservations] = useState<string[]>([]);
-  const [attemptedSightings, setAttemptedSightings] = useState<string[]>([]);
   const [keepFeedback, setKeepFeedback] = useState<{ kind: "correct" | "wrong"; text: string } | null>(null);
+  const [gembaLensActive, setGembaLensActive] = useState(false);
   const hornAudioRef = useRef<HTMLAudioElement>(null);
   const progress = stage === "complete" ? 5 : questionIndex + (correct ? 1 : 0);
   const question = QUESTIONS[questionIndex];
   const forgeSeal = FORGE_SEALS[forgeIndex];
   const sealForged = forgedSeals.includes(forgeSeal.id);
   const keepObservation = KEEP_OBSERVATIONS[keepIndex];
-  const observationCharted = chartedObservations.includes(keepObservation.id);
   const inForge = stage === "forge-intro" || stage === "forge-game" || stage === "forge-complete";
   const inKeep = stage === "keep-intro" || stage === "keep-game" || stage === "keep-complete";
   const activeChamber = inForge ? 0 : inKeep ? 1 : stage === "cover" ? null : 3;
@@ -1468,7 +1555,7 @@ export function QuestExperience() {
     if (!inKeep) return;
     const frame = window.requestAnimationFrame(() => {
       const selector = stage === "keep-game"
-        ? ".keep-world-stage"
+        ? ".gemba-lens-board"
         : stage === "keep-complete"
           ? ".keep-complete-map"
           : ".keep-intro-world";
@@ -1493,8 +1580,8 @@ export function QuestExperience() {
   const resetKeep = () => {
     setKeepIndex(0);
     setChartedObservations([]);
-    setAttemptedSightings([]);
     setKeepFeedback(null);
+    setGembaLensActive(false);
   };
 
   const enterBox = (boxNumber: number) => {
@@ -1521,31 +1608,18 @@ export function QuestExperience() {
     setPreviewBox(boxNumber);
     playTone("step", sound);
   };
-  const attemptKeep = (fragmentId: string) => {
-    if (attemptedSightings.includes(fragmentId)) return;
-    const fragment = keepObservation.fragments.find(({ id }) => id === fragmentId);
-    if (!fragment) return;
-    if (fragmentId === keepObservation.correctId) {
-      if (!observationCharted) setChartedObservations((values) => [...values, keepObservation.id]);
-      setKeepFeedback({ kind: "correct", text: keepObservation.lesson });
-      playKeepSound("lantern", sound);
-      return;
+  const discoverKeep = (observationId: string) => {
+    const index = KEEP_OBSERVATIONS.findIndex(({ id }) => id === observationId);
+    if (index < 0) return;
+    const observation = KEEP_OBSERVATIONS[index];
+    setKeepIndex(index);
+    if (!chartedObservations.includes(observationId)) {
+      setChartedObservations((values) => [...values, observationId]);
+      playKeepSound(KEEP_SOUND_CUES[index], sound);
+    } else {
+      playTone("step", sound);
     }
-    setAttemptedSightings((values) => [...values, fragmentId]);
-    setKeepFeedback({ kind: "wrong", text: fragment.rejection });
-    playTone("wrong", sound);
-  };
-  const advanceKeep = () => {
-    if (!observationCharted) return;
-    if (keepIndex === KEEP_OBSERVATIONS.length - 1) {
-      setStage("keep-complete");
-      playTone("open", sound);
-      return;
-    }
-    setKeepIndex((value) => value + 1);
-    setAttemptedSightings([]);
-    setKeepFeedback(null);
-    playKeepSound(KEEP_SOUND_CUES[keepIndex + 1], sound);
+    setKeepFeedback({ kind: "correct", text: observation.lesson });
   };
   const attemptForge = (fragmentId: string) => {
     if (sealForged || attemptedFragments.includes(fragmentId)) return;
@@ -1611,7 +1685,7 @@ export function QuestExperience() {
           const ready = index === 0 || index === 1 || index === 3;
           return <li className={active ? "active" : ready ? "ready" : "locked"} key={chamber}><span>{String(index + 1).padStart(2, "0")}</span><b>{chamber}</b><i>{active ? "ACTIVE" : ready ? "READY" : "LOCKED"}</i></li>;
         })}</ol>
-        <p>{inForge ? "Box I — Reason for Action — The Herald's Forge." : inKeep ? "Box II — Current State — The Unmapped Keep." : "Boxes I, II, and IV are ready. The other A3 chambers are still being forged."}</p>
+        <p>{inForge ? "Box I — Reason for Action — The Herald's Forge." : inKeep ? "Box II — Current State — The Cartographer's Lie." : "Boxes I, II, and IV are ready. The other A3 chambers are still being forged."}</p>
       </aside>
 
       {stage === "cover" && <section className="a3-home">
@@ -1626,12 +1700,12 @@ export function QuestExperience() {
               type="button"
               key={box.number}
               onClick={() => enterBox(box.number)}
-              aria-label={box.number === 1 ? "Box 1: Reason for Action. Enter The Herald's Forge" : box.number === 2 ? "Box 2: Current State. Enter The Unmapped Keep" : box.number === 4 ? "Box 4: Gap Analysis. Enter The Door of Whys" : `Box ${box.number}: ${box.label}. Activity coming soon`}
+              aria-label={box.number === 1 ? "Box 1: Reason for Action. Enter The Herald's Forge" : box.number === 2 ? "Box 2: Current State. Enter The Cartographer's Lie" : box.number === 4 ? "Box 4: Gap Analysis. Enter The Door of Whys" : `Box ${box.number}: ${box.label}. Activity coming soon`}
             >
               {/* Public-path artwork stays compatible with both the app runtime and GitHub Pages. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={`a3/box-${box.number}.jpg`} alt="" width="3840" height="2160" loading={box.number <= 4 ? "eager" : "lazy"} decoding="async" />
-              <span className="a3-tile-overlay"><small>BOX {String(box.number).padStart(2, "0")}</small><b>{box.label}</b><em>{box.number === 1 ? "ENTER THE HERALD'S FORGE" : box.number === 2 ? "ENTER THE UNMAPPED KEEP" : box.number === 4 ? "ENTER THE DOOR OF WHYS" : "ACTIVITY COMING SOON"}</em></span>
+              <span className="a3-tile-overlay"><small>BOX {String(box.number).padStart(2, "0")}</small><b>{box.label}</b><em>{box.number === 1 ? "ENTER THE HERALD'S FORGE" : box.number === 2 ? "ENTER THE CARTOGRAPHER'S LIE" : box.number === 4 ? "ENTER THE DOOR OF WHYS" : "ACTIVITY COMING SOON"}</em></span>
               {(box.number === 1 || box.number === 2 || box.number === 4) && <span className="a3-playable-badge">PLAYABLE</span>}
             </button>)}
           </div>
@@ -1644,89 +1718,92 @@ export function QuestExperience() {
       {stage === "keep-intro" && <section className="keep-intro-screen">
         <div className="keep-intro-copy">
           <div className="quest-kicker">THE NINE CHAMBERS · BOX II</div>
-          <div className="chamber-tag">The official map is immaculate—and wrong</div>
-          <h1>The Unmapped<br /><em>Keep</em></h1>
+          <div className="chamber-tag">The map is not the territory</div>
+          <h1>The Cartographer&apos;s<br /><em>Lie</em></h1>
           <div className="keep-prologue">
-            <p>From the throne room, the referral road appears flawless: received, reviewed, scheduled. No queues. No loops. No traveler lost.</p>
-            <p>But the Herald&apos;s numbers tell of a different kingdom.</p>
-            <blockquote>&quot;This Keep draws only what you witness. Assumptions build false corridors. Solutions open doors to rooms you have not yet earned.&quot;</blockquote>
-            <p>Take the darkened Lantern of Gemba. Follow one referral through the actual work. See it. Time it. Count it. Hear it. Then draw what is true.</p>
+            <p>The approved map shows a flawless road: received, reviewed, scheduled. Three steps. Clear ownership. No waiting. No traveler lost.</p>
+            <p>But a map drawn from policy can hide the kingdom it claims to describe.</p>
+            <blockquote>&quot;Do not correct the map yet. First earn the right to see the territory.&quot;</blockquote>
+            <p>Awaken the Gemba Lens. Move it across the official pathway and pin every place where practiced work breaks through the parchment.</p>
           </div>
-          <div className="keep-observation-preview" aria-label="The six observations of Box 2">{KEEP_OBSERVATIONS.map((observation, index) => <span key={observation.id}><i>{observation.glyph}</i><b>{String(index + 1).padStart(2, "0")}</b><em>{observation.name}</em></span>)}</div>
-          <button className="primary-button" type="button" onClick={() => { setStage("keep-game"); playKeepSound("footsteps", sound); }}><span>Leave the throne room</span><b>→</b></button>
+          <div className="keep-observation-preview" aria-label="Six discrepancies hidden in the territory">{KEEP_OBSERVATIONS.map((observation, index) => <span key={observation.id}><i>{observation.glyph}</i><b>{String(index + 1).padStart(2, "0")}</b><em>{observation.name}</em></span>)}</div>
+          <button className="primary-button" type="button" onClick={() => { setStage("keep-game"); playKeepSound("footsteps", sound); }}><span>Enter the map room</span><b>→</b></button>
         </div>
         <div className="keep-intro-world">
-          <UnmappedKeepWorld progress={0} />
-          <div className="keep-atlas-label"><span>OFFICIAL ATLAS</span><b>THE PROCESS AS IMAGINED</b><small>Beautiful · orderly · unobserved</small></div>
+          <GembaLensMap lensActive={false} discovered={[]} />
+          <div className="keep-atlas-label"><span>OFFICIAL ATLAS</span><b>THE PROCESS AS DOCUMENTED</b><small>Beautiful · orderly · unobserved</small></div>
           <div className="keep-lantern-seal" aria-hidden="true"><i /><b>ᛟ</b><span /></div>
         </div>
       </section>}
 
-      {stage === "keep-game" && <section className="keep-game-screen">
-        <div className="keep-observation-panel">
-          <div className="keep-heading-row">
-            <div><div className="quest-kicker">THE UNMAPPED KEEP</div><div className="chamber-tag">Observation {keepIndex + 1} of {KEEP_OBSERVATIONS.length} · {keepObservation.place}</div></div>
-            <div className="keep-progress" role="img" aria-label={`${chartedObservations.length} of 6 observations mapped`}>{KEEP_OBSERVATIONS.map((observation, index) => <span key={observation.id} className={`${chartedObservations.includes(observation.id) ? "lit" : ""} ${index === keepIndex ? "current" : ""}`}>{observation.glyph}</span>)}</div>
-          </div>
-          <h1><span>{keepObservation.glyph}</span>{keepObservation.name}</h1>
-          <p className="keep-prompt">{keepObservation.prompt}</p>
-          <blockquote className="keep-coaching">Sensei asks: &quot;{keepObservation.coaching}&quot;</blockquote>
-          <div className="keep-instruction"><span>CHOOSE</span> only what was seen, timed, counted, or heard.</div>
-          <div className="keep-choice-list" aria-label={`${keepObservation.name} observations`}>
-            {keepObservation.fragments.map((fragment, index) => {
-              const attempted = attemptedSightings.includes(fragment.id);
-              const isCorrect = observationCharted && fragment.id === keepObservation.correctId;
-              return <button
-                type="button"
-                key={fragment.id}
-                disabled={attempted || isCorrect}
-                className={`${attempted ? "is-false" : ""} ${isCorrect ? "is-charted" : ""}`}
-                onClick={() => attemptKeep(fragment.id)}
-              ><span>{String(index + 1).padStart(2, "0")}</span><b>{fragment.text}</b><i aria-hidden="true">⌁</i></button>;
-            })}
-          </div>
-          <div className="keep-feedback-slot" aria-live="polite">
-            {keepFeedback && <div className={`keep-feedback ${keepFeedback.kind}`}>
-              <span>{keepFeedback.kind === "correct" ? "THE KEEP REMEMBERS" : "A FALSE CORRIDOR FORMS"}</span>
-              <p>{keepFeedback.text}</p>
-              {observationCharted && <><small>{keepFeedback.kind === "correct" ? "Inspect another corridor, or continue when you are ready." : "The true chamber remains illuminated."}</small><button type="button" onClick={advanceKeep}>{keepIndex === KEEP_OBSERVATIONS.length - 1 ? "Reveal the current-state map" : "Walk to the next chamber"}<b>→</b></button></>}
-            </div>}
-          </div>
+      {stage === "keep-game" && <section className="keep-lens-game">
+        <div className="keep-lens-heading">
+          <div><div className="quest-kicker">BOX II · THE CARTOGRAPHER&apos;S LIE</div><h1>The map is <em>not</em> the territory.</h1></div>
+          <div className="keep-progress" role="img" aria-label={`${chartedObservations.length} of 6 discrepancies pinned`}>{KEEP_OBSERVATIONS.map((observation) => <span key={observation.id} className={`${chartedObservations.includes(observation.id) ? "lit" : ""} ${observation.id === keepObservation.id ? "current" : ""}`}>{observation.glyph}</span>)}</div>
         </div>
-        <div className={`keep-map-panel ${keepFeedback?.kind === "wrong" ? "is-fractured" : ""}`}>
-          <div className="keep-world-stage">
-            <UnmappedKeepWorld progress={chartedObservations.length} focus={keepIndex} fracture={keepFeedback?.kind === "wrong"} />
-            <div className="keep-gemba-cue">
-              <span>OBSERVE AT GEMBA</span>
-              <b>{keepObservation.place}</b>
-              <p>{keepObservation.sceneCue}</p>
-              <small><i aria-hidden="true">♫</i> {KEEP_SOUND_CUES[keepIndex]}</small>
+        <div className="keep-lens-layout">
+          <div className="keep-lens-map-column">
+            <div className="keep-lens-toolbar">
+              <div><span>{gembaLensActive ? "LENS ACTIVE" : "OFFICIAL MAP"}</span><b>{gembaLensActive ? "Move across the territory. Inspect what the parchment concealed." : "The process appears orderly because only the policy is visible."}</b></div>
+              <button
+                type="button"
+                className={gembaLensActive ? "is-active" : ""}
+                aria-pressed={gembaLensActive}
+                onClick={() => {
+                  setGembaLensActive((value) => !value);
+                  setKeepFeedback(null);
+                  playKeepSound("lantern", sound);
+                }}
+              ><i aria-hidden="true">ᛟ</i><span>{gembaLensActive ? "LOWER GEMBA LENS" : "ACTIVATE GEMBA LENS"}</span></button>
             </div>
-            <div className="keep-map-hud"><span>GEMBA ATLAS · LIVE</span><b>{String(chartedObservations.length).padStart(2, "0")} / 06 CHAMBERS DRAWN</b></div>
-            <div className="keep-lantern-meter" aria-hidden="true"><i style={{ height: `${Math.max(8, chartedObservations.length * (100 / 6))}%` }} /><span>ᛟ</span></div>
+            <GembaLensMap
+              lensActive={gembaLensActive}
+              discovered={chartedObservations}
+              currentId={keepObservation.id}
+              onDiscover={discoverKeep}
+            />
+            <p className="keep-lens-instruction">{gembaLensActive ? "Move the lens. Select each glowing discrepancy to pin observed evidence." : "Activate the lens to compare documented work with practiced work."}</p>
           </div>
-          <div className="keep-map-ledger">
-            <span>THE MAP DRAWS ITSELF</span>
-            <ol>{KEEP_OBSERVATIONS.map((observation, index) => <li key={observation.id} className={`${chartedObservations.includes(observation.id) ? "is-drawn" : ""} ${index === keepIndex ? "is-current" : ""}`}><i>{observation.glyph}</i><b>{observation.name}</b><p>{chartedObservations.includes(observation.id) ? observation.mapFact : "Unobserved chamber"}</p></li>)}</ol>
-          </div>
+          <aside className="keep-lens-ledger" aria-live="polite">
+            <div className="chamber-tag">FIELD NOTES · {String(chartedObservations.length).padStart(2, "0")} / 06</div>
+            {keepFeedback ? <>
+              <div className="lens-finding-glyph">{keepObservation.glyph}</div>
+              <h2>{keepObservation.name}</h2>
+              <div className="lens-comparison">
+                <div><span>THE MAP SAID</span><p>{KEEP_LENS_FINDINGS[keepIndex].official}</p></div>
+                <div><span>GEMBA SHOWED</span><p>{KEEP_LENS_FINDINGS[keepIndex].observed}</p></div>
+              </div>
+              <blockquote>Sensei asks: &quot;{keepObservation.coaching}&quot;</blockquote>
+              <p className="lens-lesson">{keepFeedback.text}</p>
+            </> : <>
+              <div className="lens-idle-sigil" aria-hidden="true">ᛟ</div>
+              <h2>{gembaLensActive ? "Find the first rupture." : "The parchment looks convincing."}</h2>
+              <p className="lens-idle-copy">{gembaLensActive ? "Follow one referral, not the arrows on the slide. Look for ownerless work, waiting, transfers, reversals, and the traveler’s voice." : "It is tidy, approved, and internally consistent. That does not make it true."}</p>
+            </>}
+            <ol className="lens-evidence-list">{KEEP_OBSERVATIONS.map((observation, index) => {
+              const found = chartedObservations.includes(observation.id);
+              return <li className={found ? "is-pinned" : ""} key={observation.id}><i>{observation.glyph}</i><div><b>{observation.name}</b><span>{found ? KEEP_LENS_FINDINGS[index].observed : "Hidden in the territory"}</span></div></li>;
+            })}</ol>
+            {chartedObservations.length === KEEP_OBSERVATIONS.length && <button className="primary-button lens-complete-button" type="button" onClick={() => { setStage("keep-complete"); playTone("open", sound); }}><span>Reveal the honest map</span><b>→</b></button>}
+          </aside>
         </div>
       </section>}
 
       {stage === "keep-complete" && <section className="keep-complete-screen">
         <div className="keep-complete-map">
-          <UnmappedKeepWorld progress={6} focus={5} complete />
+          <GembaLensMap lensActive discovered={KEEP_OBSERVATIONS.map(({ id }) => id)} currentId="map" complete />
           <div className="keep-map-hud"><span>THE ACTUAL PATH</span><b>ALL CHAMBERS OBSERVED</b></div>
           <div className="keep-complete-sigils" aria-label="All six observations mapped">{KEEP_OBSERVATIONS.map((observation) => <span key={observation.id}>{observation.glyph}</span>)}</div>
         </div>
         <div className="keep-complete-story">
           <div className="quest-kicker">CURRENT CONDITION · REVEALED</div>
-          <h1>Reality<br /><em>mapped.</em></h1>
-          <p className="keep-completion-lead">The throne-room atlas showed a straight road. Your walk revealed six steps, three handoffs, two queues, one rework loop—and the traveler&apos;s own voice.</p>
+          <h1>Territory<br /><em>revealed.</em></h1>
+          <p className="keep-completion-lead">The approved map showed a straight road. Your lens revealed six steps, three handoffs, two queues, one rework loop—and the traveler&apos;s own voice.</p>
           <div className="keep-truth-table">
             <span>THE OBSERVED JOURNEY</span>
             <ol>{KEEP_OBSERVATIONS.map((observation) => <li key={observation.id}><i>{observation.glyph}</i><div><b>{observation.name}</b><p>{observation.mapFact}</p></div></li>)}</ol>
           </div>
-          <blockquote>&quot;Reports describe the kingdom. Gemba reveals it.&quot;</blockquote>
+          <blockquote>&quot;The map is useful. The territory is true.&quot;</blockquote>
           <div className="keep-weapon-card">
             <div className="pixel-lantern" aria-hidden="true"><i /><b /><em /><span /></div>
             <span>LEGENDARY TOOL ACQUIRED</span>
