@@ -1610,10 +1610,11 @@ export function QuestExperience() {
     setKeepFeedback({ kind: "correct", text: observation.lesson });
   };
   const attemptForge = (fragmentId: string) => {
-    if (sealForged || attemptedFragments.includes(fragmentId)) return;
+    if (attemptedFragments.includes(fragmentId)) return;
     const fragment = forgeSeal.fragments.find(({ id }) => id === fragmentId);
     if (!fragment) return;
     if (fragmentId === forgeSeal.correctId) {
+      if (sealForged) return;
       setForgedSeals((values) => [...values, forgeSeal.id]);
       setForgeFeedback({ kind: "correct", text: forgeSeal.lesson });
       playTone("rune", sound);
@@ -1837,15 +1838,15 @@ export function QuestExperience() {
           <h1><span>{forgeSeal.glyph}</span>{forgeSeal.name}</h1>
           <p className="forge-prompt">{forgeSeal.prompt}</p>
           <blockquote className="forge-coaching">Sensei asks: &quot;{forgeSeal.coaching}&quot;</blockquote>
-          <div className="fragment-instruction"><span>DRAG</span> a fragment to the anvil—or tap it to strike.</div>
+          <div className="fragment-instruction"><span>{sealForged ? "INSPECT" : "DRAG"}</span> {sealForged ? "the remaining fragments to learn why they fail—or continue when ready." : "a fragment to the anvil—or tap it to strike."}</div>
           <div className="fragment-rack" aria-label={`${forgeSeal.name} evidence fragments`}>
             {forgeSeal.fragments.map((fragment, index) => {
               const attempted = attemptedFragments.includes(fragment.id);
               const correctFragment = sealForged && fragment.id === forgeSeal.correctId;
               return <button
                 type="button"
-                draggable={!sealForged && !attempted}
-                disabled={sealForged || attempted}
+                draggable={!attempted && !correctFragment}
+                disabled={attempted || correctFragment}
                 className={`forge-fragment ${attempted ? "is-shattered" : ""} ${correctFragment ? "is-forged" : ""}`}
                 key={fragment.id}
                 data-fragment-id={fragment.id}
@@ -1874,7 +1875,7 @@ export function QuestExperience() {
             {forgeFeedback && <div className={`forge-feedback ${forgeFeedback.kind}`}>
               <span>{forgeFeedback.kind === "correct" ? "THE SEAL HOLDS" : "THE METAL FRACTURES"}</span>
               <p>{forgeFeedback.text}</p>
-              {forgeFeedback.kind === "correct" && <button type="button" onClick={advanceForge}>{forgeIndex === FORGE_SEALS.length - 1 ? "Sound the Herald's Horn" : "Strike the next seal"}<b>→</b></button>}
+              {sealForged && <button type="button" onClick={advanceForge}>{forgeIndex === FORGE_SEALS.length - 1 ? "Sound the Herald's Horn" : "Strike the next seal"}<b>→</b></button>}
             </div>}
           </div>
         </div>

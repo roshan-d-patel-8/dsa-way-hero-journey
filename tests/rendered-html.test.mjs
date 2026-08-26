@@ -129,6 +129,10 @@ test("includes the Herald's Forge and preserves the full Door of Whys experience
   assert.match(source, /draggable=/);
   assert.match(source, /onDrop=/);
   assert.match(source, /data-fragment-id=/);
+  assert.match(source, /disabled=\{attempted \|\| correctFragment\}/);
+  assert.match(source, /sealForged && <button type="button" onClick=\{advanceForge\}>/);
+  assert.match(source, /the remaining fragments to learn why they fail—or continue when ready/);
+  assert.doesNotMatch(source, /disabled=\{sealForged \|\| attempted\}/);
   assert.match(source, /setStage\("threshold"\)/);
   assert.match(source, /a3\/box-\$\{box\.number\}\.jpg/);
   assert.doesNotMatch(source, /Hover to reveal each chamber\. Select Box 4 to enter The Door of Whys\./);
