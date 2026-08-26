@@ -1858,7 +1858,7 @@ export function QuestExperience() {
         <div className="forge-chamber">
           <div className="forge-heat" aria-hidden="true" />
           <div className="forge-sparks" aria-hidden="true">{Array.from({ length: 22 }, (_, index) => <i key={index} />)}</div>
-          <div className="seal-orbit" aria-hidden="true">{FORGE_SEALS.map((seal, index) => <span key={seal.id} className={`${forgedSeals.includes(seal.id) ? "lit" : ""} ${index === forgeIndex ? "current" : ""}`} style={{ "--seal-angle": `${index * 60}deg` } as CSSProperties}><b>{seal.glyph}</b></span>)}</div>
+          <div className="seal-orbit" aria-hidden="true">{FORGE_SEALS.map((seal, index) => <span key={seal.id} className={`${forgedSeals.includes(seal.id) ? "lit" : ""} ${index === forgeIndex ? "current" : ""}`} style={{ "--seal-angle": `${index * (360 / FORGE_SEALS.length)}deg` } as CSSProperties}><b>{seal.glyph}</b></span>)}</div>
           <div
             className={`forge-anvil ${sealForged ? "is-struck" : ""}`}
             role="region"

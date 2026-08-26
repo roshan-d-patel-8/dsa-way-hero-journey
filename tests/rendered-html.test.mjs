@@ -111,6 +111,8 @@ test("includes the Herald's Forge and preserves the full Door of Whys experience
   assert.match(source, /The four seals of Box 1/);
   assert.match(source, /THE FOUR-SEALED CHARTER/);
   assert.doesNotMatch(forgeBlock, /id: "trigger"|id: "scope"|id: "done"/);
+  assert.match(source, /index \* \(360 \/ FORGE_SEALS\.length\)/);
+  assert.doesNotMatch(source, /index \* 60/);
   assert.match(source, /THE STRANGER TEST/);
   assert.match(source, /HERALD(?:&apos;|')S HORN/);
   assert.match(source, /heralds-horn\.png/);
