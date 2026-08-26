@@ -108,6 +108,10 @@ test("includes the Herald's Forge and preserves the full Door of Whys experience
   assert.match(source, /gjallarhorn-reveal\.mp3/);
   assert.match(source, /hornRevealed/);
   assert.match(source, /revealHorn/);
+  assert.match(source, /const returnHome = \(\) =>/);
+  assert.match(source, /hornAudioRef\.current\.pause\(\)/);
+  assert.match(source, /hornAudioRef\.current\.currentTime = 0/);
+  assert.match(source, /onClick=\{returnHome\}/);
   assert.match(source, /Awaken the secret legendary tool/);
   assert.match(source, /Gjallarhorn/);
   assert.match(source, /God of War Ragnarök/);

@@ -1575,6 +1575,11 @@ export function QuestExperience() {
     setAttemptedFragments([]);
     setForgeFeedback(null);
     setHornRevealed(false);
+    if (hornAudioRef.current) {
+      hornAudioRef.current.pause();
+      hornAudioRef.current.currentTime = 0;
+      hornAudioRef.current.volume = 1;
+    }
   };
 
   const resetKeep = () => {
@@ -1582,6 +1587,17 @@ export function QuestExperience() {
     setChartedObservations([]);
     setKeepFeedback(null);
     setGembaLensActive(false);
+  };
+
+  const returnHome = () => {
+    resetForge();
+    resetKeep();
+    setQuestionIndex(0);
+    setWrongChoice(null);
+    setCorrect(false);
+    setPreviewBox(null);
+    setMenuOpen(false);
+    setStage("cover");
   };
 
   const enterBox = (boxNumber: number) => {
@@ -1671,7 +1687,7 @@ export function QuestExperience() {
     <main className={`quest-shell stage-${stage}`}>
       <div className="brand-strata" aria-hidden="true"><i /><i /><i /><i /><i /></div><div className="scanlines" aria-hidden="true" />
       <header className="quest-header">
-        <button className="brand-lockup" type="button" onClick={() => { setStage("cover"); setMenuOpen(false); }} aria-label="Return to title screen"><span>PERMANENTE MEDICINE</span><small>The Permanente Medical Group</small></button>
+        <button className="brand-lockup" type="button" onClick={returnHome} aria-label="Return to title screen"><span>PERMANENTE MEDICINE</span><small>The Permanente Medical Group</small></button>
         <div className="header-title"><b>the</b> DSA WAY <small>The Hero&apos;s Journey</small></div>
         <div className="header-actions">
           <button className="sound-button" type="button" aria-pressed={sound} onClick={() => setSound((value) => !value)}><span aria-hidden="true">{sound ? "♫" : "×"}</span> SOUND {sound ? "ON" : "OFF"}</button>
@@ -1812,7 +1828,7 @@ export function QuestExperience() {
           </div>
           <div className="keep-complete-actions">
             <button className="primary-button" type="button" onClick={() => { resetKeep(); setStage("keep-intro"); playTone("start", sound); }}><span>Walk the Keep again</span><b>↻</b></button>
-            <button className="map-return-button" type="button" onClick={() => setStage("cover")}>Return to the nine chambers</button>
+            <button className="map-return-button" type="button" onClick={returnHome}>Return to the nine chambers</button>
           </div>
         </div>
       </section>}
@@ -1939,7 +1955,7 @@ export function QuestExperience() {
           </div>
           <div className="forge-complete-actions">
             <button className="primary-button" type="button" onClick={() => { resetForge(); setStage("forge-intro"); playTone("start", sound); }}><span>Forge another summons</span><b>↻</b></button>
-            <button className="map-return-button" type="button" onClick={() => setStage("cover")}>Return to the nine chambers</button>
+            <button className="map-return-button" type="button" onClick={returnHome}>Return to the nine chambers</button>
           </div>
         </div>
       </section>}
