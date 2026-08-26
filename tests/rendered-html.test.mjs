@@ -76,8 +76,10 @@ test("includes the Herald's Forge and preserves the full Door of Whys experience
   assert.match(source, /GembaLensMap/);
   assert.match(source, /KEEP_LENS_FINDINGS/);
   assert.match(source, /KEEP_CASE_QUESTIONS/);
-  assert.match(source, /SIMULATED CLINICAL CASE · GASTROENTEROLOGY REFERRAL/);
-  assert.match(source, /58-year-old patient with six weeks of progressive dysphagia/);
+  assert.match(source, /SIMULATED CLINICAL CASE · SPECIALTY REFERRAL/);
+  assert.match(source, /67-year-old patient with three weeks of worsening exertional shortness of breath/);
+  const keepBriefBlock = source.slice(source.indexOf("const KEEP_CASE_BRIEF"), source.indexOf("const KEEP_LENS_FINDINGS"));
+  assert.doesNotMatch(keepBriefBlock, /GASTROENTEROLOGY REFERRAL|GI REFERRAL|progressive dysphagia/i);
   assert.match(source, /shadow this single referral end to end/);
   assert.match(source, /aria-label="Simulated clinical case briefing"/);
   const keepCaseBlock = source.slice(source.indexOf("const KEEP_CASE_QUESTIONS"), source.indexOf("const KEEP_LENS_FINDINGS"));

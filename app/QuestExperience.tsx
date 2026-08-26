@@ -418,11 +418,11 @@ const KEEP_CASE_QUESTIONS: KeepCaseQuestion[] = [
 ];
 
 const KEEP_CASE_BRIEF = {
-  label: "SIMULATED CLINICAL CASE · GASTROENTEROLOGY REFERRAL",
+  label: "SIMULATED CLINICAL CASE · SPECIALTY REFERRAL",
   time: "TUESDAY · 08:07",
   title: "A patient is waiting behind the map.",
-  story: "Primary Care submits a referral for a 58-year-old patient with six weeks of progressive dysphagia. The approved pathway promises receipt, one clinical review, and scheduling. Your assignment is to shadow this single referral end to end and record only what can be observed, timed, counted, or heard.",
-  tags: ["PROGRESSIVE DYSPHAGIA", "ONE REFERRAL", "TRACE END TO END"],
+  story: "Primary Care submits a referral for a 67-year-old patient with three weeks of worsening exertional shortness of breath. The approved pathway promises receipt, one clinical review, and scheduling. Your assignment is to shadow this single referral end to end and record only what can be observed, timed, counted, or heard.",
+  tags: ["EXERTIONAL DYSPNEA", "ONE REFERRAL", "TRACE END TO END"],
 } as const;
 
 const KEEP_LENS_FINDINGS = [
@@ -1971,7 +1971,7 @@ export function QuestExperience() {
             <GembaLensMap lensActive discovered={keepCase.evidenceIds} currentId={keepCase.evidenceIds[0]} complete />
             <div className="keep-gemba-cue">
               <span>{keepCase.place}</span>
-              <em>{KEEP_CASE_BRIEF.tags[0]} · GI REFERRAL</em>
+              <em>{KEEP_CASE_BRIEF.tags[0]} · SPECIALTY REFERRAL</em>
               <b>{keepCase.clue}</b>
               <p>{keepCaseIndex === KEEP_CASE_QUESTIONS.length - 1 ? "Build the warrant" : "Follow the evidence trail"}</p>
               <small><i>◆</i> CASE FILE · {String(keepCaseIndex + 1).padStart(2, "0")} / 04</small>
