@@ -235,11 +235,11 @@ const KEEP_OBSERVATIONS: KeepObservation[] = [
     coaching: "What did you see enter the process—and at what exact time?",
     correctId: "arrival-observed",
     lesson: "The first chamber appears. You recorded the real thing, the real place, and a timestamp—without guessing what it means.",
-    mapFact: "08:07 · Routine referral enters the GI workqueue",
+    mapFact: "08:07 · Routine referral enters the specialty workqueue",
     sceneCue: "08:07 · referral enters the shared queue · owner field blank",
     fragments: [
       { id: "arrival-blame", text: "The referral coordinator probably ignored the new request.", rejection: "A false corridor forms around a person. You did not observe neglect; you observed a referral entering a queue." },
-      { id: "arrival-observed", text: "At 08:07, one routine referral appears in the shared GI workqueue with no named owner displayed.", rejection: "" },
+      { id: "arrival-observed", text: "At 08:07, one routine referral appears in the shared specialty workqueue with no named owner displayed.", rejection: "" },
       { id: "arrival-fix", text: "The system should automatically assign every referral on arrival.", rejection: "A gleaming shortcut appears—but it leads to Box 5. This chamber maps what is, not what should be." },
     ],
   },
@@ -1656,7 +1656,7 @@ export function QuestExperience() {
       }
     });
     return () => window.cancelAnimationFrame(frame);
-  }, [inKeep, keepCaseIndex, keepIndex, stage]);
+  }, [inKeep, keepCaseIndex, stage]);
 
   const resetForge = () => {
     setForgeIndex(0);

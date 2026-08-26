@@ -80,6 +80,8 @@ test("includes the Herald's Forge and preserves the full Door of Whys experience
   assert.match(source, /67-year-old patient with three weeks of worsening exertional shortness of breath/);
   const keepBriefBlock = source.slice(source.indexOf("const KEEP_CASE_BRIEF"), source.indexOf("const KEEP_LENS_FINDINGS"));
   assert.doesNotMatch(keepBriefBlock, /GASTROENTEROLOGY REFERRAL|GI REFERRAL|progressive dysphagia/i);
+  const keepCaseData = source.slice(source.indexOf("const KEEP_OBSERVATIONS"), source.indexOf("const KEEP_LENS_FINDINGS"));
+  assert.doesNotMatch(keepCaseData, /\bGI\b|gastroenterology|dysphagia/i);
   assert.match(source, /shadow this single referral end to end/);
   assert.match(source, /aria-label="Simulated clinical case briefing"/);
   const keepCaseBlock = source.slice(source.indexOf("const KEEP_CASE_QUESTIONS"), source.indexOf("const KEEP_LENS_FINDINGS"));
@@ -116,6 +118,8 @@ test("includes the Herald's Forge and preserves the full Door of Whys experience
   assert.match(source, /gembaLensActive/);
   assert.match(source, /scrollIntoView\(\{ block: "start", behavior: "auto" \}\)/);
   assert.match(source, /window\.matchMedia\("\(max-width: 900px\)"\)/);
+  assert.match(source, /\}, \[inKeep, keepCaseIndex, stage\]\);/);
+  assert.doesNotMatch(source, /\[inKeep, keepCaseIndex, keepIndex, stage\]/);
   assert.match(source, /Open the case file/);
   assert.match(source, /setStage\("keep-lens"\)/);
   assert.match(source, /setStage\("forge-intro"\)/);
@@ -199,6 +203,8 @@ test("includes the Herald's Forge and preserves the full Door of Whys experience
   assert.match(css, /@keyframes hotspotPulse/);
   assert.match(css, /\.keep-game-screen/);
   assert.match(css, /\.keep-complete-screen/);
+  assert.match(css, /\.keep-complete-story h1 \{[^}]*max-width:100%[^}]*clamp\(2\.75rem,4\.5vw,5\.15rem\)/);
+  assert.match(css, /\.keep-complete-story h1\{font-size:clamp\(2\.35rem,10vw,3\.6rem\)\}/);
   assert.match(css, /\.unmapped-keep-world/);
   assert.match(css, /\.unmapped-keep-stack/);
   assert.match(css, /\.keep-world-blueprint/);
