@@ -417,6 +417,14 @@ const KEEP_CASE_QUESTIONS: KeepCaseQuestion[] = [
   },
 ];
 
+const KEEP_CASE_BRIEF = {
+  label: "SIMULATED CLINICAL CASE · GASTROENTEROLOGY REFERRAL",
+  time: "TUESDAY · 08:07",
+  title: "A patient is waiting behind the map.",
+  story: "Primary Care submits a referral for a 58-year-old patient with six weeks of progressive dysphagia. The approved pathway promises receipt, one clinical review, and scheduling. Your assignment is to shadow this single referral end to end and record only what can be observed, timed, counted, or heard.",
+  tags: ["PROGRESSIVE DYSPHAGIA", "ONE REFERRAL", "TRACE END TO END"],
+} as const;
+
 const KEEP_LENS_FINDINGS = [
   { id: "arrival", x: 12, y: 30, official: "Every referral is received into an owned queue.", observed: "08:07 · The referral enters a shared queue. The owner field is blank." },
   { id: "waiting", x: 29, y: 67, official: "Review begins promptly after receipt.", observed: "3 hours 35 minutes waiting · 2 minutes of active review." },
@@ -1868,6 +1876,15 @@ export function QuestExperience() {
           <div><div className="quest-kicker">BOX II · LENS BRIEFING</div><h1>Put the map <em>under the lens.</em></h1></div>
           <div className="keep-progress" role="img" aria-label="Four clue stops follow this lens briefing">{KEEP_CASE_QUESTIONS.map((caseQuestion, index) => <span key={caseQuestion.id} className={index === 0 ? "current" : ""}>{caseQuestion.glyph}</span>)}</div>
         </div>
+        <article className="keep-case-dispatch" aria-label="Simulated clinical case briefing">
+          <div className="case-dispatch-stamp"><span>FIELD DISPATCH</span><b>{KEEP_CASE_BRIEF.time}</b><i aria-hidden="true">✚</i></div>
+          <div className="case-dispatch-story">
+            <span>{KEEP_CASE_BRIEF.label}</span>
+            <h2>{KEEP_CASE_BRIEF.title}</h2>
+            <p>{KEEP_CASE_BRIEF.story}</p>
+          </div>
+          <ul aria-label="Case parameters">{KEEP_CASE_BRIEF.tags.map((tag) => <li key={tag}>{tag}</li>)}</ul>
+        </article>
         <div className="keep-lens-layout">
           <div className="keep-lens-map-column">
             <div className="keep-lens-toolbar">
@@ -1954,6 +1971,7 @@ export function QuestExperience() {
             <GembaLensMap lensActive discovered={keepCase.evidenceIds} currentId={keepCase.evidenceIds[0]} complete />
             <div className="keep-gemba-cue">
               <span>{keepCase.place}</span>
+              <em>{KEEP_CASE_BRIEF.tags[0]} · GI REFERRAL</em>
               <b>{keepCase.clue}</b>
               <p>{keepCaseIndex === KEEP_CASE_QUESTIONS.length - 1 ? "Build the warrant" : "Follow the evidence trail"}</p>
               <small><i>◆</i> CASE FILE · {String(keepCaseIndex + 1).padStart(2, "0")} / 04</small>

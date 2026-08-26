@@ -76,6 +76,10 @@ test("includes the Herald's Forge and preserves the full Door of Whys experience
   assert.match(source, /GembaLensMap/);
   assert.match(source, /KEEP_LENS_FINDINGS/);
   assert.match(source, /KEEP_CASE_QUESTIONS/);
+  assert.match(source, /SIMULATED CLINICAL CASE · GASTROENTEROLOGY REFERRAL/);
+  assert.match(source, /58-year-old patient with six weeks of progressive dysphagia/);
+  assert.match(source, /shadow this single referral end to end/);
+  assert.match(source, /aria-label="Simulated clinical case briefing"/);
   const keepCaseBlock = source.slice(source.indexOf("const KEEP_CASE_QUESTIONS"), source.indexOf("const KEEP_LENS_FINDINGS"));
   const keepOptionGroups = [...keepCaseBlock.matchAll(/options:\s*\[\s*"([^"]+)",\s*"([^"]+)",\s*"([^"]+)",\s*\]/g)].map((match) => match.slice(1));
   assert.equal((keepCaseBlock.match(/correct:/g) ?? []).length, 4);
