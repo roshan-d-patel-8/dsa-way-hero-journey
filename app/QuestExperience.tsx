@@ -6,7 +6,7 @@ import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 
-type Stage = "cover" | "forge-intro" | "forge-game" | "forge-complete" | "keep-intro" | "keep-game" | "keep-complete" | "threshold" | "questions" | "complete";
+type Stage = "cover" | "forge-intro" | "forge-game" | "forge-complete" | "keep-intro" | "keep-lens" | "keep-game" | "keep-complete" | "threshold" | "questions" | "complete";
 
 type Question = {
   known: string;
@@ -52,6 +52,21 @@ type KeepObservation = {
   mapFact: string;
   sceneCue: string;
   fragments: KeepFragment[];
+};
+
+type KeepCaseQuestion = {
+  id: string;
+  glyph: string;
+  name: string;
+  place: string;
+  clue: string;
+  prompt: string;
+  coaching: string;
+  options: string[];
+  correct: number;
+  answer: string;
+  wrong: Record<number, string>;
+  evidenceIds: string[];
 };
 
 const QUESTIONS: Question[] = [
@@ -312,6 +327,93 @@ const KEEP_OBSERVATIONS: KeepObservation[] = [
       { id: "map-root", text: "The root problem is fragmented ownership and insufficient referral staffing.", rejection: "The map fractures at the word ‘root.’ Causes belong in Box 4, after the current condition is fully visible." },
       { id: "map-future", text: "Create one centralized referral team with a single queue and automated patient updates.", rejection: "A beautiful future-state map has replaced the current one. Box 2 must remain honest about today." },
     ],
+  },
+];
+
+const KEEP_CASE_QUESTIONS: KeepCaseQuestion[] = [
+  {
+    id: "owner",
+    glyph: "⌁",
+    name: "The Vanishing Owner",
+    place: "Stop 01 · The Receiving Gate",
+    clue: "08:07 arrival · 11:42 first open · 02m touch",
+    prompt: "Which field note can travel into the current-state case file?",
+    coaching: "What was directly seen and timed—without explaining why it happened?",
+    options: [
+      "Morning understaffing left the referral unowned until 11:42, demonstrating that additional coordinator coverage is required.",
+      "The referral entered a shared queue at 08:07, waited 3 hours 35 minutes, then received 2 minutes of active review.",
+      "Referrals typically wait about four hours before review, but move quickly once a staff member opens the queue.",
+    ],
+    correct: 1,
+    answer: "CLUE LOGGED: a timestamped arrival, an ownerless queue, and separate wait and touch times—observation without diagnosis.",
+    wrong: {
+      0: "The clue names an untested cause and prescribes staffing. Those claims may be investigated later; neither was observed at the gate.",
+      2: "A rounded generalization replaces this referral’s timestamps. The current state needs the journey that was actually followed.",
+    },
+    evidenceIds: ["arrival", "waiting"],
+  },
+  {
+    id: "route",
+    glyph: "⇄",
+    name: "The Relay Route",
+    place: "Stop 02 · The Bridge of Many Hands",
+    clue: "Coordinator → MA → physician → scheduler",
+    prompt: "Which route belongs in the evidence trail?",
+    coaching: "Follow the referral itself—not the policy, org chart, or preferred future.",
+    options: [
+      "The standard pathway sends complete referrals from the coordinator directly to the physician and then to scheduling.",
+      "The coordinator and MA steps should be combined so referrals reach the physician without an unnecessary transfer.",
+      "This referral moved from coordinator to MA to physician to scheduler, creating three observed responsibility transfers.",
+    ],
+    correct: 2,
+    answer: "CLUE LOGGED: four roles and three responsibility transfers. The route records practiced work rather than the approved road.",
+    wrong: {
+      0: "That is the route printed in the atlas. The case file must follow the referral that actually traveled through the system.",
+      1: "A redesigned route is a countermeasure, not current-state evidence. First map the transfers that happened.",
+    },
+    evidenceIds: ["handoffs"],
+  },
+  {
+    id: "return",
+    glyph: "↺",
+    name: "The Returning File",
+    place: "Stop 03 · The Returning Stair",
+    clue: "Records missing · referral reverses · +2 days",
+    prompt: "Which account preserves the rework loop exactly as observed?",
+    coaching: "Where did the work reverse, and what event marked its return?",
+    options: [
+      "At physician review, missing outside records sent the referral back to the coordinator; it reentered the physician queue two days later.",
+      "The coordinator failed to collect required records, showing the team needs stronger training before referrals can advance.",
+      "A mandatory outside-records checklist should prevent referrals from moving forward until every document is confirmed.",
+    ],
+    correct: 0,
+    answer: "CLUE LOGGED: the point of reversal, the physical return, and the two-day delay are visible without assigning fault.",
+    wrong: {
+      1: "Failure and training are conclusions. The walk established a return caused by missing records—not why the records were missing.",
+      2: "The checklist may become an experiment later. A proposed repair cannot substitute for drawing today’s rework loop.",
+    },
+    evidenceIds: ["rework"],
+  },
+  {
+    id: "warrant",
+    glyph: "▦",
+    name: "The Evidence Warrant",
+    place: "Stop 04 · The Cartographer’s Table",
+    clue: "Seen · timed · counted · heard",
+    prompt: "Issue the one warrant supported entirely by the collected clues.",
+    coaching: "Can every word be traced to something observed, timed, counted, or heard?",
+    options: [
+      "The root problem is fragmented ownership and insufficient staffing, which caused long waits, repeated handoffs, missing records, and poor communication throughout the East Bay referral process.",
+      "Observed journey: 6 steps, 3 handoffs, 2 queues, 1 rework loop, 51 hours 35 minutes waiting, 18 minutes touch time; patient: ‘I called twice and still didn’t know whether you had received the referral.’",
+      "Create one centralized referral team with a single owned queue, automatic record checks, and real-time patient updates to remove handoffs, delays, and uncertainty across the East Bay referral process.",
+    ],
+    correct: 1,
+    answer: "WARRANT ISSUED: every mark is backed by a count, timestamp, observed movement, or the traveler’s own words. The current state can now withstand scrutiny.",
+    wrong: {
+      0: "The warrant overreaches into root cause. Ownership and staffing are hypotheses for Box 4, not observations proven by this trail.",
+      2: "That is a future-state design. The warrant must describe the territory before anyone redraws it.",
+    },
+    evidenceIds: ["arrival", "waiting", "handoffs", "rework", "voice", "map"],
   },
 ];
 
@@ -1513,24 +1615,31 @@ export function QuestExperience() {
   const [chartedObservations, setChartedObservations] = useState<string[]>([]);
   const [keepFeedback, setKeepFeedback] = useState<{ kind: "correct" | "wrong"; text: string } | null>(null);
   const [gembaLensActive, setGembaLensActive] = useState(false);
+  const [keepCaseIndex, setKeepCaseIndex] = useState(0);
+  const [keepCaseCorrect, setKeepCaseCorrect] = useState(false);
+  const [keepAttemptedChoices, setKeepAttemptedChoices] = useState<number[]>([]);
+  const [keepCaseFeedback, setKeepCaseFeedback] = useState<{ kind: "correct" | "wrong"; text: string } | null>(null);
   const hornAudioRef = useRef<HTMLAudioElement>(null);
   const progress = stage === "complete" ? 5 : questionIndex + (correct ? 1 : 0);
   const question = QUESTIONS[questionIndex];
   const forgeSeal = FORGE_SEALS[forgeIndex];
   const sealForged = forgedSeals.includes(forgeSeal.id);
   const keepObservation = KEEP_OBSERVATIONS[keepIndex];
+  const keepCase = KEEP_CASE_QUESTIONS[keepCaseIndex];
   const inForge = stage === "forge-intro" || stage === "forge-game" || stage === "forge-complete";
-  const inKeep = stage === "keep-intro" || stage === "keep-game" || stage === "keep-complete";
+  const inKeep = stage === "keep-intro" || stage === "keep-lens" || stage === "keep-game" || stage === "keep-complete";
   const activeChamber = inForge ? 0 : inKeep ? 1 : stage === "cover" ? null : 3;
 
   useEffect(() => {
     if (!inKeep) return;
     const frame = window.requestAnimationFrame(() => {
-      const selector = stage === "keep-game"
+      const selector = stage === "keep-lens"
         ? ".gemba-lens-board"
-        : stage === "keep-complete"
-          ? ".keep-complete-map"
-          : ".keep-intro-world";
+        : stage === "keep-game"
+          ? ".keep-game-screen"
+          : stage === "keep-complete"
+            ? ".keep-complete-map"
+            : ".keep-intro-world";
       const world = document.querySelector<HTMLElement>(selector);
       if (window.matchMedia("(max-width: 900px)").matches && world) {
         world.scrollIntoView({ block: "start", behavior: "auto" });
@@ -1539,7 +1648,7 @@ export function QuestExperience() {
       }
     });
     return () => window.cancelAnimationFrame(frame);
-  }, [inKeep, keepIndex, stage]);
+  }, [inKeep, keepCaseIndex, keepIndex, stage]);
 
   const resetForge = () => {
     setForgeIndex(0);
@@ -1559,6 +1668,10 @@ export function QuestExperience() {
     setChartedObservations([]);
     setKeepFeedback(null);
     setGembaLensActive(false);
+    setKeepCaseIndex(0);
+    setKeepCaseCorrect(false);
+    setKeepAttemptedChoices([]);
+    setKeepCaseFeedback(null);
   };
 
   const returnHome = () => {
@@ -1608,6 +1721,31 @@ export function QuestExperience() {
       playTone("step", sound);
     }
     setKeepFeedback({ kind: "correct", text: observation.lesson });
+  };
+  const chooseKeepCase = (choiceIndex: number) => {
+    if (keepAttemptedChoices.includes(choiceIndex) || (keepCaseCorrect && choiceIndex === keepCase.correct)) return;
+    if (choiceIndex === keepCase.correct) {
+      setKeepCaseCorrect(true);
+      setKeepCaseFeedback({ kind: "correct", text: keepCase.answer });
+      playKeepSound((["stopwatch", "handoff", "rework", "parchment"] as KeepSound[])[keepCaseIndex], sound);
+      return;
+    }
+    setKeepAttemptedChoices((values) => [...values, choiceIndex]);
+    setKeepCaseFeedback({ kind: "wrong", text: keepCase.wrong[choiceIndex] });
+    playTone("wrong", sound);
+  };
+  const advanceKeepCase = () => {
+    if (!keepCaseCorrect) return;
+    if (keepCaseIndex === KEEP_CASE_QUESTIONS.length - 1) {
+      setStage("keep-complete");
+      playTone("open", sound);
+      return;
+    }
+    setKeepCaseIndex((value) => value + 1);
+    setKeepCaseCorrect(false);
+    setKeepAttemptedChoices([]);
+    setKeepCaseFeedback(null);
+    playTone("step", sound);
   };
   const attemptForge = (fragmentId: string) => {
     if (attemptedFragments.includes(fragmentId)) return;
@@ -1713,10 +1851,10 @@ export function QuestExperience() {
             <p>The approved map shows a flawless road: received, reviewed, scheduled. Three steps. Clear ownership. No waiting. No traveler lost.</p>
             <p>But a map drawn from policy can hide the kingdom it claims to describe.</p>
             <blockquote>&quot;Do not correct the map yet. First earn the right to see the territory.&quot;</blockquote>
-            <p>Awaken the Gemba Lens. Move it across the official pathway and pin every place where practiced work breaks through the parchment.</p>
+            <p>Awaken the Gemba Lens to expose the territory beneath the approved map. Then follow four clue stops and issue a current-state evidence warrant.</p>
           </div>
-          <div className="keep-observation-preview" aria-label="Six discrepancies hidden in the territory">{KEEP_OBSERVATIONS.map((observation, index) => <span key={observation.id}><i>{observation.glyph}</i><b>{String(index + 1).padStart(2, "0")}</b><em>{observation.name}</em></span>)}</div>
-          <button className="primary-button" type="button" onClick={() => { setStage("keep-game"); playKeepSound("footsteps", sound); }}><span>Enter the map room</span><b>→</b></button>
+          <div className="keep-observation-preview" aria-label="The four stops in the current-state case">{KEEP_CASE_QUESTIONS.map((caseQuestion, index) => <span key={caseQuestion.id}><i>{caseQuestion.glyph}</i><b>{String(index + 1).padStart(2, "0")}</b><em>{caseQuestion.name}</em></span>)}</div>
+          <button className="primary-button" type="button" onClick={() => { setStage("keep-lens"); playKeepSound("footsteps", sound); }}><span>Enter the map room</span><b>→</b></button>
         </div>
         <div className="keep-intro-world">
           <GembaLensMap lensActive={false} discovered={[]} />
@@ -1725,10 +1863,10 @@ export function QuestExperience() {
         </div>
       </section>}
 
-      {stage === "keep-game" && <section className="keep-lens-game">
+      {stage === "keep-lens" && <section className="keep-lens-game">
         <div className="keep-lens-heading">
-          <div><div className="quest-kicker">BOX II · THE CARTOGRAPHER&apos;S LIE</div><h1>The map is <em>not</em> the territory.</h1></div>
-          <div className="keep-progress" role="img" aria-label={`${chartedObservations.length} of 6 discrepancies pinned`}>{KEEP_OBSERVATIONS.map((observation) => <span key={observation.id} className={`${chartedObservations.includes(observation.id) ? "lit" : ""} ${observation.id === keepObservation.id ? "current" : ""}`}>{observation.glyph}</span>)}</div>
+          <div><div className="quest-kicker">BOX II · LENS BRIEFING</div><h1>Put the map <em>under the lens.</em></h1></div>
+          <div className="keep-progress" role="img" aria-label="Four clue stops follow this lens briefing">{KEEP_CASE_QUESTIONS.map((caseQuestion, index) => <span key={caseQuestion.id} className={index === 0 ? "current" : ""}>{caseQuestion.glyph}</span>)}</div>
         </div>
         <div className="keep-lens-layout">
           <div className="keep-lens-map-column">
@@ -1751,7 +1889,7 @@ export function QuestExperience() {
               currentId={keepObservation.id}
               onDiscover={discoverKeep}
             />
-            <p className="keep-lens-instruction">{gembaLensActive ? "Move the lens. Select each glowing discrepancy to pin observed evidence." : "Activate the lens to compare documented work with practiced work."}</p>
+            <p className="keep-lens-instruction">{gembaLensActive ? "Move the lens. Inspect any rupture—or open the case file when the principle is clear." : "Activate the lens to compare documented work with practiced work."}</p>
           </div>
           <aside className="keep-lens-ledger" aria-live="polite">
             <div className="chamber-tag">FIELD NOTES · {String(chartedObservations.length).padStart(2, "0")} / 06</div>
@@ -1773,8 +1911,59 @@ export function QuestExperience() {
               const found = chartedObservations.includes(observation.id);
               return <li className={found ? "is-pinned" : ""} key={observation.id}><i>{observation.glyph}</i><div><b>{observation.name}</b><span>{found ? KEEP_LENS_FINDINGS[index].observed : "Hidden in the territory"}</span></div></li>;
             })}</ol>
-            {chartedObservations.length === KEEP_OBSERVATIONS.length && <button className="primary-button lens-complete-button" type="button" onClick={() => { setStage("keep-complete"); playTone("open", sound); }}><span>Reveal the honest map</span><b>→</b></button>}
+            {gembaLensActive && <button className="primary-button lens-complete-button" type="button" onClick={() => { setKeepCaseIndex(0); setKeepCaseCorrect(false); setKeepAttemptedChoices([]); setKeepCaseFeedback(null); setStage("keep-game"); playKeepSound("parchment", sound); }}><span>Open the case file</span><b>→</b></button>}
           </aside>
+        </div>
+      </section>}
+
+      {stage === "keep-game" && <section className="keep-game-screen">
+        <div className="keep-observation-panel">
+          <div className="keep-heading-row">
+            <div><div className="quest-kicker">CASE 02 · CURRENT STATE</div><div className="chamber-tag">Clue {keepCaseIndex + 1} of {KEEP_CASE_QUESTIONS.length} · 2–3 minute field window</div></div>
+            <div className="keep-progress" role="img" aria-label={`${keepCaseIndex + (keepCaseCorrect ? 1 : 0)} of 4 clues logged`}>{KEEP_CASE_QUESTIONS.map((caseQuestion, index) => <span key={caseQuestion.id} className={`${index < keepCaseIndex || (index === keepCaseIndex && keepCaseCorrect) ? "lit" : ""} ${index === keepCaseIndex ? "current" : ""}`}>{caseQuestion.glyph}</span>)}</div>
+          </div>
+          <h1><span>{keepCase.glyph}</span>{keepCase.name}</h1>
+          <p className="keep-prompt">{keepCase.prompt}</p>
+          <blockquote className="keep-coaching">Field Chief: &quot;{keepCase.coaching}&quot;</blockquote>
+          <div className="keep-instruction"><span>{keepCaseCorrect ? "INSPECT" : "SELECT"}</span> {keepCaseCorrect ? "the remaining reports to learn why they fail—or move to the next stop." : "the report that is fully supported by the clue."}</div>
+          <div className="keep-choice-list" aria-label={`${keepCase.name} reports`}>
+            {keepCase.options.map((option, index) => {
+              const attempted = keepAttemptedChoices.includes(index);
+              const correctChoice = keepCaseCorrect && index === keepCase.correct;
+              return <button
+                type="button"
+                disabled={attempted || correctChoice}
+                className={`${attempted ? "is-false" : ""} ${correctChoice ? "is-charted" : ""}`}
+                key={option}
+                data-keep-choice={index}
+                onClick={() => chooseKeepCase(index)}
+              ><span>{String.fromCharCode(65 + index)}</span><b>{option}</b><i aria-hidden="true">◆</i></button>;
+            })}
+          </div>
+          <div className="keep-feedback-slot" aria-live="polite">
+            {keepCaseFeedback && <div className={`keep-feedback ${keepCaseFeedback.kind}`}>
+              <span>{keepCaseFeedback.kind === "correct" ? keepCaseIndex === KEEP_CASE_QUESTIONS.length - 1 ? "EVIDENCE WARRANT READY" : "CLUE LOGGED" : "FALSE TRAIL"}</span>
+              <p>{keepCaseFeedback.text}</p>
+              <small>{keepCaseCorrect ? "Inspect another report, or continue when ready." : "Return to the reports and follow only what was observed."}</small>
+              {keepCaseCorrect && <button type="button" onClick={advanceKeepCase}>{keepCaseIndex === KEEP_CASE_QUESTIONS.length - 1 ? "Issue the evidence warrant" : "Travel to the next clue"}<b>→</b></button>}
+            </div>}
+          </div>
+        </div>
+        <div className={`keep-map-panel ${keepCaseFeedback?.kind === "wrong" ? "is-fractured" : ""}`}>
+          <div className="keep-world-stage">
+            <GembaLensMap lensActive discovered={keepCase.evidenceIds} currentId={keepCase.evidenceIds[0]} complete />
+            <div className="keep-gemba-cue">
+              <span>{keepCase.place}</span>
+              <b>{keepCase.clue}</b>
+              <p>{keepCaseIndex === KEEP_CASE_QUESTIONS.length - 1 ? "Build the warrant" : "Follow the evidence trail"}</p>
+              <small><i>◆</i> CASE FILE · {String(keepCaseIndex + 1).padStart(2, "0")} / 04</small>
+            </div>
+            <div className="keep-map-hud"><span>THE TERRITORY</span><b>CLUE TRAIL ACTIVE</b></div>
+          </div>
+          <div className="keep-map-ledger">
+            <span>FIELD DOSSIER · VERIFIED EVIDENCE</span>
+            <ol>{KEEP_CASE_QUESTIONS.map((caseQuestion, index) => <li className={`${index === keepCaseIndex ? "is-current" : ""} ${index < keepCaseIndex || (index === keepCaseIndex && keepCaseCorrect) ? "is-drawn" : ""}`} key={caseQuestion.id}><i>{caseQuestion.glyph}</i><b>{String(index + 1).padStart(2, "0")} · {caseQuestion.name}</b><p>{index < keepCaseIndex || (index === keepCaseIndex && keepCaseCorrect) ? caseQuestion.clue : "Clue concealed"}</p></li>)}</ol>
+          </div>
         </div>
       </section>}
 
@@ -1785,7 +1974,7 @@ export function QuestExperience() {
           <div className="keep-complete-sigils" aria-label="All six observations mapped">{KEEP_OBSERVATIONS.map((observation) => <span key={observation.id}>{observation.glyph}</span>)}</div>
         </div>
         <div className="keep-complete-story">
-          <div className="quest-kicker">CURRENT CONDITION · REVEALED</div>
+          <div className="quest-kicker">CASE CLOSED · EVIDENCE WARRANT ISSUED</div>
           <h1>Territory<br /><em>revealed.</em></h1>
           <p className="keep-completion-lead">The approved map showed a straight road. Your lens revealed six steps, three handoffs, two queues, one rework loop—and the traveler&apos;s own voice.</p>
           <div className="keep-truth-table">

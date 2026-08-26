@@ -72,9 +72,27 @@ test("includes the Herald's Forge and preserves the full Door of Whys experience
   assert.match(source, /THE PROCESS AS PRACTICED/);
   assert.match(source, /THE MAP SAID/);
   assert.match(source, /GEMBA SHOWED/);
-  assert.match(source, /Move the lens\. Select each glowing discrepancy/);
+  assert.match(source, /Move the lens\. Inspect any rupture—or open the case file when the principle is clear/);
   assert.match(source, /GembaLensMap/);
   assert.match(source, /KEEP_LENS_FINDINGS/);
+  assert.match(source, /KEEP_CASE_QUESTIONS/);
+  const keepCaseBlock = source.slice(source.indexOf("const KEEP_CASE_QUESTIONS"), source.indexOf("const KEEP_LENS_FINDINGS"));
+  const keepOptionGroups = [...keepCaseBlock.matchAll(/options:\s*\[\s*"([^"]+)",\s*"([^"]+)",\s*"([^"]+)",\s*\]/g)].map((match) => match.slice(1));
+  assert.equal((keepCaseBlock.match(/correct:/g) ?? []).length, 4);
+  assert.equal(keepOptionGroups.length, 4);
+  for (const [index, options] of keepOptionGroups.entries()) {
+    const wordCounts = options.map((option) => option.trim().split(/\s+/).length);
+    assert.ok(Math.max(...wordCounts) - Math.min(...wordCounts) <= 8, `Box 2 clue ${index + 1} reveals its answer by length`);
+  }
+  assert.match(source, /The Vanishing Owner/);
+  assert.match(source, /The Relay Route/);
+  assert.match(source, /The Returning File/);
+  assert.match(source, /The Evidence Warrant/);
+  assert.match(source, /data-keep-choice=/);
+  assert.match(source, /disabled=\{attempted \|\| correctChoice\}/);
+  assert.match(source, /keepCaseCorrect && <button type="button" onClick=\{advanceKeepCase\}>/);
+  assert.match(source, /Issue the evidence warrant/);
+  assert.match(source, /2–3 minute field window/);
   assert.match(source, /What did you see enter the process—and at what exact time\?/);
   assert.match(source, /3 hours 35 minutes waiting/);
   assert.match(source, /coordinator to MA to physician to scheduler/);
@@ -92,7 +110,8 @@ test("includes the Herald's Forge and preserves the full Door of Whys experience
   assert.match(source, /gembaLensActive/);
   assert.match(source, /scrollIntoView\(\{ block: "start", behavior: "auto" \}\)/);
   assert.match(source, /window\.matchMedia\("\(max-width: 900px\)"\)/);
-  assert.match(source, /Reveal the honest map/);
+  assert.match(source, /Open the case file/);
+  assert.match(source, /setStage\("keep-lens"\)/);
   assert.match(source, /setStage\("forge-intro"\)/);
   assert.match(source, /The Herald(?:&apos;|')s Forge/);
   assert.match(source, /className="seal-name"/);
