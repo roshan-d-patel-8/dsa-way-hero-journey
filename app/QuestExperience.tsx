@@ -161,9 +161,9 @@ const FORGE_SEALS: ForgeSeal[] = [
     correctId: "background-evidence",
     lesson: "Context forged: the reader can see the setting, the pattern, and the measured pain.",
     fragments: [
-      { id: "background-blame", text: "Schedulers keep mishandling referrals and creating delays.", rejection: "Blame is not background. It narrows the search to a person before the work is understood." },
+      { id: "background-blame", text: "Since January, scheduling staff at the East Bay clinic have mishandled adult new-GI referrals, causing long waits and rising patient dissatisfaction.", rejection: "Blame is not background. It narrows the search to a person before the work is understood." },
       { id: "background-evidence", text: "Since January, adult new-GI referrals at the East Bay clinic have waited a median 24 days for first review; 42% wait longer than 30 days.", rejection: "" },
-      { id: "background-solution", text: "A centralized referral team would finally give the clinic enough capacity.", rejection: "A countermeasure has entered before the problem is visible. The forge rejects solutions in the background." },
+      { id: "background-solution", text: "Since January, the East Bay clinic has needed a centralized referral team with dedicated staff to reduce delays for adult new-GI patients.", rejection: "A countermeasure has entered before the problem is visible. The forge rejects solutions in the background." },
     ],
   },
   {
@@ -175,8 +175,8 @@ const FORGE_SEALS: ForgeSeal[] = [
     correctId: "problem-gap",
     lesson: "Gap forged: specific, time-anchored, recurring, and free of blame or prescribed fixes.",
     fragments: [
-      { id: "problem-vague", text: "Referral access is terrible and patients are frustrated.", rejection: "The pain may be real, but 'terrible' cannot be measured. The quest still has no trajectory." },
-      { id: "problem-capacity", text: "The clinic does not have enough physicians to review referrals.", rejection: "That names a presumed cause — and smuggles in the solution of adding physicians." },
+      { id: "problem-vague", text: "Adult new-GI referrals at the East Bay clinic face unacceptable delays, leaving patients frustrated and staff overwhelmed by an unreliable review process.", rejection: "The pain may be real, but 'unacceptable' and 'unreliable' cannot be measured. The quest still has no trajectory." },
+      { id: "problem-capacity", text: "Adult new-GI referrals wait too long because the East Bay clinic lacks enough physicians to review the growing volume within fourteen days.", rejection: "That names a presumed cause — and smuggles in the solution of adding physicians." },
       { id: "problem-gap", text: "New-GI referrals are not meeting the 14-day review standard: median review time is 24 days, with 42% waiting more than 30 days.", rejection: "" },
     ],
   },
@@ -189,51 +189,23 @@ const FORGE_SEALS: ForgeSeal[] = [
     correctId: "aim-outcome",
     lesson: "Aim forged: a measurable outcome, a deadline, and protection against shifting burden to staff.",
     fragments: [
-      { id: "aim-project", text: "Hire a referral coordinator and launch a dashboard by November.", rejection: "Those are interventions, not an aim. The destination should survive even if the route changes." },
+      { id: "aim-project", text: "Hire one referral coordinator, add two physician review sessions, and launch a live referral dashboard at the East Bay clinic by November 30.", rejection: "Those are interventions, not an aim. The destination should survive even if the route changes." },
       { id: "aim-outcome", text: "Reduce median referral-review time from 24 to 14 days or less by November 30, without increasing physician after-hours work.", rejection: "" },
-      { id: "aim-vague", text: "Improve referral access as soon as possible.", rejection: "No number, no date, no recognizable finish line. The target remains in fog." },
+      { id: "aim-vague", text: "Improve adult new-GI referral access by November 30 so patients are reviewed sooner and physicians experience less after-hours work.", rejection: "The date is useful, but there is no measurable magnitude or recognizable finish line. The target remains in fog." },
     ],
   },
   {
-    id: "trigger",
+    id: "charter",
     glyph: "⚡",
-    name: "Trigger",
-    prompt: "Strike the signal that explains why this problem rises above the noise now.",
-    coaching: "What specifically happened that made this the moment to act?",
-    correctId: "trigger-signal",
-    lesson: "Trigger forged: an observable threshold explains why deliberate action begins now.",
+    name: "Trigger · Scope · Done",
+    prompt: "Choose the charter that explains why action begins now, bounds the work, and defines a sustained finish.",
+    coaching: "Why now? What is explicitly in and out? What proves the gain will hold?",
+    correctId: "charter-objective",
+    lesson: "Charter forged: an observable trigger, disciplined boundaries, and a sustained handoff make the quest actionable.",
     fragments: [
-      { id: "trigger-drift", text: "People have been unhappy with referrals for quite a while.", rejection: "A long-standing irritation is not a trigger. What crossed a line now?" },
-      { id: "trigger-vendor", text: "A vendor demonstrated a faster referral-triage platform last month.", rejection: "A tool looking for a problem is not a reason for action." },
-      { id: "trigger-signal", text: "For three consecutive months, the over-30-day backlog exceeded 40%, while referral-related patient complaints doubled.", rejection: "" },
-    ],
-  },
-  {
-    id: "scope",
-    glyph: "◇",
-    name: "Scope",
-    prompt: "Set guardrails tight enough to act, but wide enough to contain the recurring problem.",
-    coaching: "What is in play — and what is explicitly excluded?",
-    correctId: "scope-guardrails",
-    lesson: "Scope forged: one coherent process is protected from both mission creep and anecdotal narrowing.",
-    fragments: [
-      { id: "scope-everything", text: "In scope: all access problems, all specialties, and every East Bay site.", rejection: "The rope snaps. This is a portfolio of problems, not one solvable quest." },
-      { id: "scope-guardrails", text: "In: adult new-GI referrals to the East Bay clinic. Out: urgent referrals, procedure scheduling, and established-patient follow-up.", rejection: "" },
-      { id: "scope-anecdote", text: "In scope: the single referral that waited 61 days last Tuesday.", rejection: "One dramatic event cannot define the boundary of a recurring system condition." },
-    ],
-  },
-  {
-    id: "done",
-    glyph: "✓",
-    name: "Done",
-    prompt: "Choose the observable condition that allows the team to close the A3 and hand off ownership.",
-    coaching: "What lets us finish — not merely stop?",
-    correctId: "done-sustained",
-    lesson: "Done forged: the target is sustained, standard work exists, and an owner accepts the process.",
-    fragments: [
-      { id: "done-feeling", text: "Done when everyone agrees the process feels much better.", rejection: "Agreement is valuable, but feeling better cannot prove the problem stayed solved." },
-      { id: "done-launch", text: "Done when the new referral dashboard goes live.", rejection: "A deliverable is not an outcome. Launching a tool may leave the original gap untouched." },
-      { id: "done-sustained", text: "Median review time remains 14 days or less for eight consecutive weeks; standard work is adopted and an operational owner accepts monitoring.", rejection: "" },
+      { id: "charter-anecdote", text: "Trigger: one referral waited 61 days last Tuesday. Scope: every access problem across every East Bay specialty. Done: patients and staff agree the redesigned process feels substantially better.", rejection: "Anecdote, mission creep, and sentiment cannot anchor a charter. The forge needs a recurring signal, a workable boundary, and a measurable handoff." },
+      { id: "charter-solution", text: "Trigger: a vendor demonstrated a triage platform last month. Scope: adult new-GI referrals across the region. Done: the dashboard launches with automated updates and every staff member completes training.", rejection: "A vendor, a broad region, and completed deliverables do not prove the problem warrants action or that the outcome is sustained." },
+      { id: "charter-objective", text: "Trigger: the over-30-day backlog exceeded 40% for three months. Scope: adult new-GI referrals, excluding urgent, procedural, and follow-up work. Done: median review stays at or below 14 days for eight weeks with an operational owner.", rejection: "" },
     ],
   },
 ];
@@ -1849,9 +1821,9 @@ export function QuestExperience() {
             <p>The proclamation reached every corner of the clinic:</p>
             <blockquote>&quot;Access is terrible. We need more clinics.&quot;</blockquote>
             <p>No one rallied. The patient heard a complaint. The physician heard blame. The steward heard an expensive solution searching for a problem.</p>
-            <p>At the old forge wait six seals. Shape the evidence into a case for action that a stranger can understand—and a system can act upon.</p>
+            <p>At the old forge wait four seals. Shape the evidence into a case for action that a stranger can understand—and a system can act upon.</p>
           </div>
-          <div className="forge-seal-preview" aria-label="The six seals of Box 1">{FORGE_SEALS.map((seal, index) => <span key={seal.id}><i>{seal.glyph}</i><b>{String(index + 1).padStart(2, "0")}</b><em className="seal-name">{seal.name}</em></span>)}</div>
+          <div className="forge-seal-preview" aria-label="The four seals of Box 1">{FORGE_SEALS.map((seal, index) => <span key={seal.id}><i>{seal.glyph}</i><b>{String(index + 1).padStart(2, "0")}</b><em className="seal-name">{seal.name}</em></span>)}</div>
           <button className="primary-button" type="button" onClick={() => { setStage("forge-game"); playTone("step", sound); }}><span>Enter the forge</span><b>→</b></button>
         </div>
       </section>}
@@ -1860,7 +1832,7 @@ export function QuestExperience() {
         <div className="forge-workbench">
           <div className="forge-heading-row">
             <div><div className="quest-kicker">THE HERALD&apos;S FORGE</div><div className="chamber-tag">Seal {forgeIndex + 1} of {FORGE_SEALS.length}</div></div>
-            <div className="forge-seal-meter" role="img" aria-label={`${forgedSeals.length} of 6 seals forged`}>{FORGE_SEALS.map((seal, index) => <span key={seal.id} className={`${forgedSeals.includes(seal.id) ? "lit" : ""} ${index === forgeIndex ? "current" : ""}`}>{seal.glyph}</span>)}</div>
+            <div className="forge-seal-meter" role="img" aria-label={`${forgedSeals.length} of ${FORGE_SEALS.length} seals forged`}>{FORGE_SEALS.map((seal, index) => <span key={seal.id} className={`${forgedSeals.includes(seal.id) ? "lit" : ""} ${index === forgeIndex ? "current" : ""}`}>{seal.glyph}</span>)}</div>
           </div>
           <h1><span>{forgeSeal.glyph}</span>{forgeSeal.name}</h1>
           <p className="forge-prompt">{forgeSeal.prompt}</p>
@@ -1912,7 +1884,7 @@ export function QuestExperience() {
         <div className="forge-complete-story">
           <div className="quest-kicker">THE STRANGER TEST · PASSED</div>
           <h1>The summons<br /><em>holds.</em></h1>
-          <p className="forge-completion-lead">Six seals, one coherent case for action. The proclamation can now be repeated by someone who has never entered the clinic.</p>
+          <p className="forge-completion-lead">Four seals, one coherent case for action. The proclamation can now be repeated by someone who has never entered the clinic.</p>
           <div className="stranger-echo">
             <span>THE OUTSIDER ECHOES BACK</span>
             <dl>
@@ -1940,7 +1912,7 @@ export function QuestExperience() {
               {/* The supplied transparent asset is preserved verbatim and staged with CSS lighting. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img className="gjallarhorn-art" src="heralds-horn.png" alt="An ornate gold-and-black legendary horn" width="1200" height="1361" />
-              <div className="victory-seals" aria-label="All six Box 1 seals forged">{FORGE_SEALS.map((seal) => <span key={seal.id}>{seal.glyph}</span>)}</div>
+              <div className="victory-seals" aria-label="All four Box 1 seals forged">{FORGE_SEALS.map((seal) => <span key={seal.id}>{seal.glyph}</span>)}</div>
             </>}
           </div>
           {hornRevealed ? <div className="forge-weapon-card">
@@ -1948,9 +1920,9 @@ export function QuestExperience() {
             <h2><small>THE</small> HERALD&apos;S HORN</h2>
             <p>A case for action that is bounded, measurable, urgent, achievable—and human.</p>
             <p className="gjallarhorn-reference"><span>MYTHIC ECHO</span> A visual homage to <cite>Gjallarhorn</cite> from <cite>God of War Ragnarök</cite>.</p>
-          </div> : <div className="sealed-reward-card"><span>LEGENDARY TOOL SEALED</span><b>???</b><p>The six seals have opened one final mystery.</p></div>}
+          </div> : <div className="sealed-reward-card"><span>LEGENDARY TOOL SEALED</span><b>???</b><p>The four seals have opened one final mystery.</p></div>}
           <div className="forged-charter">
-            <span>THE SIX-SEALED CHARTER</span>
+            <span>THE FOUR-SEALED CHARTER</span>
             <ol>{FORGE_SEALS.map((seal) => <li key={seal.id}><b>{seal.name}</b><p>{seal.fragments.find(({ id }) => id === seal.correctId)?.text}</p></li>)}</ol>
           </div>
           <div className="forge-complete-actions">

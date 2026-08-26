@@ -96,12 +96,21 @@ test("includes the Herald's Forge and preserves the full Door of Whys experience
   assert.match(source, /setStage\("forge-intro"\)/);
   assert.match(source, /The Herald(?:&apos;|')s Forge/);
   assert.match(source, /className="seal-name"/);
+  const forgeBlock = source.slice(source.indexOf("const FORGE_SEALS"), source.indexOf("const KEEP_OBSERVATIONS"));
+  const forgeFragments = [...forgeBlock.matchAll(/\{ id: "[^"]+", text: "([^"]+)", rejection:/g)].map((match) => match[1]);
+  assert.equal((forgeBlock.match(/correctId:/g) ?? []).length, 4);
+  assert.equal(forgeFragments.length, 12);
+  for (let index = 0; index < forgeFragments.length; index += 3) {
+    const wordCounts = forgeFragments.slice(index, index + 3).map((fragment) => fragment.trim().split(/\s+/).length);
+    assert.ok(Math.max(...wordCounts) - Math.min(...wordCounts) <= 7, `Forge seal ${index / 3 + 1} reveals its answer by length`);
+  }
   assert.match(source, /Background/);
   assert.match(source, /Problem Statement/);
   assert.match(source, /Aim/);
-  assert.match(source, /Trigger/);
-  assert.match(source, /Scope/);
-  assert.match(source, /Done/);
+  assert.match(source, /Trigger · Scope · Done/);
+  assert.match(source, /The four seals of Box 1/);
+  assert.match(source, /THE FOUR-SEALED CHARTER/);
+  assert.doesNotMatch(forgeBlock, /id: "trigger"|id: "scope"|id: "done"/);
   assert.match(source, /THE STRANGER TEST/);
   assert.match(source, /HERALD(?:&apos;|')S HORN/);
   assert.match(source, /heralds-horn\.png/);
@@ -140,6 +149,7 @@ test("includes the Herald's Forge and preserves the full Door of Whys experience
   assert.match(css, /:has\(\.a3-tile:is\(:hover,:focus-visible\)\)/);
   assert.match(css, /brightness\(\.27\)/);
   assert.match(css, /\.forge-intro-screen/);
+  assert.match(css, /\.forge-seal-preview \{[^}]*grid-template-columns:repeat\(2,minmax\(0,1fr\)\)[^}]*grid-template-rows:repeat\(2,minmax\(84px,auto\)\)/);
   assert.match(css, /\.forge-seal-preview > span \{[^}]*clamp\(\.86rem,\.95vw,\.96rem\)/);
   assert.match(css, /\.forge-seal-preview i \{[^}]*font-size:\s*1\.6rem/);
   assert.match(css, /\.forge-seal-preview \.seal-name \{[^}]*min-height:2\.5em/);
