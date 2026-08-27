@@ -27,9 +27,47 @@ test("server-renders the DSA Way quest", async () => {
   assert.match(html, /Gap Analysis/);
   assert.match(html, /ENTER THE HERALD(?:&#x27;|')S FORGE/);
   assert.match(html, /ENTER THE CARTOGRAPHER(?:&#x27;|')S LIE/);
+  assert.match(html, /ENTER THE NORTH STAR OBSERVATORY/);
   assert.match(html, /ENTER THE DOOR OF WHYS/);
+  assert.match(html, /ENTER THE ARMORY OF MANY KEYS/);
+  assert.match(html, /ENTER THE CLOCKWORK PDSA LABORATORY/);
+  assert.match(html, /ENTER THE EXPEDITION LEDGER/);
+  assert.match(html, /ENTER THE DRAGON(?:&#x27;|')S TRIBUNAL/);
+  assert.match(html, /ENTER RETURN WITH THE ELIXIR/);
+  assert.match(html, /All nine chambers are ready/);
+  assert.equal((html.match(/PLAYABLE/g) ?? []).length, 9);
   assert.doesNotMatch(html, /Hover to reveal each chamber\. Select Box 4 to enter The Door of Whys\./);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton|Your site is taking shape/i);
+});
+
+test("all six new chambers contain four balanced, replayable learning trials", async () => {
+  const [data, component, source, css] = await Promise.all([
+    readFile(new URL("../app/remainingChambersData.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/RemainingChamberQuest.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/QuestExperience.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  ]);
+  for (const title of ["The North Star Observatory", "The Armory of Many Keys", "The Clockwork PDSA Laboratory", "The Expedition Ledger", "The Dragon's Tribunal", "Return with the Elixir"]) assert.match(data, new RegExp(title.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  for (const label of ["Target State", "Solutions Approach", "Rapid Experiments", "Completion Plan", "Confirmed State", "Insights"]) assert.match(data, new RegExp(label));
+  assert.equal((data.match(/correct:\s*[012],/g) ?? []).length, 24);
+  const optionGroups = [...data.matchAll(/options:\s*\[\s*"([^"]+)",\s*"([^"]+)",\s*"([^"]+)",\s*\]/g)].map((match) => match.slice(1));
+  assert.equal(optionGroups.length, 24);
+  for (const [index, options] of optionGroups.entries()) {
+    const wordCounts = options.map((option) => option.trim().split(/\s+/).length);
+    assert.ok(Math.max(...wordCounts) - Math.min(...wordCounts) <= 8, `New chamber trial ${index + 1} reveals its answer by length`);
+  }
+  assert.match(source, /type Stage = [^;]+\| "remaining"/);
+  assert.match(source, /isRemainingBoxNumber\(boxNumber\)/);
+  assert.match(source, /<RemainingChamberQuest/);
+  assert.match(component, /disabled=\{attempted \|\| \(correct && correctChoice\)\}/);
+  assert.match(component, /Inspect another path, or continue when you are ready\./);
+  assert.match(component, /playChamberSound/);
+  assert.match(component, /AudioContext/);
+  assert.match(component, /setAttemptedChoices\(\[\]\)/);
+  assert.match(component, /setPhase\("intro"\)/);
+  assert.match(component, /\[phase, trialIndex\]/);
+  for (const box of [3, 5, 6, 7, 8, 9]) assert.match(css, new RegExp(`\\.rc-box-${box}`));
+  assert.match(css, /@media \(max-width: 680px\)/);
 });
 
 test("includes the Herald's Forge and preserves the full Door of Whys experience", async () => {

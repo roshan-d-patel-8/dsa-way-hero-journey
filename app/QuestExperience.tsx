@@ -5,8 +5,10 @@ import * as THREE from "three";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
+import { RemainingChamberQuest } from "./RemainingChamberQuest";
+import { REMAINING_CHAMBER_SPECS, isRemainingBoxNumber, type RemainingBoxNumber } from "./remainingChambersData";
 
-type Stage = "cover" | "forge-intro" | "forge-game" | "forge-complete" | "keep-intro" | "keep-lens" | "keep-game" | "keep-complete" | "threshold" | "questions" | "complete";
+type Stage = "cover" | "forge-intro" | "forge-game" | "forge-complete" | "keep-intro" | "keep-lens" | "keep-game" | "keep-complete" | "remaining" | "threshold" | "questions" | "complete";
 
 type Question = {
   known: string;
@@ -165,6 +167,18 @@ const A3_BOXES = [
 ] as const;
 
 const CHAMBERS = A3_BOXES.map(({ label }) => label);
+
+const CHAMBER_QUEST_NAMES: Record<number, string> = {
+  1: "THE HERALD'S FORGE",
+  2: "THE CARTOGRAPHER'S LIE",
+  3: "THE NORTH STAR OBSERVATORY",
+  4: "THE DOOR OF WHYS",
+  5: "THE ARMORY OF MANY KEYS",
+  6: "THE CLOCKWORK PDSA LABORATORY",
+  7: "THE EXPEDITION LEDGER",
+  8: "THE DRAGON'S TRIBUNAL",
+  9: "RETURN WITH THE ELIXIR",
+};
 
 const FORGE_SEALS: ForgeSeal[] = [
   {
@@ -1613,7 +1627,7 @@ export function QuestExperience() {
   const [correct, setCorrect] = useState(false);
   const [sound, setSound] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [previewBox, setPreviewBox] = useState<number | null>(null);
+  const [remainingBoxNumber, setRemainingBoxNumber] = useState<RemainingBoxNumber | null>(null);
   const [forgeIndex, setForgeIndex] = useState(0);
   const [forgedSeals, setForgedSeals] = useState<string[]>([]);
   const [attemptedFragments, setAttemptedFragments] = useState<string[]>([]);
@@ -1636,7 +1650,7 @@ export function QuestExperience() {
   const keepCase = KEEP_CASE_QUESTIONS[keepCaseIndex];
   const inForge = stage === "forge-intro" || stage === "forge-game" || stage === "forge-complete";
   const inKeep = stage === "keep-intro" || stage === "keep-lens" || stage === "keep-game" || stage === "keep-complete";
-  const activeChamber = inForge ? 0 : inKeep ? 1 : stage === "cover" ? null : 3;
+  const activeChamber = inForge ? 0 : inKeep ? 1 : stage === "remaining" && remainingBoxNumber ? remainingBoxNumber - 1 : stage === "cover" ? null : 3;
 
   useEffect(() => {
     if (!inKeep) return;
@@ -1688,7 +1702,7 @@ export function QuestExperience() {
     setQuestionIndex(0);
     setWrongChoice(null);
     setCorrect(false);
-    setPreviewBox(null);
+    setRemainingBoxNumber(null);
     setMenuOpen(false);
     setStage("cover");
   };
@@ -1696,26 +1710,29 @@ export function QuestExperience() {
   const enterBox = (boxNumber: number) => {
     if (boxNumber === 1) {
       resetForge();
-      setPreviewBox(null);
+      setRemainingBoxNumber(null);
       setStage("forge-intro");
       playTone("start", sound);
       return;
     }
     if (boxNumber === 2) {
       resetKeep();
-      setPreviewBox(null);
+      setRemainingBoxNumber(null);
       setStage("keep-intro");
       playTone("start", sound);
       return;
     }
     if (boxNumber === 4) {
-      setPreviewBox(null);
+      setRemainingBoxNumber(null);
       setStage("threshold");
       playTone("start", sound);
       return;
     }
-    setPreviewBox(boxNumber);
-    playTone("step", sound);
+    if (isRemainingBoxNumber(boxNumber)) {
+      setRemainingBoxNumber(boxNumber);
+      setStage("remaining");
+      playTone("start", sound);
+    }
   };
   const discoverKeep = (observationId: string) => {
     const index = KEEP_OBSERVATIONS.findIndex(({ id }) => id === observationId);
@@ -1817,38 +1834,36 @@ export function QuestExperience() {
         <div className="map-heading"><span>THE NINE CHAMBERS</span><button onClick={() => setMenuOpen(false)} aria-label="Close quest map">×</button></div>
         <ol>{CHAMBERS.map((chamber, index) => {
           const active = index === activeChamber;
-          const ready = index === 0 || index === 1 || index === 3;
-          return <li className={active ? "active" : ready ? "ready" : "locked"} key={chamber}><span>{String(index + 1).padStart(2, "0")}</span><b>{chamber}</b><i>{active ? "ACTIVE" : ready ? "READY" : "LOCKED"}</i></li>;
+          return <li className={active ? "active" : "ready"} key={chamber}><span>{String(index + 1).padStart(2, "0")}</span><b>{chamber}</b><i>{active ? "ACTIVE" : "READY"}</i></li>;
         })}</ol>
-        <p>{inForge ? "Box I — Reason for Action — The Herald's Forge." : inKeep ? "Box II — Current State — The Cartographer's Lie." : "Boxes I, II, and IV are ready. The other A3 chambers are still being forged."}</p>
+        <p>{inForge ? "Box I — Reason for Action — The Herald's Forge." : inKeep ? "Box II — Current State — The Cartographer's Lie." : stage === "remaining" && remainingBoxNumber ? `Box ${remainingBoxNumber} — ${REMAINING_CHAMBER_SPECS[remainingBoxNumber].a3Label} — ${REMAINING_CHAMBER_SPECS[remainingBoxNumber].concept}.` : stage === "cover" ? "All nine chambers are ready. Choose any A3 box to begin its quest." : "Box IV — Gap Analysis — The Door of Whys."}</p>
       </aside>
 
       {stage === "cover" && <section className="a3-home">
         <div className="a3-home-heading">
           <div><div className="eyebrow"><span>09</span> A DSA LEARNING QUEST</div><h1>The DSA Way: <em>The Hero&apos;s Journey</em></h1></div>
-          <p>Nine chambers shape the A3. Choose a box to reveal its path; Boxes 1, 2, and 4 are ready to play.</p>
+          <p>Nine chambers shape the A3. Choose any box to begin its two-to-three-minute learning quest.</p>
         </div>
         <div className="a3-grid-viewport">
           <div className="a3-grid" aria-label="The nine boxes of the A3">
             {A3_BOXES.map((box) => <button
-              className={`a3-tile a3-box-${box.number} ${box.number === 1 || box.number === 2 || box.number === 4 ? "is-playable" : ""} ${previewBox === box.number ? "is-previewed" : ""}`}
+              className={`a3-tile a3-box-${box.number} is-playable`}
               type="button"
               key={box.number}
               onClick={() => enterBox(box.number)}
-              aria-label={box.number === 1 ? "Box 1: Reason for Action. Enter The Herald's Forge" : box.number === 2 ? "Box 2: Current State. Enter The Cartographer's Lie" : box.number === 4 ? "Box 4: Gap Analysis. Enter The Door of Whys" : `Box ${box.number}: ${box.label}. Activity coming soon`}
+              aria-label={`Box ${box.number}: ${box.label}. Enter ${CHAMBER_QUEST_NAMES[box.number]}`}
             >
               {/* Public-path artwork stays compatible with both the app runtime and GitHub Pages. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={`a3/box-${box.number}.jpg`} alt="" width="3840" height="2160" loading={box.number <= 4 ? "eager" : "lazy"} decoding="async" />
-              <span className="a3-tile-overlay"><small>BOX {String(box.number).padStart(2, "0")}</small><b>{box.label}</b><em>{box.number === 1 ? "ENTER THE HERALD'S FORGE" : box.number === 2 ? "ENTER THE CARTOGRAPHER'S LIE" : box.number === 4 ? "ENTER THE DOOR OF WHYS" : "ACTIVITY COMING SOON"}</em></span>
-              {(box.number === 1 || box.number === 2 || box.number === 4) && <span className="a3-playable-badge">PLAYABLE</span>}
+              <span className="a3-tile-overlay"><small>BOX {String(box.number).padStart(2, "0")}</small><b>{box.label}</b><em>{`ENTER ${CHAMBER_QUEST_NAMES[box.number]}`}</em></span>
+              <span className="a3-playable-badge">PLAYABLE</span>
             </button>)}
           </div>
         </div>
-        <p className="a3-home-status" aria-live="polite">{previewBox
-          ? `The ${A3_BOXES[previewBox - 1].label} activity has not been forged yet. Boxes 1, 2, and 4 are ready to play.`
-          : null}</p>
       </section>}
+
+      {stage === "remaining" && remainingBoxNumber && <RemainingChamberQuest boxNumber={remainingBoxNumber} sound={sound} onExit={returnHome} />}
 
       {stage === "keep-intro" && <section className="keep-intro-screen">
         <div className="keep-intro-copy">
