@@ -34,6 +34,21 @@ test("GitHub Pages includes a visible startup shell and deployable assets", asyn
 
   const hornImage = await stat(new URL("../dist-pages/heralds-horn.png", import.meta.url));
   assert.ok(hornImage.size > 1_000_000, "the supplied ornate horn artwork should ship intact");
+  const relicImages = (await readdir(new URL("../dist-pages/relics/", import.meta.url))).filter((file) => file.endsWith(".webp"));
+  assert.deepEqual(relicImages.sort(), [
+    "clockwork-learning-orb.webp",
+    "commanders-war-map.webp",
+    "elixir-of-hansei.webp",
+    "five-whys.webp",
+    "lantern-of-gemba.webp",
+    "north-star-compass.webp",
+    "quiver-of-countermeasures.webp",
+    "truthful-mirror.webp",
+  ]);
+  for (const image of relicImages) {
+    const imageStats = await stat(new URL(`../dist-pages/relics/${image}`, import.meta.url));
+    assert.ok(imageStats.size > 100_000, `${image} should retain high-detail relic artwork`);
+  }
   const hornAudio = await stat(new URL("../dist-pages/gjallarhorn-reveal.mp3", import.meta.url));
   assert.ok(hornAudio.size > 100_000, "the faded Gjallarhorn reveal clip should ship intact");
 });

@@ -70,6 +70,31 @@ test("all six new chambers contain four balanced, replayable learning trials", a
   assert.match(css, /@media \(max-width: 680px\)/);
 });
 
+test("all eight post-Herald chambers use the shared click-to-awaken relic experience", async () => {
+  const [reveal, remaining, source, css] = await Promise.all([
+    readFile(new URL("../app/RelicReveal.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/RemainingChamberQuest.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/QuestExperience.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  ]);
+  for (const asset of ["lantern-of-gemba", "north-star-compass", "five-whys", "quiver-of-countermeasures", "clockwork-learning-orb", "commanders-war-map", "truthful-mirror", "elixir-of-hansei"]) {
+    assert.match(reveal, new RegExp(`relics/${asset}\\.webp`));
+  }
+  assert.match(reveal, /SEALED RELIC/);
+  assert.match(reveal, /AWAKEN/);
+  assert.match(reveal, /playRelicRevealSound/);
+  assert.ok(reveal.includes('aria-label={`Awaken the sealed Box ${boxNumber} relic`}'));
+  assert.ok(remaining.includes("<RelicReveal boxNumber={boxNumber}"));
+  assert.match(remaining, /relicRevealed \? <div className="rc-reward-card relic-card-awakened">/);
+  assert.ok(source.includes("<RelicReveal boxNumber={2}"));
+  assert.ok(source.includes("<RelicReveal boxNumber={4}"));
+  assert.match(source, /lanternRevealed \? <div className="keep-weapon-card relic-card-awakened">/);
+  assert.match(source, /whysRevealed \? <div className="weapon-card relic-card-awakened">/);
+  assert.match(css, /\.relic-reveal-stage/);
+  assert.match(css, /@keyframes relicObjectMaterialize/);
+  assert.match(css, /prefers-reduced-motion/);
+});
+
 test("includes the Herald's Forge and preserves the full Door of Whys experience", async () => {
   const [source, css, packageJson, layout, ogImage, hornImage, hornAudio] = await Promise.all([
     readFile(new URL("../app/QuestExperience.tsx", import.meta.url), "utf8"),
@@ -86,7 +111,7 @@ test("includes the Herald's Forge and preserves the full Door of Whys experience
   assert.match(source, /Inspect another path, or continue when you are ready\./);
   assert.match(source, /the rune remains lit/);
   assert.match(source, /curiosity with stamina/);
-  assert.match(source, /ALL RUNES AWAKENED/);
+  assert.match(source, /whysRevealed/);
   assert.match(source, /UnrealBloomPass/);
   assert.match(source, /runeStrokes/);
   assert.match(source, /import \* as THREE from "three"/);

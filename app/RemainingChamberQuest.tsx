@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type CSSProperties } from "react";
 import { REMAINING_CHAMBER_SPECS, type RemainingBoxNumber } from "./remainingChambersData";
+import { RelicReveal } from "./RelicReveal";
 
 type Feedback = { kind: "correct" | "wrong"; text: string } | null;
 type ChamberSound = "start" | "step" | "correct" | "wrong" | "complete";
@@ -48,6 +49,7 @@ export function RemainingChamberQuest({ boxNumber, sound, onExit }: { boxNumber:
   const [correct, setCorrect] = useState(false);
   const [attemptedChoices, setAttemptedChoices] = useState<number[]>([]);
   const [feedback, setFeedback] = useState<Feedback>(null);
+  const [relicRevealed, setRelicRevealed] = useState(false);
   const trial = spec.trials[trialIndex];
   const progress = phase === "complete" ? 4 : trialIndex + (correct ? 1 : 0);
 
@@ -57,6 +59,7 @@ export function RemainingChamberQuest({ boxNumber, sound, onExit }: { boxNumber:
     setCorrect(false);
     setAttemptedChoices([]);
     setFeedback(null);
+    setRelicRevealed(false);
   };
 
   useEffect(() => {
@@ -109,12 +112,12 @@ export function RemainingChamberQuest({ boxNumber, sound, onExit }: { boxNumber:
   </section>;
 
   if (phase === "complete") return <section className={`rc-shell rc-complete rc-box-${boxNumber}`} style={{ "--rc-accent": spec.accent, "--rc-glow": spec.glow, "--rc-secondary": spec.secondary, "--rc-deep": spec.deep } as CSSProperties}>
-    <ChamberScene boxNumber={boxNumber} progress={4} current={3} />
+    <RelicReveal boxNumber={boxNumber} relicName={spec.weapon} revealed={relicRevealed} sound={sound} accent={spec.accent} glow={spec.glow} onReveal={() => setRelicRevealed(true)} />
     <div className="rc-complete-copy">
       <div className="quest-kicker">BOX {String(boxNumber).padStart(2, "0")} · ACHIEVEMENT UNLOCKED</div>
       <h1>{spec.completionTitle}</h1>
       <p>{spec.completionLead}</p>
-      <div className="rc-reward-card"><span>{spec.weaponKicker}</span><h2>{spec.weapon}</h2><p>{spec.weaponDescription}</p></div>
+      {relicRevealed ? <div className="rc-reward-card relic-card-awakened"><span>{spec.weaponKicker}</span><h2>{spec.weapon}</h2><p>{spec.weaponDescription}</p></div> : <div className="sealed-reward-card rc-sealed-reward"><span>LEGENDARY TOOL SEALED</span><b>???</b><p>The four trials have opened one final mystery.</p></div>}
       <div className="rc-complete-actions"><button className="primary-button" type="button" onClick={() => { reset(); playChamberSound("start", boxNumber, sound); }}><span>Play this chamber again</span><b>↻</b></button><button className="map-return-button" type="button" onClick={onExit}>Return to the nine chambers</button></div>
     </div>
   </section>;
