@@ -2011,7 +2011,6 @@ export function QuestExperience() {
       </section>}
 
       {stage === "keep-complete" && <section className="keep-complete-screen">
-        <RelicReveal boxNumber={2} relicName="The Lantern of Gemba" revealed={lanternRevealed} sound={sound} accent="#30b5e6" glow="#ffc45e" onReveal={() => setLanternRevealed(true)} />
         <div className="keep-complete-story">
           <div className="quest-kicker">CASE CLOSED · EVIDENCE WARRANT ISSUED</div>
           <h1>Territory<br /><em>revealed.</em></h1>
@@ -2021,11 +2020,14 @@ export function QuestExperience() {
             <ol>{KEEP_OBSERVATIONS.map((observation) => <li key={observation.id}><i>{observation.glyph}</i><div><b>{observation.name}</b><p>{observation.mapFact}</p></div></li>)}</ol>
           </div>
           <blockquote>&quot;The map is useful. The territory is true.&quot;</blockquote>
-          {lanternRevealed ? <div className="keep-weapon-card relic-card-awakened">
+        </div>
+        <div className="forge-reward-column relic-reward-column">
+          <RelicReveal boxNumber={2} relicName="The Lantern of Gemba" revealed={lanternRevealed} sound={sound} accent="#30b5e6" glow="#ffc45e" onReveal={() => setLanternRevealed(true)} />
+          {lanternRevealed ? <div className="forge-weapon-card relic-card-awakened">
             <span>LEGENDARY TOOL ACQUIRED</span>
             <h2><small>THE</small> LANTERN OF GEMBA</h2>
             <p>Its light cannot reveal what should happen, why it happens, or how to fix it. It illuminates only what is actually there.</p>
-          </div> : <div className="sealed-reward-card keep-sealed-reward"><span>LEGENDARY TOOL SEALED</span><b>???</b><p>The evidence warrant has opened one final mystery.</p></div>}
+          </div> : <div className="sealed-reward-card"><span>LEGENDARY TOOL SEALED</span><b>???</b><p>The evidence warrant has opened one final mystery.</p></div>}
           <div className="keep-complete-actions">
             <button className="primary-button" type="button" onClick={() => { resetKeep(); setStage("keep-intro"); playTone("start", sound); }}><span>Walk the Keep again</span><b>↻</b></button>
             <button className="map-return-button" type="button" onClick={returnHome}>Return to the nine chambers</button>
@@ -2175,14 +2177,14 @@ export function QuestExperience() {
 
       {stage === "complete" && <section className="complete-screen">
         <div className="complete-story"><div className="quest-kicker">THE DOOR OPENS</div><h1>Root found.</h1><p className="completion-lead">Five questions, one thread — from a late cart down to a decision made in a purchasing office.</p><ol className="root-chain"><li>The medication cart is late</li><li>↳ why — the order list reaches pharmacy late</li><li>↳ why — the overnight printer jams every morning</li><li>↳ why — the paper curls in the tray</li><li>↳ why — a cheaper stock absorbs the basement&apos;s humidity</li><li>↳ why — purchasing changed suppliers, and no standard required them to tell the people the change would touch</li></ol><p>The root fix costs almost nothing: restore the approved stock, and write the missing rule — <em>any supply change that touches clinical work gets flagged to the people who live with it.</em></p><p>The expensive fixes you were offered — new printers, second carts, earlier shifts — would have treated symptoms forever.</p></div>
-        <div className="reward-column">
+        <div className="forge-reward-column relic-reward-column">
           <RelicReveal boxNumber={4} relicName="The Five Whys" revealed={whysRevealed} sound={sound} accent="#f08f24" glow="#ffc45e" onReveal={() => setWhysRevealed(true)} />
-          {whysRevealed ? <div className="weapon-card relic-card-awakened">
+          {whysRevealed ? <div className="forge-weapon-card relic-card-awakened">
             <span>LEGENDARY TOOL DISCOVERED</span>
             <h2><small>THE</small> FIVE WHYS</h2>
             <p>A hero&apos;s sharpest weapon isn&apos;t steel—it&apos;s curiosity with stamina.</p>
             <p className="quest-incantation">Ask why. Follow the answer. Repeat until the root has nowhere left to hide.</p>
-          </div> : <div className="sealed-reward-card whys-sealed-reward"><span>LEGENDARY TOOL SEALED</span><b>???</b><p>Five awakened runes guard one final mystery.</p></div>}
+          </div> : <div className="sealed-reward-card"><span>LEGENDARY TOOL SEALED</span><b>???</b><p>Five awakened runes guard one final mystery.</p></div>}
           <div className="completion-meta"><p>Rootfinder — the door barely resisted you</p><strong>This chamber is Box 4 of 9 — Gap Analysis.</strong><p>On an A3, masters of improvement spend most of the journey here, understanding the problem, before a single solution is drawn. Return to the map when you are ready to explore another chamber.</p><button className="primary-button" type="button" onClick={restart}><span>Enter again</span><b>↻</b></button></div>
         </div>
       </section>}

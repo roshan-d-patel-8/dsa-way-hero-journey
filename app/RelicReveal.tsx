@@ -98,8 +98,10 @@ export function RelicReveal({
   };
 
   return <div
-    className={`relic-reveal-stage ${revealed ? "is-revealed" : "is-sealed"}`}
+    className={`herald-horn-scene relic-reveal-stage ${revealed ? "is-revealed" : "is-sealed"}`}
     style={{ "--relic-accent": accent, "--relic-glow": glow } as CSSProperties}
+    role="group"
+    aria-label={revealed ? `${relicName} awakened` : `Sealed Box ${boxNumber} relic`}
   >
     {!revealed && <button className="horn-reveal-button relic-reveal-button" type="button" onClick={reveal} aria-label={`Awaken the sealed Box ${boxNumber} relic`}>
       <span aria-hidden="true">{art.symbol}</span><b>SEALED RELIC</b><small>AWAKEN</small>
@@ -111,7 +113,6 @@ export function RelicReveal({
       {/* The white-background master is staged inside a feathered luminous portal. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img className={`relic-art relic-art-${boxNumber}`} src={art.image} alt={art.alt} width="1672" height="941" />
-      <div className="relic-awakened-name"><span>RELIC AWAKENED</span><b>{relicName}</b></div>
     </>}
   </div>;
 }

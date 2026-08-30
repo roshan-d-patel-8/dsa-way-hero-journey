@@ -84,12 +84,15 @@ test("all eight post-Herald chambers use the shared click-to-awaken relic experi
   assert.match(reveal, /AWAKEN/);
   assert.match(reveal, /playRelicRevealSound/);
   assert.ok(reveal.includes('aria-label={`Awaken the sealed Box ${boxNumber} relic`}'));
+  assert.match(reveal, /herald-horn-scene relic-reveal-stage/);
   assert.ok(remaining.includes("<RelicReveal boxNumber={boxNumber}"));
-  assert.match(remaining, /relicRevealed \? <div className="rc-reward-card relic-card-awakened">/);
+  assert.match(remaining, /className="forge-reward-column relic-reward-column"/);
+  assert.match(remaining, /relicRevealed \? <div className="forge-weapon-card relic-card-awakened">/);
   assert.ok(source.includes("<RelicReveal boxNumber={2}"));
   assert.ok(source.includes("<RelicReveal boxNumber={4}"));
-  assert.match(source, /lanternRevealed \? <div className="keep-weapon-card relic-card-awakened">/);
-  assert.match(source, /whysRevealed \? <div className="weapon-card relic-card-awakened">/);
+  assert.match(source, /lanternRevealed \? <div className="forge-weapon-card relic-card-awakened">/);
+  assert.match(source, /whysRevealed \? <div className="forge-weapon-card relic-card-awakened">/);
+  assert.equal((source.match(/forge-reward-column relic-reward-column/g) ?? []).length, 2);
   assert.match(css, /\.relic-reveal-stage/);
   assert.match(css, /@keyframes relicObjectMaterialize/);
   assert.match(css, /prefers-reduced-motion/);

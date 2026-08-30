@@ -112,12 +112,14 @@ export function RemainingChamberQuest({ boxNumber, sound, onExit }: { boxNumber:
   </section>;
 
   if (phase === "complete") return <section className={`rc-shell rc-complete rc-box-${boxNumber}`} style={{ "--rc-accent": spec.accent, "--rc-glow": spec.glow, "--rc-secondary": spec.secondary, "--rc-deep": spec.deep } as CSSProperties}>
-    <RelicReveal boxNumber={boxNumber} relicName={spec.weapon} revealed={relicRevealed} sound={sound} accent={spec.accent} glow={spec.glow} onReveal={() => setRelicRevealed(true)} />
     <div className="rc-complete-copy">
       <div className="quest-kicker">BOX {String(boxNumber).padStart(2, "0")} · ACHIEVEMENT UNLOCKED</div>
       <h1>{spec.completionTitle}</h1>
       <p>{spec.completionLead}</p>
-      {relicRevealed ? <div className="rc-reward-card relic-card-awakened"><span>{spec.weaponKicker}</span><h2>{spec.weapon}</h2><p>{spec.weaponDescription}</p></div> : <div className="sealed-reward-card rc-sealed-reward"><span>LEGENDARY TOOL SEALED</span><b>???</b><p>The four trials have opened one final mystery.</p></div>}
+    </div>
+    <div className="forge-reward-column relic-reward-column">
+      <RelicReveal boxNumber={boxNumber} relicName={spec.weapon} revealed={relicRevealed} sound={sound} accent={spec.accent} glow={spec.glow} onReveal={() => setRelicRevealed(true)} />
+      {relicRevealed ? <div className="forge-weapon-card relic-card-awakened"><span>{spec.weaponKicker}</span><h2><small>THE</small>{spec.weapon.replace(/^The\s+/i, "")}</h2><p>{spec.weaponDescription}</p></div> : <div className="sealed-reward-card"><span>LEGENDARY TOOL SEALED</span><b>???</b><p>The four trials have opened one final mystery.</p></div>}
       <div className="rc-complete-actions"><button className="primary-button" type="button" onClick={() => { reset(); playChamberSound("start", boxNumber, sound); }}><span>Play this chamber again</span><b>↻</b></button><button className="map-return-button" type="button" onClick={onExit}>Return to the nine chambers</button></div>
     </div>
   </section>;
