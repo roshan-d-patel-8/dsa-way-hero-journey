@@ -3,6 +3,7 @@
 import { useEffect, useState, type CSSProperties } from "react";
 import { REMAINING_CHAMBER_SPECS, type RemainingBoxNumber } from "./remainingChambersData";
 import { RelicReveal } from "./RelicReveal";
+import { IncantationScroll, SenseiMessage } from "./StoryTreatments";
 
 type Feedback = { kind: "correct" | "wrong"; text: string } | null;
 type ChamberSound = "start" | "step" | "correct" | "wrong" | "complete";
@@ -105,7 +106,8 @@ export function RemainingChamberQuest({ boxNumber, sound, onExit }: { boxNumber:
       <div className="chamber-tag">{spec.wisdom}</div>
       <h1>{spec.mythicTitle}</h1>
       <div className="rc-prologue">{spec.prologue.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div>
-      <blockquote>&quot;{spec.incantation}&quot;</blockquote>
+      <SenseiMessage boxNumber={boxNumber}>{spec.senseiBrief}</SenseiMessage>
+      <IncantationScroll label="CHAMBER INCANTATION">{spec.incantation}</IncantationScroll>
       <div className="rc-trial-preview" aria-label={`The four trials of ${spec.mythicTitle}`}>{spec.trials.map((item) => <span key={item.id}><i>{item.glyph}</i><b>{item.name}</b></span>)}</div>
       <button className="primary-button" type="button" onClick={() => { setPhase("trial"); playChamberSound("start", boxNumber, sound); }}><span>Enter {spec.concept}</span><b>→</b></button>
     </div>
@@ -129,7 +131,7 @@ export function RemainingChamberQuest({ boxNumber, sound, onExit }: { boxNumber:
       <div className="rc-heading-row"><div><div className="quest-kicker">BOX {String(boxNumber).padStart(2, "0")} · TRIAL {String(trialIndex + 1).padStart(2, "0")} / 04</div><div className="chamber-tag">{trial.clue}</div></div><div className="rc-progress">{spec.trials.map((item, index) => <span key={item.id} className={`${index < progress ? "is-lit" : ""} ${index === trialIndex ? "is-current" : ""}`}>{item.glyph}</span>)}</div></div>
       <h1>{trial.name}</h1>
       <p className="rc-prompt">{trial.prompt}</p>
-      <blockquote>Sensei asks: &quot;{trial.coaching}&quot;</blockquote>
+      <SenseiMessage boxNumber={boxNumber}>{trial.coaching}</SenseiMessage>
       <div className="rc-choice-list">{trial.options.map((option, choiceIndex) => {
         const attempted = attemptedChoices.includes(choiceIndex);
         const correctChoice = choiceIndex === trial.correct;

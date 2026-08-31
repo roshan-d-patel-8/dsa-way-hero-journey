@@ -26,7 +26,7 @@ test("server-renders the DSA Way quest", async () => {
   assert.match(html, /Current State/);
   assert.match(html, /Gap Analysis/);
   assert.match(html, /ENTER THE HERALD(?:&#x27;|')S FORGE/);
-  assert.match(html, /ENTER THE CARTOGRAPHER(?:&#x27;|')S LIE/);
+  assert.match(html, /ENTER THE CARTOGRAPHER(?:&#x27;|')S UNSEEN PATH/);
   assert.match(html, /ENTER THE NORTH STAR OBSERVATORY/);
   assert.match(html, /ENTER THE DOOR OF WHYS/);
   assert.match(html, /ENTER THE ARMORY OF MANY KEYS/);
@@ -98,19 +98,21 @@ test("all eight post-Herald chambers use the shared click-to-awaken relic experi
   assert.match(css, /prefers-reduced-motion/);
 });
 
-test("includes the Herald's Forge and preserves the full Door of Whys experience", async () => {
-  const [source, css, packageJson, layout, ogImage, hornImage, hornAudio] = await Promise.all([
+test("includes the Herald's Forge, corrected current-state case, and full Door of Whys experience", async () => {
+  const [source, css, storyTreatments, packageJson, layout, ogImage, hornImage, hornAudio, senseiImage] = await Promise.all([
     readFile(new URL("../app/QuestExperience.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+    readFile(new URL("../app/StoryTreatments.tsx", import.meta.url), "utf8"),
     readFile(new URL("../package.json", import.meta.url), "utf8"),
     readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
     stat(new URL("../public/og.png", import.meta.url)),
     stat(new URL("../public/heralds-horn.png", import.meta.url)),
     stat(new URL("../public/gjallarhorn-reveal.mp3", import.meta.url)),
+    stat(new URL("../public/sensei/sensei-box-2.png", import.meta.url)),
   ]);
-  assert.match(source, /The medication cart leaves pharmacy late every morning\./);
-  assert.match(source, /Who changed the paper — and did anyone check with pharmacy\?/);
-  assert.match(source, /That question carried a solution in its sleeve\. Ask what is — not what to do\./);
+  assert.match(source, /correct covered pool at 08:07 and was first opened at 15:42/);
+  assert.match(source, /Why wasn’t the receipt-to-review gap detected and corrected earlier\?/);
+  assert.match(source, /That question carried a solution or a judgment/);
   assert.match(source, /Inspect another path, or continue when you are ready\./);
   assert.match(source, /the rune remains lit/);
   assert.match(source, /curiosity with stamina/);
@@ -131,24 +133,25 @@ test("includes the Herald's Forge and preserves the full Door of Whys experience
   assert.match(source, /boxNumber === 1/);
   assert.match(source, /boxNumber === 2/);
   assert.match(source, /setStage\("keep-intro"\)/);
-  assert.match(source, /The Cartographer(?:&apos;|')s Lie/);
+  assert.match(source, /The Cartographer(?:&apos;|')s Unseen Path/);
   assert.match(source, /LANTERN OF GEMBA/i);
   assert.match(source, /The map is not the territory/);
   assert.match(source, /ACTIVATE GEMBA LENS/);
   assert.match(source, /THE PROCESS AS PRACTICED/);
   assert.match(source, /THE MAP SAID/);
   assert.match(source, /GEMBA SHOWED/);
-  assert.match(source, /Move the lens\. Inspect any rupture—or open the case file when the principle is clear/);
+  assert.match(source, /Inspect the six evidence seals, or open the case file when the pattern is clear/);
   assert.match(source, /GembaLensMap/);
   assert.match(source, /KEEP_LENS_FINDINGS/);
   assert.match(source, /KEEP_CASE_QUESTIONS/);
-  assert.match(source, /SIMULATED CLINICAL CASE · SPECIALTY REFERRAL/);
-  assert.match(source, /67-year-old patient with three weeks of worsening exertional shortness of breath/);
+  assert.match(source, /SIMULATED CLINICAL CASE · AFM → SPECIALTY REFERRAL/);
+  assert.match(source, /At 8:07 a\.m\., an AFM physician submits a specialty referral through Health Connect/);
   const keepBriefBlock = source.slice(source.indexOf("const KEEP_CASE_BRIEF"), source.indexOf("const KEEP_LENS_FINDINGS"));
   assert.doesNotMatch(keepBriefBlock, /GASTROENTEROLOGY REFERRAL|GI REFERRAL|progressive dysphagia/i);
   const keepCaseData = source.slice(source.indexOf("const KEEP_OBSERVATIONS"), source.indexOf("const KEEP_LENS_FINDINGS"));
   assert.doesNotMatch(keepCaseData, /\bGI\b|gastroenterology|dysphagia/i);
-  assert.match(source, /shadow this single referral end to end/);
+  assert.match(source, /It reached the correct covered pool/);
+  assert.match(source, /Health Connect/);
   assert.match(source, /aria-label="Simulated clinical case briefing"/);
   const keepCaseBlock = source.slice(source.indexOf("const KEEP_CASE_QUESTIONS"), source.indexOf("const KEEP_LENS_FINDINGS"));
   const keepOptionGroups = [...keepCaseBlock.matchAll(/options:\s*\[\s*"([^"]+)",\s*"([^"]+)",\s*"([^"]+)",\s*\]/g)].map((match) => match.slice(1));
@@ -158,21 +161,22 @@ test("includes the Herald's Forge and preserves the full Door of Whys experience
     const wordCounts = options.map((option) => option.trim().split(/\s+/).length);
     assert.ok(Math.max(...wordCounts) - Math.min(...wordCounts) <= 8, `Box 2 clue ${index + 1} reveals its answer by length`);
   }
-  assert.match(source, /The Vanishing Owner/);
-  assert.match(source, /The Relay Route/);
-  assert.match(source, /The Returning File/);
-  assert.match(source, /The Evidence Warrant/);
+  assert.match(source, /Received Is Not Reviewed/);
+  assert.match(source, /Find the Work Pattern/);
+  assert.match(source, /Preserve the Patient’s Voice/);
+  assert.match(source, /Draw the Current State/);
   assert.match(source, /data-keep-choice=/);
   assert.match(source, /disabled=\{attempted \|\| correctChoice\}/);
   assert.match(source, /keepCaseCorrect && <button type="button" onClick=\{advanceKeepCase\}>/);
-  assert.match(source, /Issue the evidence warrant/);
+  assert.match(source, /Complete the current-state map/);
   assert.match(source, /2–3 minute field window/);
-  assert.match(source, /What did you see enter the process—and at what exact time\?/);
-  assert.match(source, /3 hours 35 minutes waiting/);
-  assert.match(source, /coordinator to MA to physician to scheduler/);
-  assert.match(source, /missing outside records send the referral back/);
-  assert.match(source, /I called twice and still didn’t know whether you had received the referral/);
-  assert.match(source, /6 process steps, 3 handoffs, 2 queues, 1 rework loop, at least 51 hours 35 minutes waiting/);
+  assert.match(source, /Which facts can you verify at the moment the referral enters the pool\?/);
+  assert.match(source, /waited 7 hours 35 minutes/);
+  assert.match(source, /Review blocks 08:00 and 15:30/);
+  assert.match(source, /I can see that the referral was received\. Has anyone reviewed it yet\?/);
+  assert.match(source, /14 referrals accumulated between the 08:00 and 15:30 review blocks/);
+  assert.match(source, /territory-pathway/);
+  assert.match(source, /territory-evidence-rail/);
   assert.match(source, /KEEP_SOUND_CUES/);
   assert.match(source, /playKeepSound/);
   assert.match(source, /"footsteps" \| "stopwatch" \| "handoff" \| "rework" \| "voices" \| "parchment" \| "lantern"/);
@@ -250,6 +254,13 @@ test("includes the Herald's Forge and preserves the full Door of Whys experience
   assert.match(css, /:has\(\.a3-tile:is\(:hover,:focus-visible\)\)/);
   assert.match(css, /brightness\(\.27\)/);
   assert.match(css, /\.forge-intro-screen/);
+  assert.match(storyTreatments, /className="sensei-message"/);
+  assert.match(storyTreatments, /className="incantation-scroll"/);
+  assert.match(storyTreatments, /sensei\/sensei-box-/);
+  for (const role of ["ACCESS SPECIALIST", "PHYSICIAN GUIDE", "QUALITY ANALYST", "IMPROVEMENT COACH", "NURSE LEADER", "PHYSICIAN SCIENTIST", "OPERATIONS LEAD", "PATIENT PARTNER", "PHYSICIAN MENTOR"]) assert.match(storyTreatments, new RegExp(role));
+  assert.match(css, /\.sensei-bubble/);
+  assert.match(css, /\.incantation-scroll/);
+  assert.ok(senseiImage.size > 100_000, "the pixel Sensei portrait should ship at production quality");
   assert.match(css, /\.forge-seal-preview \{[^}]*grid-template-columns:repeat\(2,minmax\(0,1fr\)\)[^}]*grid-template-rows:repeat\(2,minmax\(84px,auto\)\)/);
   assert.match(css, /\.forge-seal-preview > span \{[^}]*clamp\(\.86rem,\.95vw,\.96rem\)/);
   assert.match(css, /\.forge-seal-preview i \{[^}]*font-size:\s*1\.6rem/);

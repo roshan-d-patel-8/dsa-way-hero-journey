@@ -34,6 +34,12 @@ test("GitHub Pages includes a visible startup shell and deployable assets", asyn
 
   const hornImage = await stat(new URL("../dist-pages/heralds-horn.png", import.meta.url));
   assert.ok(hornImage.size > 1_000_000, "the supplied ornate horn artwork should ship intact");
+  const senseiImages = (await readdir(new URL("../dist-pages/sensei/", import.meta.url))).filter((file) => file.endsWith(".png"));
+  assert.deepEqual(senseiImages.sort(), Array.from({ length: 9 }, (_, index) => `sensei-box-${index + 1}.png`));
+  for (const image of senseiImages) {
+    const imageStats = await stat(new URL(`../dist-pages/sensei/${image}`, import.meta.url));
+    assert.ok(imageStats.size > 100_000, `${image} should retain detailed pixel artwork`);
+  }
   const relicImages = (await readdir(new URL("../dist-pages/relics/", import.meta.url))).filter((file) => file.endsWith(".webp"));
   assert.deepEqual(relicImages.sort(), [
     "clockwork-learning-orb.webp",
