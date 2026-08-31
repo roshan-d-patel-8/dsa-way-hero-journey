@@ -41,7 +41,7 @@ export const RELIC_ART = {
   },
   8: {
     image: "relics/truthful-mirror.webp",
-    alt: "The Truthful Mirror, an ornate black-and-gold legendary mirror with amethyst and turquoise jewels",
+    alt: "The Threefold Mirror, an ornate black-and-gold legendary mirror with amethyst and turquoise jewels",
     symbol: "⚖",
   },
   9: {

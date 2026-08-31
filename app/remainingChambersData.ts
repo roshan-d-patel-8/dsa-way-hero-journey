@@ -477,7 +477,7 @@ export const REMAINING_CHAMBER_SPECS: Record<RemainingBoxNumber, RemainingChambe
     glow: "#981f59",
     secondary: "#75e2e6",
     deep: "#160813",
-    weapon: "The Truthful Mirror",
+    weapon: "The Threefold Mirror",
     weaponKicker: "PREDICTED ≠ ACTUAL UNTIL MEASURED",
     weaponDescription: "It reflects outcome, process, and balancing evidence together—never implementation activity dressed as success.",
     completionTitle: "Verdict rendered.",
