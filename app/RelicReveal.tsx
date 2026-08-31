@@ -31,7 +31,7 @@ export const RELIC_ART = {
   },
   6: {
     image: "relics/clockwork-learning-orb.webp",
-    alt: "The Clockwork Learning Orb, an ornate gold armillary mechanism surrounding a luminous blue glass sphere",
+    alt: "The PDSA Orb, an ornate gold armillary mechanism surrounding a luminous blue glass sphere",
     symbol: "↻",
   },
   7: {

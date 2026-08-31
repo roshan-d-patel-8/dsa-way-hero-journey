@@ -271,7 +271,7 @@ export const REMAINING_CHAMBER_SPECS: Record<RemainingBoxNumber, RemainingChambe
     glow: "#30b5e6",
     secondary: "#ffc45e",
     deep: "#05151b",
-    weapon: "The Clockwork Learning Orb",
+    weapon: "The PDSA Orb",
     weaponKicker: "ACTION NOW PRODUCES INFORMATION",
     weaponDescription: "It remembers every prediction, deviation, surprise, and decision—turning small action into the next better theory.",
     completionTitle: "Cycle awakened.",
