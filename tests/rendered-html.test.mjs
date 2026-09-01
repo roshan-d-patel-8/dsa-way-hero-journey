@@ -101,7 +101,12 @@ test("every chamber is a self-contained mini-adventure with its own visual instr
   }
   assert.match(scenes, /target-constellation/);
   assert.match(scenes, /root-lock/);
-  assert.match(scenes, /experiment-belt/);
+  assert.match(scenes, /pdsa-gear-train/);
+  assert.match(scenes, /gear-teeth/);
+  assert.equal((scenes.match(/length: 16/g) ?? []).length, 1);
+  assert.match(sceneCss, /pdsaGearClockwise/);
+  assert.match(sceneCss, /pdsaGearCounterclockwise/);
+  assert.match(sceneCss, /nth-child\(even\).*pdsaGearCounterclockwise/);
   assert.match(scenes, /expedition-route/);
   assert.match(scenes, /tribunal-scales/);
   assert.match(scenes, /elixir-level/);

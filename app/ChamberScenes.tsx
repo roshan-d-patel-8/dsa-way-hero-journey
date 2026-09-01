@@ -52,7 +52,14 @@ function PDSAApparatus({ progress, current }: Omit<SceneProps, "boxNumber">) {
   return <SceneChrome boxNumber={6} progress={progress} current={current}>
     <div className="pdsa-apparatus" aria-hidden="true">
       <div className="learning-orb"><i className="orb-ring ring-one" /><i className="orb-ring ring-two" /><i className="orb-ring ring-three" /><span>{progress}/4</span><b>LEARN</b></div>
-      <div className="experiment-belt">{trials.map((trial, index) => <div key={trial.id} className={`pdsa-station ${stateClass(index, progress, current)}`}><i>{["P", "D", "S", "A"][index]}</i><span>{trial.glyph}</span><b>{trial.name}</b></div>)}</div>
+      <div className="pdsa-gear-train">{trials.map((trial, index) => <div key={trial.id} className={`pdsa-gear-node gear-${index + 1} ${stateClass(index, progress, current)}`}>
+        <div className="gear-wheel">
+          <div className="gear-teeth">{Array.from({ length: 16 }, (_, tooth) => <i key={tooth} style={{ "--tooth": tooth } as CSSProperties} />)}</div>
+          <span className="gear-hub">{["P", "D", "S", "A"][index]}</span>
+          <i className="gear-pin" />
+        </div>
+        <div className="gear-label"><span>{["P", "D", "S", "A"][index]}</span><b>{trial.name}</b><em>{index < progress ? "ENGAGED" : index === current ? "ACTIVATING" : "LOCKED"}</em></div>
+      </div>)}</div>
       <div className="energy-conduit"><span style={{ width: `${progress * 25}%` }} /></div>
       <div className="apparatus-note">TRY SMALL · LEARN HONESTLY · ADAPT DELIBERATELY</div>
     </div>
