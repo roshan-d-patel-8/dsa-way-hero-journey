@@ -83,11 +83,14 @@ test("every chamber is a self-contained mini-adventure with its own visual instr
   for (const anchor of [
     "only 58% of next week’s patients",
     "Forty-two pathology results waited more than three days",
-    "31% of patients leave GI consultations",
+    "31% of patients leave follow-up visits",
     "28 of 30 patients arrived ready",
     "Late cancellations fell from 17 to 6 per month",
     "Portal questions fell 34%",
   ]) assert.match(data, new RegExp(anchor.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  assert.match(data, /AFM clinic/);
+  assert.match(data, /end-of-visit checklist reminder in Health Connect/);
+  assert.doesNotMatch(data, /room-closing prompt|every GI clinic/);
   assert.doesNotMatch(data, /\bBox [1-9]\b/);
   assert.doesNotMatch(source, /The Box Two map exposed/);
   assert.match(source, /At 10:20 a\.m\., a patient cancels a 2:00 p\.m\. endoscopy/);
