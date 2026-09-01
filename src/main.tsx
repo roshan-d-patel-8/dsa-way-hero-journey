@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import "@fontsource/press-start-2p";
 import "../app/globals.css";
 import "../app/chamber-scenes.css";
+import "../app/box-artifact-atlas.css";
 
 class JourneyErrorBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
   state = { failed: false };

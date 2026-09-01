@@ -34,10 +34,40 @@ test("server-renders the DSA Way quest", async () => {
   assert.match(html, /ENTER THE EXPEDITION LEDGER/);
   assert.match(html, /ENTER THE DRAGON(?:&#x27;|')S TRIBUNAL/);
   assert.match(html, /ENTER RETURN WITH THE ELIXIR/);
-  assert.match(html, /All nine chambers are ready/);
+  assert.match(html, /Select any box to inspect its original 4K artifact/);
   assert.equal((html.match(/PLAYABLE/g) ?? []).length, 9);
   assert.doesNotMatch(html, /Hover to reveal each chamber\. Select Box 4 to enter The Door of Whys\./);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton|Your site is taking shape/i);
+});
+
+test("quest map opens nine annotated native-4K booth artifact pages", async () => {
+  const [source, atlas, data, css, layout, pagesEntry, ...images] = await Promise.all([
+    readFile(new URL("../app/QuestExperience.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/BoxArtifactAtlas.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/boothAtlasData.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/box-artifact-atlas.css", import.meta.url), "utf8"),
+    readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/main.tsx", import.meta.url), "utf8"),
+    ...Array.from({ length: 9 }, (_, index) => stat(new URL(`../public/a3/box-${index + 1}.jpg`, import.meta.url))),
+  ]);
+  assert.match(source, /type Stage = [^;]+"atlas"/);
+  assert.match(source, /openBoxAtlas\(index \+ 1\)/);
+  assert.match(source, /Open the annotated 4K artwork/);
+  assert.doesNotMatch(source, /active \? "ACTIVE" : "READY"/);
+  assert.match(source, /<BoxArtifactAtlas/);
+  assert.match(atlas, /width="3840" height="2160"/);
+  assert.match(atlas, /onMouseEnter=\{\(\) => \{/);
+  assert.match(atlas, /onHover\(\)/);
+  assert.match(atlas, /onFocus=\{onActivate\}/);
+  assert.match(atlas, /Open the 4K image/);
+  assert.equal((data.match(/image: "a3\/box-[1-9]\.jpg"/g) ?? []).length, 9);
+  assert.ok((data.match(/body: "/g) ?? []).length >= 75, "All nine booth legends should have object-level explanations");
+  for (const anchor of ["The deeper human why", "Voice of the customer", "Rehearsable future work", "A systemic dragon", "Failure produces information", "Adopt, adapt, or abandon", "The measurement gate", "Three evidence-based decisions", "Learning compounds"]) assert.match(data, new RegExp(anchor));
+  assert.match(css, /\.booth-hotspot:hover \.booth-hover-card/);
+  assert.match(css, /@media\(max-width:680px\)/);
+  assert.match(layout, /box-artifact-atlas\.css/);
+  assert.match(pagesEntry, /box-artifact-atlas\.css/);
+  for (const image of images) assert.ok(image.size > 1_000_000, "Each supplied booth image should remain a high-resolution source asset");
 });
 
 test("all six new chambers contain four balanced, replayable learning trials", async () => {
@@ -188,7 +218,7 @@ test("includes the Herald's Forge, corrected current-state case, and full Door o
   assert.match(source, /boxNumber === 1/);
   assert.match(source, /boxNumber === 2/);
   assert.match(source, /setStage\("keep-intro"\)/);
-  assert.match(source, /The Cartographer(?:&apos;|')s Unseen Path/);
+  assert.match(source, /The Cartographer(?:&apos;|')s<\/span><em>Unseen Path/);
   assert.match(source, /LANTERN OF GEMBA/i);
   assert.match(source, /The map is not the territory/);
   assert.match(source, /ACTIVATE GEMBA LENS/);
@@ -248,7 +278,7 @@ test("includes the Herald's Forge, corrected current-state case, and full Door o
   assert.match(source, /Open the case file/);
   assert.match(source, /setStage\("keep-lens"\)/);
   assert.match(source, /setStage\("forge-intro"\)/);
-  assert.match(source, /The Herald(?:&apos;|')s Forge/);
+  assert.match(source, /THE HERALD(?:&apos;|')S FORGE/);
   assert.match(source, /className="seal-name"/);
   const forgeBlock = source.slice(source.indexOf("const FORGE_SEALS"), source.indexOf("const KEEP_OBSERVATIONS"));
   const forgeFragments = [...forgeBlock.matchAll(/\{ id: "[^"]+", text: "([^"]+)", rejection:/g)].map((match) => match[1]);

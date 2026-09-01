@@ -6,11 +6,13 @@ import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 import { RemainingChamberQuest } from "./RemainingChamberQuest";
-import { REMAINING_CHAMBER_SPECS, isRemainingBoxNumber, type RemainingBoxNumber } from "./remainingChambersData";
+import { isRemainingBoxNumber, type RemainingBoxNumber } from "./remainingChambersData";
 import { RelicReveal } from "./RelicReveal";
 import { IncantationScroll, SenseiMessage } from "./StoryTreatments";
+import { BoxArtifactAtlas } from "./BoxArtifactAtlas";
+import { isBoothBoxNumber, type BoothBoxNumber } from "./boothAtlasData";
 
-type Stage = "cover" | "forge-intro" | "forge-game" | "forge-complete" | "keep-intro" | "keep-lens" | "keep-game" | "keep-complete" | "remaining" | "threshold" | "questions" | "complete";
+type Stage = "cover" | "atlas" | "forge-intro" | "forge-game" | "forge-complete" | "keep-intro" | "keep-lens" | "keep-game" | "keep-complete" | "remaining" | "threshold" | "questions" | "complete";
 
 type Question = {
   known: string;
@@ -1624,6 +1626,7 @@ export function QuestExperience() {
   const [correct, setCorrect] = useState(false);
   const [sound, setSound] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [atlasBoxNumber, setAtlasBoxNumber] = useState<BoothBoxNumber | null>(null);
   const [remainingBoxNumber, setRemainingBoxNumber] = useState<RemainingBoxNumber | null>(null);
   const [forgeIndex, setForgeIndex] = useState(0);
   const [forgedSeals, setForgedSeals] = useState<string[]>([]);
@@ -1649,7 +1652,7 @@ export function QuestExperience() {
   const keepCase = KEEP_CASE_QUESTIONS[keepCaseIndex];
   const inForge = stage === "forge-intro" || stage === "forge-game" || stage === "forge-complete";
   const inKeep = stage === "keep-intro" || stage === "keep-lens" || stage === "keep-game" || stage === "keep-complete";
-  const activeChamber = inForge ? 0 : inKeep ? 1 : stage === "remaining" && remainingBoxNumber ? remainingBoxNumber - 1 : stage === "cover" ? null : 3;
+  const activeChamber = stage === "atlas" && atlasBoxNumber ? atlasBoxNumber - 1 : inForge ? 0 : inKeep ? 1 : stage === "remaining" && remainingBoxNumber ? remainingBoxNumber - 1 : stage === "cover" ? null : 3;
 
   useEffect(() => {
     if (!inKeep) return;
@@ -1703,12 +1706,14 @@ export function QuestExperience() {
     setWrongChoice(null);
     setCorrect(false);
     setWhysRevealed(false);
+    setAtlasBoxNumber(null);
     setRemainingBoxNumber(null);
     setMenuOpen(false);
     setStage("cover");
   };
 
   const enterBox = (boxNumber: number) => {
+    setAtlasBoxNumber(null);
     if (boxNumber === 1) {
       resetForge();
       setRemainingBoxNumber(null);
@@ -1738,6 +1743,13 @@ export function QuestExperience() {
       setStage("remaining");
       playTone("start", sound);
     }
+  };
+  const openBoxAtlas = (boxNumber: number) => {
+    if (!isBoothBoxNumber(boxNumber)) return;
+    setAtlasBoxNumber(boxNumber);
+    setMenuOpen(false);
+    setStage("atlas");
+    window.scrollTo({ top: 0, behavior: "auto" });
   };
   const discoverKeep = (observationId: string) => {
     const index = KEEP_OBSERVATIONS.findIndex(({ id }) => id === observationId);
@@ -1840,10 +1852,12 @@ export function QuestExperience() {
         <div className="map-heading"><span>THE NINE CHAMBERS</span><button onClick={() => setMenuOpen(false)} aria-label="Close quest map">×</button></div>
         <ol>{CHAMBERS.map((chamber, index) => {
           const active = index === activeChamber;
-          return <li className={active ? "active" : "ready"} key={chamber}><span>{String(index + 1).padStart(2, "0")}</span><b>{chamber}</b><i>{active ? "ACTIVE" : "READY"}</i></li>;
+          return <li className={active ? "active" : "ready"} key={chamber}><button type="button" onClick={() => openBoxAtlas(index + 1)} aria-label={`Open the annotated 4K artwork for Box ${index + 1}: ${chamber}`}><span>{String(index + 1).padStart(2, "0")}</span><b>{chamber}</b></button></li>;
         })}</ol>
-        <p>{inForge ? "Box I — Reason for Action — The Herald's Forge." : inKeep ? "Box II — Current State — The Cartographer's Unseen Path." : stage === "remaining" && remainingBoxNumber ? `Box ${remainingBoxNumber} — ${REMAINING_CHAMBER_SPECS[remainingBoxNumber].a3Label} — ${REMAINING_CHAMBER_SPECS[remainingBoxNumber].concept}.` : stage === "cover" ? "All nine chambers are ready. Choose any A3 box to begin its quest." : "Box IV — Gap Analysis — The Door of Whys."}</p>
+        <p>Select any box to inspect its original 4K artifact and discover the meaning carried by each object.</p>
       </aside>
+
+      {stage === "atlas" && atlasBoxNumber && <BoxArtifactAtlas key={atlasBoxNumber} boxNumber={atlasBoxNumber} onBack={returnHome} onChooseBox={openBoxAtlas} onEnterQuest={enterBox} />}
 
       {stage === "cover" && <section className="a3-home">
         <div className="a3-home-heading">

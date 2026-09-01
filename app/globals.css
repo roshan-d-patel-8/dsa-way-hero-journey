@@ -60,14 +60,14 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
 .map-heading { display: flex; justify-content: space-between; align-items: center; font: 800 .72rem/1 "Courier New", monospace; letter-spacing: .13em; margin-bottom: 26px; }
 .map-heading button { border: 1px solid rgba(255,255,255,.25); background: none; color: #fff; width: 36px; height: 36px; cursor: pointer; font-size: 1.4rem; }
 .quest-map ol { list-style: none; padding: 0; margin: 0; }
-.quest-map li { display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 8px; min-height: 52px; border-top: 1px solid rgba(255,255,255,.12); color: rgba(255,255,255,.38); }
-.quest-map li span, .quest-map li i { font: 700 .58rem/1 "Courier New", monospace; }
+.quest-map li { min-height: 52px; border-top: 1px solid rgba(255,255,255,.12); color: rgba(255,255,255,.38); }
+.quest-map li button{width:100%;min-height:52px;display:grid;grid-template-columns:34px 1fr;align-items:center;gap:8px;padding:0;border:0;background:none;color:inherit;text-align:left;cursor:pointer;transition:color .18s,background .18s,padding .18s}
+.quest-map li span { font: 700 .58rem/1 "Courier New", monospace; }
 .quest-map li b { font-size: .83rem; }
-.quest-map li i { font-style: normal; letter-spacing: .08em; }
-.quest-map li.active { color: #fff; border-left: 4px solid var(--orange); padding-left: 12px; background: linear-gradient(90deg, rgba(240,143,36,.18), transparent); }
-.quest-map li.active i { color: var(--orange); }
+.quest-map li.active { color: #fff; border-left: 4px solid var(--orange); background: linear-gradient(90deg, rgba(240,143,36,.18), transparent); }
+.quest-map li.active button{padding-left:12px}
 .quest-map li.ready { color: rgba(255,255,255,.82); }
-.quest-map li.ready i { color: #ffc45e; }
+.quest-map li button:hover,.quest-map li button:focus-visible{outline:none;color:#fff;background:linear-gradient(90deg,rgba(48,181,230,.17),transparent);padding-left:10px}
 .quest-map > p { color: rgba(255,255,255,.58); font-size: .76rem; line-height: 1.55; margin-top: 24px; }
 
 .eyebrow, .quest-kicker { color: var(--berry); font: 850 .7rem/1 "Courier New", monospace; letter-spacing: .18em; text-transform: uppercase; }

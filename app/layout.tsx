@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import "@fontsource/press-start-2p";
 import "./globals.css";
 import "./chamber-scenes.css";
+import "./box-artifact-atlas.css";
 
 export async function generateMetadata(): Promise<Metadata> {
   const requestHeaders = await headers();
