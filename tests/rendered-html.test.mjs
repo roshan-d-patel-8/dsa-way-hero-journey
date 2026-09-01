@@ -100,6 +100,11 @@ test("every chamber is a self-contained mini-adventure with its own visual instr
   assert.match(source, /monthly utilization hid time-to-refill and missed patient offers/);
   assert.match(remaining, /BespokeChamberScene/);
   assert.match(remaining, /ChamberTrialPreview/);
+  assert.match(scenes, /expedition-river/);
+  assert.match(scenes, /SILVERBEND RIVER/);
+  assert.match(scenes, /topographic-ridges/);
+  assert.match(scenes, /RIVER FORD/);
+  assert.match(sceneCss, /paper-weathering/);
   assert.doesNotMatch(remaining, /rc-ritual-ring|index \* 90/);
   for (const instrument of ["north-star-observatory", "key-armory", "pdsa-apparatus", "expedition-ledger", "evidence-tribunal", "elixir-laboratory"]) {
     assert.match(scenes, new RegExp(instrument));
