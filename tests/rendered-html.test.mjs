@@ -70,6 +70,45 @@ test("all six new chambers contain four balanced, replayable learning trials", a
   assert.match(css, /@media \(max-width: 680px\)/);
 });
 
+test("every chamber is a self-contained mini-adventure with its own visual instrument", async () => {
+  const [data, source, remaining, scenes, sceneCss, layout, pagesEntry] = await Promise.all([
+    readFile(new URL("../app/remainingChambersData.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/QuestExperience.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/RemainingChamberQuest.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/ChamberScenes.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/chamber-scenes.css", import.meta.url), "utf8"),
+    readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/main.tsx", import.meta.url), "utf8"),
+  ]);
+  for (const anchor of [
+    "only 58% of next week’s patients",
+    "Forty-two pathology results waited more than three days",
+    "31% of patients leave GI consultations",
+    "28 of 30 patients arrived ready",
+    "Late cancellations fell from 17 to 6 per month",
+    "Portal questions fell 34%",
+  ]) assert.match(data, new RegExp(anchor.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  assert.doesNotMatch(data, /\bBox [1-9]\b/);
+  assert.doesNotMatch(source, /The Box Two map exposed/);
+  assert.match(source, /At 10:20 a\.m\., a patient cancels a 2:00 p\.m\. endoscopy/);
+  assert.match(source, /monthly utilization hid time-to-refill and missed patient offers/);
+  assert.match(remaining, /BespokeChamberScene/);
+  assert.match(remaining, /ChamberTrialPreview/);
+  assert.doesNotMatch(remaining, /rc-ritual-ring|index \* 90/);
+  for (const instrument of ["north-star-observatory", "key-armory", "pdsa-apparatus", "expedition-ledger", "evidence-tribunal", "elixir-laboratory"]) {
+    assert.match(scenes, new RegExp(instrument));
+    assert.match(sceneCss, new RegExp(`\\.${instrument}`));
+  }
+  assert.match(scenes, /target-constellation/);
+  assert.match(scenes, /root-lock/);
+  assert.match(scenes, /experiment-belt/);
+  assert.match(scenes, /expedition-route/);
+  assert.match(scenes, /tribunal-scales/);
+  assert.match(scenes, /elixir-level/);
+  assert.match(layout, /chamber-scenes\.css/);
+  assert.match(pagesEntry, /chamber-scenes\.css/);
+});
+
 test("all eight post-Herald chambers use the shared click-to-awaken relic experience", async () => {
   const [reveal, remaining, source, css] = await Promise.all([
     readFile(new URL("../app/RelicReveal.tsx", import.meta.url), "utf8"),
@@ -110,8 +149,8 @@ test("includes the Herald's Forge, corrected current-state case, and full Door o
     stat(new URL("../public/gjallarhorn-reveal.mp3", import.meta.url)),
     stat(new URL("../public/sensei/sensei-box-2.png", import.meta.url)),
   ]);
-  assert.match(source, /correct covered pool at 08:07 and was first opened at 15:42/);
-  assert.match(source, /Why wasn’t the receipt-to-review gap detected and corrected earlier\?/);
+  assert.match(source, /a patient cancelled a 2:00 p\.m\. endoscopy/);
+  assert.match(source, /Why wasn’t the missed opportunity detected and corrected earlier\?/);
   assert.match(source, /That question carried a solution or a judgment/);
   assert.match(source, /Inspect another path, or continue when you are ready\./);
   assert.match(source, /the rune remains lit/);

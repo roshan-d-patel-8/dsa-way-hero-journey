@@ -2,6 +2,7 @@ import React, { Component, useEffect, useState, type ErrorInfo, type ReactNode }
 import ReactDOM from "react-dom/client";
 import "@fontsource/press-start-2p";
 import "../app/globals.css";
+import "../app/chamber-scenes.css";
 
 class JourneyErrorBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
   state = { failed: false };

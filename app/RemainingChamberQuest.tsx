@@ -4,6 +4,7 @@ import { useEffect, useState, type CSSProperties } from "react";
 import { REMAINING_CHAMBER_SPECS, type RemainingBoxNumber } from "./remainingChambersData";
 import { RelicReveal } from "./RelicReveal";
 import { IncantationScroll, SenseiMessage } from "./StoryTreatments";
+import { BespokeChamberScene, ChamberTrialPreview } from "./ChamberScenes";
 
 type Feedback = { kind: "correct" | "wrong"; text: string } | null;
 type ChamberSound = "start" | "step" | "correct" | "wrong" | "complete";
@@ -28,19 +29,6 @@ function playChamberSound(kind: ChamberSound, box: RemainingBoxNumber, enabled: 
     oscillator.stop(now + index * .08 + .42);
   });
   window.setTimeout(() => void context.close(), 900);
-}
-
-function ChamberScene({ boxNumber, progress, current }: { boxNumber: RemainingBoxNumber; progress: number; current: number }) {
-  const spec = REMAINING_CHAMBER_SPECS[boxNumber];
-  return <div className={`rc-scene rc-box-${boxNumber}`} style={{ "--rc-accent": spec.accent, "--rc-glow": spec.glow, "--rc-secondary": spec.secondary, "--rc-deep": spec.deep } as CSSProperties} aria-label={`${spec.sceneLabel}, ${progress} of 4 trials complete`}>
-    <div className="rc-particles" aria-hidden="true">{Array.from({ length: 18 }, (_, index) => <i key={index} style={{ "--i": index } as CSSProperties} />)}</div>
-    <div className="rc-scene-label"><span>BOX {String(boxNumber).padStart(2, "0")} · LIVE TOOL</span><b>{spec.sceneLabel}</b></div>
-    <div className="rc-ritual-ring" aria-hidden="true">
-      {spec.trials.map((trial, index) => <span key={trial.id} className={`${index < progress ? "is-lit" : ""} ${index === current ? "is-current" : ""}`} style={{ "--angle": `${index * 90}deg` } as CSSProperties}><i>{trial.glyph}</i><b>{trial.name}</b></span>)}
-      <div className="rc-scene-core"><i>{spec.sceneSymbol}</i><b>{progress}/4</b></div>
-    </div>
-    <div className="rc-scene-floor" aria-hidden="true" />
-  </div>;
 }
 
 export function RemainingChamberQuest({ boxNumber, sound, onExit }: { boxNumber: RemainingBoxNumber; sound: boolean; onExit: () => void }) {
@@ -99,7 +87,7 @@ export function RemainingChamberQuest({ boxNumber, sound, onExit }: { boxNumber:
     <div className="rc-intro-art">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={`a3/box-${boxNumber}.jpg`} alt="" width="3840" height="2160" />
-      <ChamberScene boxNumber={boxNumber} progress={0} current={0} />
+      <BespokeChamberScene boxNumber={boxNumber} progress={0} current={0} />
     </div>
     <div className="rc-intro-copy">
       <div className="quest-kicker">THE NINE CHAMBERS · BOX {String(boxNumber).padStart(2, "0")}</div>
@@ -108,7 +96,7 @@ export function RemainingChamberQuest({ boxNumber, sound, onExit }: { boxNumber:
       <div className="rc-prologue">{spec.prologue.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div>
       <SenseiMessage boxNumber={boxNumber}>{spec.senseiBrief}</SenseiMessage>
       <IncantationScroll label="CHAMBER INCANTATION">{spec.incantation}</IncantationScroll>
-      <div className="rc-trial-preview" aria-label={`The four trials of ${spec.mythicTitle}`}>{spec.trials.map((item) => <span key={item.id}><i>{item.glyph}</i><b>{item.name}</b></span>)}</div>
+      <ChamberTrialPreview boxNumber={boxNumber} />
       <button className="primary-button" type="button" onClick={() => { setPhase("trial"); playChamberSound("start", boxNumber, sound); }}><span>Enter {spec.concept}</span><b>→</b></button>
     </div>
   </section>;
@@ -140,6 +128,6 @@ export function RemainingChamberQuest({ boxNumber, sound, onExit }: { boxNumber:
       <div className={`rc-feedback ${feedback ? `is-${feedback.kind}` : ""}`} aria-live="polite">{feedback ? <><span>{feedback.kind === "correct" ? "TRIAL CLEARED" : "PATH INSPECTED"}</span><p>{feedback.text}</p></> : <p>Choose the evidence path that best serves patients, people, and the process.</p>}</div>
       {correct && <div className="rc-advance"><p>Inspect another path, or continue when you are ready.</p><button className="primary-button" type="button" onClick={advance}><span>{trialIndex === 3 ? "Claim the chamber tool" : "Continue to the next trial"}</span><b>→</b></button></div>}
     </div>
-    <div className="rc-game-world"><ChamberScene boxNumber={boxNumber} progress={progress} current={trialIndex} /><div className="rc-dossier"><span>FIELD DOSSIER</span><b>{spec.a3Label}</b><p>{trial.clue}. The chamber records each inspected path; progress is never lost.</p></div></div>
+    <div className="rc-game-world"><BespokeChamberScene boxNumber={boxNumber} progress={progress} current={trialIndex} /><div className="rc-dossier"><span>FIELD DOSSIER</span><b>{spec.a3Label}</b><p>{trial.clue}. The chamber records each inspected path; progress is never lost.</p></div></div>
   </section>;
 }

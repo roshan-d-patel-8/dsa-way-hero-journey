@@ -75,75 +75,75 @@ type KeepCaseQuestion = {
 
 const QUESTIONS: Question[] = [
   {
-    known: "The referral reached the correct covered pool at 08:07 and was first opened at 15:42.",
+    known: "At 10:20 a.m., a patient cancelled a 2:00 p.m. endoscopy. Eleven urgent referrals were waiting, but the slot remained empty.",
     whisper: "A rune glimmers on the door, waiting.",
     options: [
-      "Why didn’t the covering physician check the pool sooner?",
-      "How was work pulled from the pool between arrival and first review?",
-      "Could Health Connect send an alert whenever a referral arrives?",
+      "Why didn’t the scheduler fill the slot before the afternoon procedure session?",
+      "How were same-day cancellations matched to patients already waiting for procedures?",
+      "Could Health Connect automatically text every patient on the urgent waitlist?",
     ],
     correct: 1,
-    answer: "The pool was reviewed in scheduled blocks: once at 08:00 and again at 15:30. This referral arrived seven minutes after the morning block.",
+    answer: "The cancellation list was reviewed during the 8:00 a.m. huddle. No one reviewed it again when the 10:20 cancellation appeared.",
     wrong: {
-      0: "That question aims at a person before the work pattern is understood. Start with how the pool actually moves referrals.",
+      0: "That question aims at a person before the matching process is understood. Start with how the work actually connects open slots to waiting patients.",
       2: "A solution is hiding inside the question. First learn what signal, if any, moves the work today.",
     },
   },
   {
-    known: "The pool is reviewed in two scheduled blocks: 08:00 and 15:30.",
+    known: "The cancellation list was reviewed at the 8:00 a.m. huddle, before the 10:20 cancellation occurred.",
     whisper: "One rune burns. Four remain dark.",
     options: [
-      "What tells the covering physician that a new referral should be pulled between blocks?",
-      "Should the team add a noon review block?",
-      "Is the covering physician too busy with clinic to manage the pool?",
+      "What tells the scheduling team that a same-day opening needs another waitlist review?",
+      "Should the team add a noon cancellation-list meeting?",
+      "Was the scheduler too busy to notice the empty procedure slot?",
     ],
     correct: 0,
-    answer: "Nothing in the current workflow signals that the oldest waiting referral is due for active review. Coverage is visible; flow is not.",
+    answer: "Nothing links a new opening on the procedure schedule to the separate urgent waitlist. The opportunity remains silent.",
     wrong: {
-      1: "That may become an experiment, but it skips the current mechanism. Ask what tells the team to pull work now.",
-      2: "A workload theory may be worth testing later. At this depth, the evidence only shows two review blocks and no visible pull signal.",
+      1: "That may become an experiment, but it skips the current mechanism. Ask what tells the team to act now.",
+      2: "A workload theory may be worth testing later. The evidence only shows separate lists and no visible signal between them.",
     },
   },
   {
-    known: "The covered pool has no signal showing when the oldest waiting referral is due for review.",
+    known: "The procedure schedule and urgent waitlist sit on separate screens, with no signal connecting a new opening to waiting patients.",
     whisper: "Two runes burn. You feel the door listening.",
     options: [
-      "Why hasn’t Health Connect been programmed to send more alerts?",
-      "What expectation tells the team how long receipt-to-review should take?",
-      "Should one physician be assigned to watch only the referral pool?",
+      "Why hasn’t Health Connect been programmed to send a cancellation alert?",
+      "What standard tells the team who rematches a new opening, and by when?",
+      "Should one scheduler be assigned to watch the procedure schedule continuously?",
     ],
     correct: 1,
-    answer: "The standard names who covers the pool, but it does not define a receipt-to-review expectation or a trigger for pulling aging work.",
+    answer: "The standard assigns daily waitlist ownership, but it does not define a trigger or response time when a same-day opening appears.",
     wrong: {
       0: "Programming is already a proposed remedy. First ask what operating expectation the technology would need to support.",
-      2: "A staffing design has entered before the standard is understood. More attention can still serve an undefined flow rule.",
+      2: "A staffing design has entered before the standard is understood. More attention can still serve an undefined rule.",
     },
   },
   {
-    known: "The pool standard defines coverage, but not when a received referral should enter active review.",
+    known: "The waitlist standard assigns daily ownership, but not the trigger or response time for a same-day opening.",
     whisper: "Three runes burn. The lock is close now.",
     options: [
-      "Why was coverage defined while referral flow was left undefined?",
-      "Could the chief simply require review within four hours?",
-      "Should reviewers receive additional training on queue management?",
+      "Why was daily ownership defined while same-day recovery work was left undefined?",
+      "Could the chief simply require every open slot to be filled within one hour?",
+      "Should schedulers receive additional training on procedure access and waitlist management?",
     ],
     correct: 0,
-    answer: "The workflow was designed to ensure that someone was attached to the pool. It was not designed around the patient’s elapsed time from receipt to review.",
+    answer: "The workflow was designed for morning planning. It was never redesigned for real-time recovery when the day changes after the huddle.",
     wrong: {
       1: "A target has been declared before the design gap is understood. Keep descending through the current system.",
-      2: "Training assumes a knowledge problem. The evidence so far points to an operating standard that never defined flow.",
+      2: "Training assumes a knowledge problem. The evidence points to work that the operating standard never defined.",
     },
   },
   {
-    known: "The workflow was designed around pool coverage, not the patient’s elapsed time from receipt to active review.",
+    known: "The workflow was designed for morning planning, not real-time recovery when a same-day cancellation appears.",
     whisper: "Four runes burn. One question remains.",
     options: [
-      "Why wasn’t the receipt-to-review gap detected and corrected earlier?",
-      "Should the team begin publishing each reviewer’s turnaround time?",
-      "Can leadership purchase a referral-management dashboard?",
+      "Why wasn’t the missed opportunity detected and corrected earlier?",
+      "Should the team publish each scheduler’s same-day fill rate?",
+      "Can leadership purchase a new endoscopy scheduling dashboard?",
     ],
     correct: 0,
-    answer: "The team tracked whether referrals were received and whether the pool was covered, but not receipt-to-review time or the patient’s experience of waiting. The design gap stayed invisible.",
+    answer: "The team reviewed monthly utilization, but not time-to-refill or missed patient offers after cancellations. The design gap stayed invisible.",
     wrong: {
       1: "A performance report is a proposed countermeasure and may create blame. First identify why the system could not see the gap.",
       2: "A dashboard may display a measure, but the team has not yet named the missing feedback loop it should serve.",
@@ -251,7 +251,7 @@ const KEEP_OBSERVATIONS: KeepObservation[] = [
     fragments: [
       { id: "receipt-assumed", text: "The referral was received at 08:07, so clinical review was underway.", rejection: "Received and reviewed are different events. The first status does not prove the second." },
       { id: "receipt-observed", text: "At 08:07, Health Connect shows the AFM referral entering the correct specialty triage pool.", rejection: "" },
-      { id: "receipt-fix", text: "Health Connect should alert the triaging physician as soon as every referral arrives.", rejection: "That may become a countermeasure. Box Two records what happened before deciding what should change." },
+      { id: "receipt-fix", text: "Health Connect should alert the triaging physician as soon as every referral arrives.", rejection: "That may become a countermeasure. Current State records what happened before deciding what should change." },
     ],
   },
   {
@@ -302,7 +302,7 @@ const KEEP_OBSERVATIONS: KeepObservation[] = [
     fragments: [
       { id: "waiting-rounded", text: "The referral waited most of the day for a lengthy clinical review.", rejection: "That blends two very different intervals. The timestamps show a long wait and a short active review." },
       { id: "waiting-measured", text: "Received at 08:07, first opened at 15:42, and advanced at 15:45: 7 hours 35 minutes waiting and 3 minutes of active review.", rejection: "" },
-      { id: "waiting-cause", text: "The referral waited because the physician had too much clinical work.", rejection: "The wait is observed; its cause has not yet been tested. Save causal analysis for Box Four." },
+      { id: "waiting-cause", text: "The referral waited because the physician had too much clinical work.", rejection: "The wait is observed; its cause has not yet been tested. Save causal analysis for Gap Analysis." },
     ],
   },
   {
@@ -335,8 +335,8 @@ const KEEP_OBSERVATIONS: KeepObservation[] = [
     sceneCue: "correct pool · active coverage · batch rhythm · long wait · short touch",
     fragments: [
       { id: "map-current", text: "Observed: the correct pool remained covered; 14 referrals accumulated between the 08:00 and 15:30 review blocks; this referral waited 7 hours 35 minutes for 3 minutes of active review; the patient asked whether review had begun.", rejection: "" },
-      { id: "map-root", text: "The root problem is insufficient physician capacity and an ineffective pool structure.", rejection: "The map fractures at the word ‘root.’ Causes belong in Box Four, after the current condition is visible." },
-      { id: "map-future", text: "Assign every referral to a named physician and add an automated midday alert.", rejection: "A future-state design has replaced the current one. Box Two must remain honest about today." },
+      { id: "map-root", text: "The root problem is insufficient physician capacity and an ineffective pool structure.", rejection: "The map fractures at the word ‘root.’ Causes belong in Gap Analysis, after the current condition is visible." },
+      { id: "map-future", text: "Assign every referral to a named physician and add an automated midday alert.", rejection: "A future-state design has replaced the current one. Current State must remain honest about today." },
     ],
   },
 ];
@@ -380,7 +380,7 @@ const KEEP_CASE_QUESTIONS: KeepCaseQuestion[] = [
     answer: "CLUE LOGGED: two review windows, fourteen waiting referrals, and one first-open timestamp make the batch pattern visible.",
     wrong: {
       0: "That judges a person instead of mapping the pattern. Record the two review windows and the queue between them.",
-      2: "That is a possible solution. Box Two first records the rhythm that occurred today.",
+      2: "That is a possible solution. Current State first records the rhythm that occurred today.",
     },
     evidenceIds: ["rhythm", "waiting"],
   },
@@ -411,7 +411,7 @@ const KEEP_CASE_QUESTIONS: KeepCaseQuestion[] = [
     name: "Draw the Current State",
     place: "Stop 04 · The Gemba Map",
     clue: "owned throughout · 14 waiting · 07h 35m wait · 03m touch",
-    prompt: "Which summary belongs in Box Two of the A3?",
+    prompt: "Which summary belongs in the Current State section of the A3?",
     coaching: "Can every word be traced to something seen, timed, counted, or heard? Save causes for Gap Analysis and solutions for later.",
     options: [
       "The root problem is insufficient physician capacity and an ineffective pool structure; leaders should add another reviewer during the day.",
@@ -421,8 +421,8 @@ const KEEP_CASE_QUESTIONS: KeepCaseQuestion[] = [
     correct: 1,
     answer: "CURRENT STATE COMPLETE: every mark is backed by a timestamp, queue count, observed review pattern, or the patient’s own words. The team can now see the same process together.",
     wrong: {
-      0: "That is a cause hypothesis for Gap Analysis. Box Two describes what happened before explaining why.",
-      2: "That is a future-state design. Box Two must make today’s pathway visible before the team redraws it.",
+      0: "That is a cause hypothesis for Gap Analysis. Current State describes what happened before explaining why.",
+      2: "That is a future-state design. Current State must make today’s pathway visible before the team redraws it.",
     },
     evidenceIds: ["receipt", "coverage", "rhythm", "waiting", "voice", "map"],
   },
@@ -2164,8 +2164,8 @@ export function QuestExperience() {
           <div className="chamber-tag">Gap Analysis · five questions to the root</div>
           <h1 className="chamber-title">The Door<br />of Whys</h1>
           <div className="threshold-prose">
-            <p>The Box Two map exposed a referral that was correctly routed and continuously owned—yet waited 7 hours 35 minutes for 3 minutes of active review.</p>
-            <p>Your mission is to descend from the observed gap to the system condition that allowed it.</p>
+            <p>At 10:20 a.m., a patient cancels a 2:00 p.m. endoscopy. Eleven urgent referrals are waiting, but the slot remains empty.</p>
+            <p>Your mission is to descend from this missed opportunity to the system condition that allowed it—without blaming the scheduler or jumping to technology.</p>
           </div>
           <SenseiMessage boxNumber={4}>Ask about the work, not the person. If a question already contains a fix, the door will reject it.</SenseiMessage>
           <IncantationScroll label="THE DOOR’S INSCRIPTION">Follow each answer with another honest why. Stop only when the system—not a person—stands exposed.</IncantationScroll>
@@ -2183,7 +2183,7 @@ export function QuestExperience() {
       </section>}
 
       {stage === "complete" && <section className="complete-screen">
-        <div className="complete-story"><div className="quest-kicker">THE DOOR OPENS</div><h1>Root found.</h1><p className="completion-lead">Five questions, one thread—from visible waiting to an invisible design gap.</p><ol className="root-chain"><li>The referral waited 7 hours 35 minutes before active review</li><li>↳ why — the pool was reviewed in two scheduled blocks</li><li>↳ why — no signal pulled aging work between those blocks</li><li>↳ why — the standard defined coverage, but not receipt-to-review flow</li><li>↳ why — the workflow was designed around ownership rather than the patient&apos;s elapsed time</li><li>↳ why — the team tracked receipt and coverage, but not receipt-to-review time or the patient&apos;s experience</li></ol><p>The root is not a careless physician or an ownerless pool. The system made coverage visible while leaving flow invisible.</p><p>Now the countermeasure chamber can test responses that match that design gap.</p></div>
+        <div className="complete-story"><div className="quest-kicker">THE DOOR OPENS</div><h1>Root found.</h1><p className="completion-lead">Five questions, one thread—from an empty procedure slot to an invisible design gap.</p><ol className="root-chain"><li>A same-day cancellation left a procedure slot empty despite an urgent waitlist</li><li>↳ why — the cancellation list was reviewed only during the morning huddle</li><li>↳ why — no signal connected the new opening to the separate waitlist</li><li>↳ why — the standard assigned daily ownership, but no real-time trigger or response time</li><li>↳ why — the workflow was designed for morning planning, not same-day recovery</li><li>↳ why — monthly utilization hid time-to-refill and missed patient offers</li></ol><p>The root is not a careless scheduler or a lack of urgent patients. The system planned the morning well but could not see or recover from change during the day.</p><p>That understanding can now guide a small, root-matched countermeasure test.</p></div>
         <div className="forge-reward-column relic-reward-column">
           <RelicReveal boxNumber={4} relicName="The Five Whys" revealed={whysRevealed} sound={sound} accent="#f08f24" glow="#ffc45e" onReveal={() => setWhysRevealed(true)} />
           {whysRevealed ? <div className="forge-weapon-card relic-card-awakened">
