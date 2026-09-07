@@ -118,7 +118,7 @@ test("every chamber is a self-contained mini-adventure with its own visual instr
     "Late cancellations fell from 17 to 6 per month",
     "Portal questions fell 34%",
   ]) assert.match(data, new RegExp(anchor.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
-  assert.match(data, /AFM clinic/);
+  assert.match(data, /Adult and Family Medicine \(AFM\) clinic/);
   assert.match(data, /end-of-visit checklist reminder in Health Connect/);
   assert.match(data, /asthma inhaler-teaching checklist/);
   assert.match(data, /pediatric clinic/);
@@ -127,7 +127,7 @@ test("every chamber is a self-contained mini-adventure with its own visual instr
   assert.doesNotMatch(data, /\bBox [1-9]\b/);
   assert.doesNotMatch(source, /The Box Two map exposed/);
   assert.match(source, /At 10:20 a\.m\., a patient cancels a 2:00 p\.m\. endoscopy/);
-  assert.match(source, /monthly utilization hid time-to-refill and missed patient offers/);
+  assert.match(source, /monthly utilization left time-to-refill and missed offers to waiting patients unseen/);
   assert.match(remaining, /BespokeChamberScene/);
   assert.match(remaining, /ChamberTrialPreview/);
   assert.match(scenes, /expedition-river/);
@@ -224,13 +224,13 @@ test("includes the Herald's Forge, corrected current-state case, and full Door o
   assert.match(source, /ACTIVATE GEMBA LENS/);
   assert.match(source, /THE PROCESS AS PRACTICED/);
   assert.match(source, /THE MAP SAID/);
-  assert.match(source, /GEMBA SHOWED/);
+  assert.match(source, /DIRECT OBSERVATION SHOWED/);
   assert.match(source, /Inspect the six evidence seals, or open the case file when the pattern is clear/);
   assert.match(source, /GembaLensMap/);
   assert.match(source, /KEEP_LENS_FINDINGS/);
   assert.match(source, /KEEP_CASE_QUESTIONS/);
   assert.match(source, /SIMULATED CLINICAL CASE · AFM → SPECIALTY REFERRAL/);
-  assert.match(source, /At 8:07 a\.m\., an AFM physician submits a specialty referral through Health Connect/);
+  assert.match(source, /At 8:07 a\.m\., an Adult and Family Medicine \(AFM\) physician submits a specialty referral through Health Connect/);
   const keepBriefBlock = source.slice(source.indexOf("const KEEP_CASE_BRIEF"), source.indexOf("const KEEP_LENS_FINDINGS"));
   assert.doesNotMatch(keepBriefBlock, /GASTROENTEROLOGY REFERRAL|GI REFERRAL|progressive dysphagia/i);
   const keepCaseData = source.slice(source.indexOf("const KEEP_OBSERVATIONS"), source.indexOf("const KEEP_LENS_FINDINGS"));
@@ -291,9 +291,9 @@ test("includes the Herald's Forge, corrected current-state case, and full Door o
   assert.match(source, /Background/);
   assert.match(source, /Problem Statement/);
   assert.match(source, /Aim/);
-  assert.match(source, /Trigger · Scope · Done/);
+  assert.match(source, /Why Now · Scope · Done/);
   assert.match(source, /The four seals of Box 1/);
-  assert.match(source, /THE FOUR-SEALED CHARTER/);
+  assert.match(source, /THE FOUR-SEALED PROJECT BRIEF/);
   assert.doesNotMatch(forgeBlock, /id: "trigger"|id: "scope"|id: "done"/);
   assert.match(source, /index \* \(360 \/ FORGE_SEALS\.length\)/);
   assert.doesNotMatch(source, /index \* 60/);

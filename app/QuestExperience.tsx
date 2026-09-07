@@ -10,6 +10,7 @@ import { isRemainingBoxNumber, type RemainingBoxNumber } from "./remainingChambe
 import { RelicReveal } from "./RelicReveal";
 import { IncantationScroll, SenseiMessage } from "./StoryTreatments";
 import { BoxArtifactAtlas } from "./BoxArtifactAtlas";
+import { ChamberGuide, CHAMBER_SUBTITLES } from "./ChamberGuide";
 import { isBoothBoxNumber, type BoothBoxNumber } from "./boothAtlasData";
 
 type Stage = "cover" | "atlas" | "forge-intro" | "forge-game" | "forge-complete" | "keep-intro" | "keep-lens" | "keep-game" | "keep-complete" | "remaining" | "threshold" | "questions" | "complete";
@@ -102,7 +103,7 @@ const QUESTIONS: Question[] = [
     correct: 0,
     answer: "Nothing links a new opening on the procedure schedule to the separate urgent waitlist. The opportunity remains silent.",
     wrong: {
-      1: "That may become an experiment, but it skips the current mechanism. Ask what tells the team to act now.",
+      1: "That may become an experiment, but it skips understanding how the work happens today. Ask what tells the team to act now.",
       2: "A workload theory may be worth testing later. The evidence only shows separate lists and no visible signal between them.",
     },
   },
@@ -111,33 +112,33 @@ const QUESTIONS: Question[] = [
     whisper: "Two runes burn. You feel the door listening.",
     options: [
       "Why hasn’t Health Connect been programmed to send a cancellation alert?",
-      "What standard tells the team who rematches a new opening, and by when?",
+      "What agreed rule tells the team who fills a new opening, and by when?",
       "Should one scheduler be assigned to watch the procedure schedule continuously?",
     ],
     correct: 1,
-    answer: "The standard assigns daily waitlist ownership, but it does not define a trigger or response time when a same-day opening appears.",
+    answer: "The agreed process assigns someone to manage the waitlist each day. It does not say what alerts them to a same-day opening or how quickly to respond.",
     wrong: {
-      0: "Programming is already a proposed remedy. First ask what operating expectation the technology would need to support.",
-      2: "A staffing design has entered before the standard is understood. More attention can still serve an undefined rule.",
+      0: "Programming is already a proposed remedy. First ask what agreed work rule the technology would need to support.",
+      2: "A staffing design has entered before the agreed work rule is understood. More attention can still serve an undefined rule.",
     },
   },
   {
-    known: "The waitlist standard assigns daily ownership, but not the trigger or response time for a same-day opening.",
+    known: "The agreed waitlist process assigns daily responsibility but leaves out the alert and response deadline for a same-day opening.",
     whisper: "Three runes burn. The lock is close now.",
     options: [
-      "Why was daily ownership defined while same-day recovery work was left undefined?",
+      "Why was daily ownership defined while work to refill same-day openings was left undefined?",
       "Could the chief simply require every open slot to be filled within one hour?",
       "Should schedulers receive additional training on procedure access and waitlist management?",
     ],
     correct: 0,
-    answer: "The workflow was designed for morning planning. It was never redesigned for real-time recovery when the day changes after the huddle.",
+    answer: "The workflow was designed for morning planning. It was never redesigned for responding to new openings after the morning meeting.",
     wrong: {
       1: "A target has been declared before the design gap is understood. Keep descending through the current system.",
-      2: "Training assumes a knowledge problem. The evidence points to work that the operating standard never defined.",
+      2: "Training assumes a knowledge problem. The evidence points to work that the agreed process never defined.",
     },
   },
   {
-    known: "The workflow was designed for morning planning, not real-time recovery when a same-day cancellation appears.",
+    known: "The workflow was designed for morning planning, not refilling openings when a same-day cancellation appears.",
     whisper: "Four runes burn. One question remains.",
     options: [
       "Why wasn’t the missed opportunity detected and corrected earlier?",
@@ -145,10 +146,10 @@ const QUESTIONS: Question[] = [
       "Can leadership purchase a new endoscopy scheduling dashboard?",
     ],
     correct: 0,
-    answer: "The team reviewed monthly utilization, but not time-to-refill or missed patient offers after cancellations. The design gap stayed invisible.",
+    answer: "The team reviewed monthly utilization, but did not track time-to-refill or whether waiting patients were offered cancelled slots. That missing information kept the gap hidden.",
     wrong: {
-      1: "A performance report is a proposed countermeasure and may create blame. First identify why the system could not see the gap.",
-      2: "A dashboard may display a measure, but the team has not yet named the missing feedback loop it should serve.",
+      1: "A performance report is a proposed change and may create blame. First identify why the system could not see the gap.",
+      2: "A dashboard may display a measure, but the team has not yet named how the team would use the information to spot a problem and respond.",
     },
   },
 ];
@@ -184,24 +185,24 @@ const FORGE_SEALS: ForgeSeal[] = [
     id: "background",
     glyph: "⌂",
     name: "Background",
-    prompt: "Choose the fragment that makes the situation legible to someone outside the clinic.",
+    prompt: "Choose the description that someone outside the clinic could understand.",
     coaching: "Where, when, for whom — and how big?",
     correctId: "background-evidence",
-    lesson: "Context forged: the reader can see the setting, the pattern, and the measured pain.",
+    lesson: "Context forged: the reader can see who is affected, where the problem happens, and how large it is.",
     fragments: [
       { id: "background-blame", text: "Since January, scheduling staff at the East Bay clinic have mishandled adult new-GI referrals, causing long waits and rising patient dissatisfaction.", rejection: "Blame is not background. It narrows the search to a person before the work is understood." },
       { id: "background-evidence", text: "Since January, adult new-GI referrals at the East Bay clinic have taken a median 24 days to reach completed specialty disposition; 42% remain open longer than 30 days.", rejection: "" },
-      { id: "background-solution", text: "Since January, the East Bay clinic has needed a centralized referral team with dedicated staff to reduce delays for adult new-GI patients.", rejection: "A countermeasure has entered before the problem is visible. The forge rejects solutions in the background." },
+      { id: "background-solution", text: "Since January, the East Bay clinic has needed a centralized referral team with dedicated staff to reduce delays for adult new-GI patients.", rejection: "A proposed change has entered before the problem is clear. First describe what is happening." },
     ],
   },
   {
     id: "problem",
     glyph: "!",
     name: "Problem Statement",
-    prompt: "Forge the measurable gap without hiding a remedy inside it.",
+    prompt: "Describe the difference between today’s result and the required result, without choosing a fix yet.",
     coaching: "Is this a gap you can measure, or a solution wearing the problem's clothes?",
     correctId: "problem-gap",
-    lesson: "Gap forged: specific, time-anchored, recurring, and free of blame or prescribed fixes.",
+    lesson: "Gap forged: a specific, recurring problem with dates and numbers, without blame or a proposed fix.",
     fragments: [
       { id: "problem-vague", text: "Adult new-GI referrals at the East Bay clinic face unacceptable delays, leaving patients frustrated and staff overwhelmed by an unreliable review process.", rejection: "The pain may be real, but 'unacceptable' and 'unreliable' cannot be measured. The quest still has no trajectory." },
       { id: "problem-capacity", text: "Adult new-GI referrals wait too long because the East Bay clinic lacks enough physicians to review the growing volume within fourteen days.", rejection: "That names a presumed cause — and smuggles in the solution of adding physicians." },
@@ -212,28 +213,28 @@ const FORGE_SEALS: ForgeSeal[] = [
     id: "aim",
     glyph: "◎",
     name: "Aim",
-    prompt: "Choose an end state with magnitude and time — but no prescribed method.",
+    prompt: "Choose a goal that states how much improvement is needed and by when, while leaving the method open.",
     coaching: "If achieved, would we know — and would patients and staff feel it?",
     correctId: "aim-outcome",
     lesson: "Aim forged: a measurable outcome, a deadline, and protection against shifting burden to staff.",
     fragments: [
-      { id: "aim-project", text: "Hire one referral coordinator, add two physician review sessions, and launch a live referral dashboard at the East Bay clinic by November 30.", rejection: "Those are interventions, not an aim. The destination should survive even if the route changes." },
+      { id: "aim-project", text: "Hire one referral coordinator, add two physician review sessions, and launch a live referral dashboard at the East Bay clinic by November 30.", rejection: "Those are actions to take. An aim describes the result they should achieve, even if the team later chooses different actions." },
       { id: "aim-outcome", text: "Reduce median referral-to-disposition time from 24 to 14 days or less by November 30, without increasing physician after-hours work.", rejection: "" },
-      { id: "aim-vague", text: "Improve adult new-GI referral access by November 30 so patients are reviewed sooner and physicians experience less after-hours work.", rejection: "The date is useful, but there is no measurable magnitude or recognizable finish line. The target remains in fog." },
+      { id: "aim-vague", text: "Improve adult new-GI referral access by November 30 so patients are reviewed sooner and physicians experience less after-hours work.", rejection: "The date is useful, but there is no measurable amount of improvement or recognizable finish line. The target remains in fog." },
     ],
   },
   {
     id: "charter",
     glyph: "⚡",
-    name: "Trigger · Scope · Done",
-    prompt: "Choose the charter that explains why action begins now, bounds the work, and defines a sustained finish.",
+    name: "Why Now · Scope · Done",
+    prompt: "Choose a project brief that explains why to act now, what work is included, and what lasting success looks like.",
     coaching: "Why now? What is explicitly in and out? What proves the gain will hold?",
     correctId: "charter-objective",
-    lesson: "Charter forged: an observable trigger, disciplined boundaries, and a sustained handoff make the quest actionable.",
+    lesson: "Project brief forged: evidence for acting now, clear boundaries, and a measurable finish make the next steps clear.",
     fragments: [
-      { id: "charter-anecdote", text: "Trigger: one referral waited 61 days last Tuesday. Scope: every access problem across every East Bay specialty. Done: patients and staff agree the redesigned process feels substantially better.", rejection: "Anecdote, mission creep, and sentiment cannot anchor a charter. The forge needs a recurring signal, a workable boundary, and a measurable handoff." },
-      { id: "charter-solution", text: "Trigger: a vendor demonstrated a triage platform last month. Scope: adult new-GI referrals across the region. Done: the dashboard launches with automated updates and every staff member completes training.", rejection: "A vendor, a broad region, and completed deliverables do not prove the problem warrants action or that the outcome is sustained." },
-      { id: "charter-objective", text: "Trigger: the over-30-day backlog exceeded 40% for three months. Scope: adult new-GI referrals, excluding urgent, procedural, and follow-up work. Done: median referral-to-disposition time stays at or below 14 days for eight weeks with ownership.", rejection: "" },
+      { id: "charter-anecdote", text: "Why now: one referral waited 61 days last Tuesday. Scope: every access problem across every East Bay specialty. Done: patients and staff agree the redesigned process feels substantially better.", rejection: "One incident, an expanding scope, and general impressions are not enough. Define a recurring problem, manageable work, and results that can be checked." },
+      { id: "charter-solution", text: "Why now: a vendor demonstrated a triage platform last month. Scope: adult new-GI referrals across the region. Done: the dashboard launches with automated updates and every staff member completes training.", rejection: "A vendor, a broad region, and completed tasks do not prove the problem warrants action or that the outcome is sustained." },
+      { id: "charter-objective", text: "Why now: over 40% of referrals waited over 30 days for three months. Scope: adult new-GI referrals; exclude urgent, procedural, follow-up. Done: median referral-to-disposition at most 14 days for eight weeks, with an accountable owner.", rejection: "" },
     ],
   },
 ];
@@ -248,18 +249,18 @@ const KEEP_OBSERVATIONS: KeepObservation[] = [
     coaching: "Which facts can you verify at the moment the referral enters the pool?",
     correctId: "receipt-observed",
     lesson: "The first mark is precise: Health Connect confirms arrival in the correct pool, not that clinical review has begun.",
-    mapFact: "08:07 · AFM submits · correct specialty triage pool",
-    sceneCue: "08:07 · AFM submits · correct specialty triage pool",
+    mapFact: "08:07 · AFM submits · correct shared referral-review queue",
+    sceneCue: "08:07 · AFM submits · correct shared referral-review queue",
     fragments: [
       { id: "receipt-assumed", text: "The referral was received at 08:07, so clinical review was underway.", rejection: "Received and reviewed are different events. The first status does not prove the second." },
-      { id: "receipt-observed", text: "At 08:07, Health Connect shows the AFM referral entering the correct specialty triage pool.", rejection: "" },
+      { id: "receipt-observed", text: "At 08:07, Health Connect shows the AFM referral entering the correct shared referral-review queue.", rejection: "" },
       { id: "receipt-fix", text: "Health Connect should alert the triaging physician as soon as every referral arrives.", rejection: "That may become a countermeasure. Current State records what happened before deciding what should change." },
     ],
   },
   {
     id: "coverage",
     glyph: "◆",
-    name: "Pool Coverage",
+    name: "Who Is Responsible?",
     place: "The Covered Watch",
     prompt: "The pool has an active triaging physician. Which observation keeps ownership separate from movement?",
     coaching: "What proves the work had an appropriate owner—and what remains unproven?",
@@ -270,13 +271,13 @@ const KEEP_OBSERVATIONS: KeepObservation[] = [
     fragments: [
       { id: "coverage-blame", text: "No one took ownership of the referral after it arrived.", rejection: "The pool was covered and a triaging physician was logged in. The evidence does not support ownerless work." },
       { id: "coverage-observed", text: "Coverage was active and a triaging physician was logged into the pool; the referral had not yet been opened.", rejection: "" },
-      { id: "coverage-fix", text: "Every referral should be assigned to one named physician immediately.", rejection: "The current pool model already establishes ownership. A different assignment model is a future-state choice, not a current-state fact." },
+      { id: "coverage-fix", text: "Every referral should be assigned to one named physician immediately.", rejection: "The current pool model already establishes ownership. A different assignment model is a choice about the future process, not a current-state fact." },
     ],
   },
   {
     id: "rhythm",
     glyph: "◫",
-    name: "Review Rhythm",
+    name: "Review Times",
     place: "The Two Bells",
     prompt: "The pool is reviewed in two planned blocks. Which note describes the observed work pattern?",
     coaching: "When was the pool reviewed, and what accumulated between those moments?",
@@ -293,7 +294,7 @@ const KEEP_OBSERVATIONS: KeepObservation[] = [
   {
     id: "waiting",
     glyph: "◴",
-    name: "Waiting vs Touch",
+    name: "Waiting vs Active Review",
     place: "The Silent Gallery",
     prompt: "The referral is first opened at 15:42. Which inscription separates elapsed time from active work?",
     coaching: "How long did the referral wait, and how long did clinical review actually take?",
@@ -304,13 +305,13 @@ const KEEP_OBSERVATIONS: KeepObservation[] = [
     fragments: [
       { id: "waiting-rounded", text: "The referral waited most of the day for a lengthy clinical review.", rejection: "That blends two very different intervals. The timestamps show a long wait and a short active review." },
       { id: "waiting-measured", text: "Received at 08:07, first opened at 15:42, and advanced at 15:45: 7 hours 35 minutes waiting and 3 minutes of active review.", rejection: "" },
-      { id: "waiting-cause", text: "The referral waited because the physician had too much clinical work.", rejection: "The wait is observed; its cause has not yet been tested. Save causal analysis for Gap Analysis." },
+      { id: "waiting-cause", text: "The referral waited because the physician had too much clinical work.", rejection: "The wait is observed; its cause has not yet been tested. Save possible causes for Gap Analysis." },
     ],
   },
   {
     id: "voice",
     glyph: "◖",
-    name: "Voice",
+    name: "Patient’s Words",
     place: "The Listening Alcove",
     prompt: "At 14:18, the patient sends a message. Which note preserves the patient’s voice as evidence?",
     coaching: "What did the patient actually say—not what do we think the patient felt?",
@@ -321,7 +322,7 @@ const KEEP_OBSERVATIONS: KeepObservation[] = [
     fragments: [
       { id: "voice-verbatim", text: "Patient at 14:18: “I can see that the referral was received. Has anyone reviewed it yet?”", rejection: "" },
       { id: "voice-interpreted", text: "The patient was anxious because the specialty team had not communicated.", rejection: "That may be true, but it is an interpretation. Preserve the patient’s exact words first." },
-      { id: "voice-portal", text: "The patient portal should display the referral’s exact position in the queue.", rejection: "A feature request cannot substitute for the present experience. Save it for the countermeasure chamber." },
+      { id: "voice-portal", text: "The patient portal should display the referral’s exact position in the queue.", rejection: "A feature request cannot substitute for the present experience. Save it for the chamber for choosing changes to test." },
     ],
   },
   {
@@ -333,12 +334,12 @@ const KEEP_OBSERVATIONS: KeepObservation[] = [
     coaching: "Can every mark on this map be traced back to something you saw, timed, counted, or heard?",
     correctId: "map-current",
     lesson: "The Unmapped Keep is unmapped no longer. The actual journey is visible, measurable, and ready for the next chamber.",
-    mapFact: "Pool owned continuously · 14 waiting · 07h 35m wait · 03m touch",
+    mapFact: "Pool owned continuously · 14 waiting · 07h 35m wait · 03m active review",
     sceneCue: "correct pool · active coverage · batch rhythm · long wait · short touch",
     fragments: [
       { id: "map-current", text: "Observed: the correct pool remained covered; 14 referrals accumulated between the 08:00 and 15:30 review blocks; this referral waited 7 hours 35 minutes for 3 minutes of active review; the patient asked whether review had begun.", rejection: "" },
       { id: "map-root", text: "The root problem is insufficient physician capacity and an ineffective pool structure.", rejection: "The map fractures at the word ‘root.’ Causes belong in Gap Analysis, after the current condition is visible." },
-      { id: "map-future", text: "Assign every referral to a named physician and add an automated midday alert.", rejection: "A future-state design has replaced the current one. Current State must remain honest about today." },
+      { id: "map-future", text: "Assign every referral to a named physician and add an automated midday alert.", rejection: "A proposed future process has replaced the current one. Current State must remain honest about today." },
     ],
   },
 ];
@@ -379,7 +380,7 @@ const KEEP_CASE_QUESTIONS: KeepCaseQuestion[] = [
       "A midday alert would have prevented the queue from accumulating between review blocks.",
     ],
     correct: 1,
-    answer: "CLUE LOGGED: two review windows, fourteen waiting referrals, and one first-open timestamp make the batch pattern visible.",
+    answer: "CLUE LOGGED: two review windows, fourteen waiting referrals, and one first-open timestamp show that referrals waited between scheduled review times.",
     wrong: {
       0: "That judges a person instead of mapping the pattern. Record the two review windows and the queue between them.",
       2: "That is a possible solution. Current State first records the rhythm that occurred today.",
@@ -403,7 +404,7 @@ const KEEP_CASE_QUESTIONS: KeepCaseQuestion[] = [
     answer: "CLUE LOGGED: the patient’s exact words expose the difference between a visible receipt status and actual progress.",
     wrong: {
       1: "That translates the patient’s words into an emotional judgment and assigns blame. Preserve the quote first.",
-      2: "That is a possible countermeasure. The current-state map records what the patient experienced today.",
+      2: "That is a possible change. The current-state map records what the patient experienced today.",
     },
     evidenceIds: ["voice"],
   },
@@ -412,7 +413,7 @@ const KEEP_CASE_QUESTIONS: KeepCaseQuestion[] = [
     glyph: "▦",
     name: "Draw the Current State",
     place: "Stop 04 · The Gemba Map",
-    clue: "owned throughout · 14 waiting · 07h 35m wait · 03m touch",
+    clue: "owned throughout · 14 waiting · 07h 35m wait · 03m active review",
     prompt: "Which summary belongs in the Current State section of the A3?",
     coaching: "Can every word be traced to something seen, timed, counted, or heard? Save causes for Gap Analysis and solutions for later.",
     options: [
@@ -423,8 +424,8 @@ const KEEP_CASE_QUESTIONS: KeepCaseQuestion[] = [
     correct: 1,
     answer: "CURRENT STATE COMPLETE: every mark is backed by a timestamp, queue count, observed review pattern, or the patient’s own words. The team can now see the same process together.",
     wrong: {
-      0: "That is a cause hypothesis for Gap Analysis. Current State describes what happened before explaining why.",
-      2: "That is a future-state design. Current State must make today’s pathway visible before the team redraws it.",
+      0: "That is a possible explanation to investigate in Gap Analysis. Current State describes what happened before explaining why.",
+      2: "That is a proposed future process. Current State must make today’s pathway visible before the team redraws it.",
     },
     evidenceIds: ["receipt", "coverage", "rhythm", "waiting", "voice", "map"],
   },
@@ -442,9 +443,9 @@ const KEEP_LENS_FINDINGS = [
   { id: "receipt", x: 14, y: 31, official: "Received means the referral is moving through review.", observed: "08:07 · AFM submits in Health Connect · correct specialty pool." },
   { id: "coverage", x: 29, y: 67, official: "An active owner means active work.", observed: "Coverage active · triaging physician logged into the pool · referral not yet opened." },
   { id: "rhythm", x: 50, y: 31, official: "Review proceeds continuously during the day.", observed: "Review blocks at 08:00 and 15:30 · 14 referrals accumulated between them." },
-  { id: "waiting", x: 68, y: 68, official: "Review begins promptly after receipt.", observed: "Received 08:07 · first opened 15:42 · advanced 15:45 · 7h 35m wait · 3m touch." },
+  { id: "waiting", x: 68, y: 68, official: "Review begins promptly after receipt.", observed: "Received 08:07 · first opened 15:42 · advanced 15:45 · 7h 35m wait · 3m active review." },
   { id: "voice", x: 88, y: 29, official: "The receipt status keeps the patient informed.", observed: "14:18 · “I can see that the referral was received. Has anyone reviewed it yet?”" },
-  { id: "map", x: 88, y: 78, official: "Received → reviewed → scheduled.", observed: "Correctly routed and continuously owned · long wait between two review windows · short active touch." },
+  { id: "map", x: 88, y: 78, official: "Received → reviewed → scheduled.", observed: "Correctly routed and continuously owned · long wait between two review windows · short active review." },
 ] as const;
 
 function playTone(kind: "start" | "step" | "wrong" | "rune" | "open", enabled: boolean) {
@@ -1578,10 +1579,10 @@ function GembaLensMap({
         <path d="M120 306 L500 306 L880 306" />
         <circle cx="120" cy="306" r="13" /><circle cx="500" cy="306" r="13" /><circle cx="880" cy="306" r="13" />
       </svg>
-      <div className="official-node official-received"><i>01</i><b>RECEIVED</b><span>Owned queue</span><small>✓ STANDARD</small></div>
-      <div className="official-node official-reviewed"><i>02</i><b>REVIEWED</b><span>Covered pool</span><small>✓ ON TIME</small></div>
+      <div className="official-node official-received"><i>01</i><b>RECEIVED</b><span>Queue with an assigned team</span><small>✓ STANDARD</small></div>
+      <div className="official-node official-reviewed"><i>02</i><b>REVIEWED</b><span>Assigned reviewer</span><small>✓ ON TIME</small></div>
       <div className="official-node official-scheduled"><i>03</i><b>SCHEDULED</b><span>Patient notified</span><small>✓ COMPLETE</small></div>
-      <div className="atlas-assurance">CLEAR OWNERSHIP · CONTINUOUS FLOW · PATIENT INFORMED</div>
+      <div className="atlas-assurance">CLEAR OWNERSHIP · WORK MOVES CONTINUOUSLY · PATIENT INFORMED</div>
     </div>
 
     <div className="observed-territory-layer" aria-hidden={!revealTerritory}>
@@ -1598,7 +1599,7 @@ function GembaLensMap({
         <div className="territory-step territory-step-5"><i>05</i><b>AFTERNOON BLOCK</b><span>POOL REVIEW · 15:30</span></div>
         <div className="territory-step territory-step-6"><i>06</i><b>ACTIVE REVIEW</b><span>15:42–15:45 · 3m</span></div>
       </div>
-      <div className="territory-rework-note"><b>FLOW SIGNAL</b><span>7h 35m waiting · 3m active touch</span></div>
+      <div className="territory-rework-note"><b>WAITING AND REVIEW TIME</b><span>7h 35m waiting · 3m active review</span></div>
       <div className="territory-patient-note"><b>PATIENT VOICE · 14:18</b><span>“I can see it was received. Has anyone reviewed it yet?”</span></div>
       <div className="territory-evidence-rail" aria-label="Evidence seals to inspect">{KEEP_LENS_FINDINGS.map((finding) => {
         const observation = KEEP_OBSERVATIONS.find(({ id }) => id === finding.id)!;
@@ -1862,7 +1863,7 @@ export function QuestExperience() {
       {stage === "cover" && <section className="a3-home">
         <div className="a3-home-heading">
           <div><div className="eyebrow"><span>09</span> A DSA LEARNING QUEST</div><h1>The DSA Way: <em>The Hero&apos;s Journey</em></h1></div>
-          <p>Nine chambers shape the A3. Choose any box to begin its two-to-three-minute learning quest.</p>
+          <p>An A3 tells the improvement story on one page. Explore its nine steps through these short games. Choose any box to begin.</p>
         </div>
         <div className="a3-grid-viewport">
           <div className="a3-grid" aria-label="The nine boxes of the A3">
@@ -1876,7 +1877,7 @@ export function QuestExperience() {
               {/* Public-path artwork stays compatible with both the app runtime and GitHub Pages. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={`a3/box-${box.number}.jpg`} alt="" width="3840" height="2160" loading={box.number <= 4 ? "eager" : "lazy"} decoding="async" />
-              <span className="a3-tile-overlay"><small>BOX {String(box.number).padStart(2, "0")}</small><b>{box.label}</b><em>{`ENTER ${CHAMBER_QUEST_NAMES[box.number]}`}</em></span>
+              <span className="a3-tile-overlay"><small>BOX {String(box.number).padStart(2, "0")}</small><b>{box.label}</b><span className="a3-tile-subtitle">{CHAMBER_SUBTITLES[box.number]}</span><em>{`ENTER ${CHAMBER_QUEST_NAMES[box.number]}`}</em></span>
               <span className="a3-playable-badge">PLAYABLE</span>
             </button>)}
           </div>
@@ -1890,12 +1891,13 @@ export function QuestExperience() {
           <div className="quest-kicker">THE NINE CHAMBERS · BOX II</div>
           <div className="chamber-tag">The map is not the territory</div>
           <h1><span>The Cartographer&apos;s</span><em>Unseen Path</em></h1>
+          <ChamberGuide boxNumber={2} />
           <div className="keep-prologue">
-            <p>At 8:07 a.m., an AFM physician submits a specialty referral through Health Connect. It reaches the correct triage pool, where coverage is active.</p>
+            <p>At 8:07 a.m., an Adult and Family Medicine (AFM) physician submits a specialty referral through Health Connect. It reaches the correct shared referral-review queue, where coverage is active.</p>
             <p>At 2:18 p.m., the patient writes: “I can see that the referral was received. Has anyone reviewed it yet?”</p>
           </div>
           <SenseiMessage boxNumber={2}>We have a referral on the clock. Follow it, uncover where the time went, and separate what the system records from what the patient experiences.</SenseiMessage>
-          <IncantationScroll label="GEMBA INSCRIPTION">Received is a status. Movement is an observation.</IncantationScroll>
+          <IncantationScroll label="OBSERVE THE WORK">A received status tells us the referral arrived. Direct observation tells us whether review has begun.</IncantationScroll>
           <div className="keep-observation-preview" aria-label="The four stops in the current-state case">{KEEP_CASE_QUESTIONS.map((caseQuestion, index) => <span key={caseQuestion.id}><i>{caseQuestion.glyph}</i><b>{String(index + 1).padStart(2, "0")}</b><em>{caseQuestion.name}</em></span>)}</div>
           <button className="primary-button" type="button" onClick={() => { setStage("keep-lens"); playKeepSound("footsteps", sound); }}><span>Enter the map room</span><b>→</b></button>
         </div>
@@ -1950,14 +1952,14 @@ export function QuestExperience() {
               <h2>{keepObservation.name}</h2>
               <div className="lens-comparison">
                 <div><span>THE MAP SAID</span><p>{KEEP_LENS_FINDINGS[keepIndex].official}</p></div>
-                <div><span>GEMBA SHOWED</span><p>{KEEP_LENS_FINDINGS[keepIndex].observed}</p></div>
+                <div><span>DIRECT OBSERVATION SHOWED</span><p>{KEEP_LENS_FINDINGS[keepIndex].observed}</p></div>
               </div>
               <SenseiMessage boxNumber={2}>{keepObservation.coaching}</SenseiMessage>
               <p className="lens-lesson">{keepFeedback.text}</p>
             </> : <>
               <div className="lens-idle-sigil" aria-hidden="true">ᛟ</div>
               <h2>{gembaLensActive ? "Walk the pathway." : "The parchment looks convincing."}</h2>
-              <p className="lens-idle-copy">{gembaLensActive ? "Follow one referral from receipt to active review. Look for routing, coverage, the review rhythm, waiting versus touch time, and the patient’s voice." : "It is tidy, approved, and internally consistent. It is also only the starting point."}</p>
+              <p className="lens-idle-copy">{gembaLensActive ? "Follow one referral from receipt to active review. Look for routing, coverage, the review rhythm, waiting time versus active review time, and the patient’s voice." : "It is tidy, approved, and internally consistent. It is also only the starting point."}</p>
             </>}
             <ol className="lens-evidence-list">{KEEP_OBSERVATIONS.map((observation, index) => {
               const found = chartedObservations.includes(observation.id);
@@ -2029,7 +2031,7 @@ export function QuestExperience() {
             <span>THE OBSERVED JOURNEY</span>
             <ol>{KEEP_OBSERVATIONS.map((observation) => <li key={observation.id}><i>{observation.glyph}</i><div><b>{observation.name}</b><p>{observation.mapFact}</p></div></li>)}</ol>
           </div>
-          <blockquote>&quot;Ownership tells us where the work belongs. Gemba shows us whether it is moving.&quot;</blockquote>
+          <blockquote>&quot;Ownership tells us who is responsible. Direct observation shows us whether the work is moving.&quot;</blockquote>
         </div>
         <div className="forge-reward-column relic-reward-column">
           <RelicReveal boxNumber={2} relicName="The Lantern of Gemba" revealed={lanternRevealed} sound={sound} accent="#30b5e6" glow="#ffc45e" onReveal={() => setLanternRevealed(true)} />
@@ -2057,11 +2059,12 @@ export function QuestExperience() {
           <div className="quest-kicker">THE NINE CHAMBERS · BOX I</div>
           <div className="chamber-tag">The summons has failed</div>
           <h1>The Herald&apos;s<br /><em>Forge</em></h1>
+          <ChamberGuide boxNumber={1} />
           <div className="forge-prologue">
             <p>Adult new-GI referrals are taking a median of 24 days to reach completed specialty disposition, and 42% remain open longer than 30 days. The first proposed answer is already on the table: “We need more clinics.”</p>
             <p>Your mission is to build a clear case for action before the team commits to a cause or a solution.</p>
           </div>
-          <SenseiMessage boxNumber={1}>Forge four parts: context, a measurable gap, a clear aim, and a bounded definition of done.</SenseiMessage>
+          <SenseiMessage boxNumber={1}>Forge four parts: context, a measured problem, a clear goal, and limits on what counts as done.</SenseiMessage>
           <IncantationScroll label="FORGE INSCRIPTION">Make the gap visible. Bound the work. Name the finish.</IncantationScroll>
           <div className="forge-seal-preview" aria-label="The four seals of Box 1">{FORGE_SEALS.map((seal, index) => <span key={seal.id}><i>{seal.glyph}</i><b>{String(index + 1).padStart(2, "0")}</b><em className="seal-name">{seal.name}</em></span>)}</div>
           <button className="primary-button" type="button" onClick={() => { setStage("forge-game"); playTone("step", sound); }}><span>Enter the forge</span><b>→</b></button>
@@ -2130,8 +2133,8 @@ export function QuestExperience() {
             <dl>
               <div><dt>Where and whom?</dt><dd>Adult new-GI referrals at the East Bay clinic.</dd></div>
               <div><dt>How large?</dt><dd>Median 24 days to disposition; 42% remain open beyond 30 days.</dd></div>
-              <div><dt>Why now?</dt><dd>Three months above the threshold; complaints doubled.</dd></div>
-              <div><dt>What counts as done?</dt><dd>14 days or less for eight weeks, with standard work and an owner.</dd></div>
+              <div><dt>Why now?</dt><dd>More than 40% open beyond 30 days for three months.</dd></div>
+              <div><dt>What counts as done?</dt><dd>14 days or less for eight weeks, with someone accountable for maintaining the result.</dd></div>
             </dl>
           </div>
           <blockquote>&quot;A problem a stranger can repeat is ready to rally action.&quot;</blockquote>
@@ -2158,11 +2161,11 @@ export function QuestExperience() {
           {hornRevealed ? <div className="forge-weapon-card">
             <span>LEGENDARY TOOL ACQUIRED</span>
             <h2><small>THE</small> HERALD&apos;S HORN</h2>
-            <p>A case for action that is bounded, measurable, urgent, achievable—and human.</p>
+            <p>A case for action with clear boundaries, a measurable goal, a reason to act now, and patients and staff at its heart.</p>
             <p className="gjallarhorn-reference"><span>MYTHIC ECHO</span> A visual homage to <cite>Gjallarhorn</cite> from <cite>God of War Ragnarök</cite>.</p>
           </div> : <div className="sealed-reward-card"><span>LEGENDARY TOOL SEALED</span><b>???</b><p>The four seals have opened one final mystery.</p></div>}
           <div className="forged-charter">
-            <span>THE FOUR-SEALED CHARTER</span>
+            <span>THE FOUR-SEALED PROJECT BRIEF</span>
             <ol>{FORGE_SEALS.map((seal) => <li key={seal.id}><b>{seal.name}</b><p>{seal.fragments.find(({ id }) => id === seal.correctId)?.text}</p></li>)}</ol>
           </div>
           <div className="forge-complete-actions">
@@ -2175,11 +2178,12 @@ export function QuestExperience() {
       {stage === "threshold" && <section className="threshold-screen">
         <div className="story-column">
           <div className="quest-kicker">THE NINE CHAMBERS · BOX IV</div>
-          <div className="chamber-tag">Gap Analysis · five questions to the root</div>
+          <div className="chamber-tag">Gap Analysis · five questions about why the gap exists</div>
           <h1 className="chamber-title">The Door<br />of Whys</h1>
+          <ChamberGuide boxNumber={4} />
           <div className="threshold-prose">
             <p>At 10:20 a.m., a patient cancels a 2:00 p.m. endoscopy. Eleven urgent referrals are waiting, but the slot remains empty.</p>
-            <p>Your mission is to descend from this missed opportunity to the system condition that allowed it—without blaming the scheduler or jumping to technology.</p>
+            <p>Your mission is to descend from this missed opportunity to the part of the process that allowed it—without blaming the scheduler or jumping to technology.</p>
           </div>
           <SenseiMessage boxNumber={4}>Ask about the work, not the person. If a question already contains a fix, the door will reject it.</SenseiMessage>
           <IncantationScroll label="THE DOOR’S INSCRIPTION">Follow each answer with another honest why. Stop only when the system—not a person—stands exposed.</IncantationScroll>
@@ -2197,7 +2201,7 @@ export function QuestExperience() {
       </section>}
 
       {stage === "complete" && <section className="complete-screen">
-        <div className="complete-story"><div className="quest-kicker">THE DOOR OPENS</div><h1>Root found.</h1><p className="completion-lead">Five questions, one thread—from an empty procedure slot to an invisible design gap.</p><ol className="root-chain"><li>A same-day cancellation left a procedure slot empty despite an urgent waitlist</li><li>↳ why — the cancellation list was reviewed only during the morning huddle</li><li>↳ why — no signal connected the new opening to the separate waitlist</li><li>↳ why — the standard assigned daily ownership, but no real-time trigger or response time</li><li>↳ why — the workflow was designed for morning planning, not same-day recovery</li><li>↳ why — monthly utilization hid time-to-refill and missed patient offers</li></ol><p>The root is not a careless scheduler or a lack of urgent patients. The system planned the morning well but could not see or recover from change during the day.</p><p>That understanding can now guide a small, root-matched countermeasure test.</p></div>
+        <div className="complete-story"><div className="quest-kicker">THE DOOR OPENS</div><h1>Root found.</h1><p className="completion-lead">Five questions, one thread—from an empty procedure slot to a missing part of the process.</p><ol className="root-chain"><li>A same-day cancellation left a procedure slot empty despite an urgent waitlist</li><li>↳ why — the cancellation list was reviewed only during the morning huddle</li><li>↳ why — no signal connected the new opening to the separate waitlist</li><li>↳ why — the agreed process assigned daily responsibility, but no alert or deadline for responding</li><li>↳ why — the process covered morning planning but left out refilling new openings</li><li>↳ why — monthly utilization left time-to-refill and missed offers to waiting patients unseen</li></ol><p>The root is not a careless scheduler or a lack of urgent patients. The system planned the morning well but could not see or recover from change during the day.</p><p>That understanding can now guide a small test aimed at the identified cause.</p></div>
         <div className="forge-reward-column relic-reward-column">
           <RelicReveal boxNumber={4} relicName="The Five Whys" revealed={whysRevealed} sound={sound} accent="#f08f24" glow="#ffc45e" onReveal={() => setWhysRevealed(true)} />
           {whysRevealed ? <div className="forge-weapon-card relic-card-awakened">

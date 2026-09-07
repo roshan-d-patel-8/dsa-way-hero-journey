@@ -5,6 +5,7 @@ import { REMAINING_CHAMBER_SPECS, type RemainingBoxNumber } from "./remainingCha
 import { RelicReveal } from "./RelicReveal";
 import { IncantationScroll, SenseiMessage } from "./StoryTreatments";
 import { BespokeChamberScene, ChamberTrialPreview } from "./ChamberScenes";
+import { ChamberGuide } from "./ChamberGuide";
 
 type Feedback = { kind: "correct" | "wrong"; text: string } | null;
 type ChamberSound = "start" | "step" | "correct" | "wrong" | "complete";
@@ -93,6 +94,7 @@ export function RemainingChamberQuest({ boxNumber, sound, onExit }: { boxNumber:
       <div className="quest-kicker">THE NINE CHAMBERS · BOX {String(boxNumber).padStart(2, "0")}</div>
       <div className="chamber-tag">{spec.wisdom}</div>
       <h1>{spec.mythicTitle}</h1>
+      <ChamberGuide boxNumber={boxNumber} />
       <div className="rc-prologue">{spec.prologue.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div>
       <SenseiMessage boxNumber={boxNumber}>{spec.senseiBrief}</SenseiMessage>
       <IncantationScroll label="CHAMBER INCANTATION">{spec.incantation}</IncantationScroll>
