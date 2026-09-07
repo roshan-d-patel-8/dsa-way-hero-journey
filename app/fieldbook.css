@@ -1,0 +1,19 @@
+@font-face{font-family:"DSA Fieldbook Hand";src:url("/fonts/fieldbook-hand.woff") format("woff");font-weight:400;font-style:normal;font-display:swap}
+
+/* Scoped to the fieldbook: never restyle the game's buttons, titles or navigation. */
+.incantation-scroll[data-fieldbook]{display:block;max-width:760px;margin:20px 0 23px;color:#30382c;filter:none;transform:rotate(-.35deg);isolation:isolate}
+.incantation-scroll[data-fieldbook]>.fieldbook-sheet{display:block;position:relative;min-height:0;padding:20px 25px 19px;border:0;border-radius:2px 6px 2px 1px;background:#e6dec4;box-shadow:0 7px 16px #0003,1px 1px 0 #f9f1db66,inset 0 0 24px #96845c15}
+.incantation-scroll[data-fieldbook]>.fieldbook-sheet::after{content:"";position:absolute;inset:0;opacity:.16;pointer-events:none;mix-blend-mode:multiply;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65 .91' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E")}
+.incantation-scroll[data-fieldbook]>.fieldbook-sheet::before{content:"";position:absolute;right:0;top:0;width:17px;height:17px;background:linear-gradient(225deg,#101920 45%,#b7ab8c 49%,#f4ebd4 54%,#e6dec4);filter:drop-shadow(-1px 1px 1px #74675144)}
+.incantation-scroll[data-fieldbook] .fieldbook-label{display:block;position:relative;z-index:1;color:#4d503c;font:900 .72rem/1.45 "Courier New",monospace;letter-spacing:.10em}
+.incantation-scroll[data-fieldbook] .fieldbook-copy{position:relative;z-index:1;margin:10px 0 0;color:#30382c;font:400 1.55rem/1.35 "DSA Fieldbook Hand",cursive;letter-spacing:0}
+.forge-weapon-card .incantation-scroll[data-fieldbook]{margin:17px 0 0;transform:none}
+.forge-weapon-card .incantation-scroll[data-fieldbook]>.fieldbook-sheet{padding:17px 21px}
+.forge-weapon-card .incantation-scroll[data-fieldbook] .fieldbook-copy{font-size:1.35rem}
+@media(max-width:680px){
+  .incantation-scroll[data-fieldbook]{margin:17px 0 20px;transform:none}
+  .incantation-scroll[data-fieldbook]>.fieldbook-sheet{padding:18px 20px}
+  .incantation-scroll[data-fieldbook] .fieldbook-label{font-size:.72rem;letter-spacing:.06em}
+  .incantation-scroll[data-fieldbook] .fieldbook-copy{font-size:1.35rem;line-height:1.35}
+}
+@media(prefers-reduced-motion:reduce){.incantation-scroll[data-fieldbook]{transform:none}}

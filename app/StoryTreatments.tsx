@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import "./fieldbook.css";
 
 const SENSEI_ROLES: Record<number, string> = {
   1: "ACCESS SPECIALIST",
@@ -28,12 +29,10 @@ export function SenseiMessage({ children, boxNumber, label = "THE SENSEI" }: { c
 }
 
 export function IncantationScroll({ children, label = "INSCRIPTION" }: { children: ReactNode; label?: string }) {
-  return <div className="incantation-scroll" role="note" aria-label={label}>
-    <i aria-hidden="true" />
-    <div>
-      <span>{label}</span>
-      <p>{children}</p>
+  return <div className="incantation-scroll" data-fieldbook role="note" aria-label={label}>
+    <div className="fieldbook-sheet">
+      <span className="fieldbook-label">{label}</span>
+      <p className="fieldbook-copy">{children}</p>
     </div>
-    <i aria-hidden="true" />
   </div>;
 }

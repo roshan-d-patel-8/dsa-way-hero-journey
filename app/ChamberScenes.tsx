@@ -2,6 +2,7 @@
 
 import type { CSSProperties, ReactNode } from "react";
 import { REMAINING_CHAMBER_SPECS, type RemainingBoxNumber } from "./remainingChambersData";
+import { ObservatoryInstrument } from "./ObservatoryInstrument";
 
 type SceneProps = { boxNumber: RemainingBoxNumber; progress: number; current: number };
 
@@ -30,7 +31,7 @@ function Observatory({ progress, current }: Omit<SceneProps, "boxNumber">) {
         {points.slice(0, -1).map((point, index) => <line key={index} className={index < progress ? "is-lit" : ""} x1={point[0]} y1={point[1]} x2={points[index + 1][0]} y2={points[index + 1][1]} />)}
         {points.map((point, index) => <g key={trials[index].id} className={stateClass(index, progress, current)} transform={`translate(${point[0]} ${point[1]})`}><circle r="19" /><circle r="6" /><text y="42">{trials[index].glyph} · {trials[index].name}</text></g>)}
       </svg>
-      <div className="telescope"><span /><b /></div>
+      <ObservatoryInstrument progress={progress} />
       <div className="observatory-readout"><span>COORDINATES FIXED</span><b>{progress}/4</b></div>
     </div>
   </SceneChrome>;

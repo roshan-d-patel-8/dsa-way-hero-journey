@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 660" >
+          <defs>
+            <linearGradient id="metal" x2=".2" y2="1"><stop stop-color="#eedcb0"/><stop offset=".18" stop-color="#b88b4e"/><stop offset=".45" stop-color="#e0c38c"/><stop offset=".72" stop-color="#69482c"/><stop offset="1" stop-color="#a38151"/></linearGradient>
+            <linearGradient id="enamel"><stop stop-color="#102024"/><stop offset=".45" stop-color="#384347"/><stop offset="1" stop-color="#0a1318"/></linearGradient>
+            <radialGradient id="lens"><stop stop-color="#0a1b24"/><stop offset=".7" stop-color="#243f46"/><stop offset="1" stop-color="#8fa99b"/></radialGradient>
+          </defs>
+          <ellipse cx="410" cy="584" rx="229" ry="24" fill="#000" opacity=".3"/>
+          <g stroke="#ad8b53" stroke-width="6" fill="url(#enamel)"><path d="M378 369L228 579L259 590L417 385Z"/><path d="M418 369L577 578L550 591L390 385Z"/><path d="M400 376L370 568H400L427 376Z"/></g>
+          <path d="M361 351V296H432V351" fill="url(#metal)" stroke="#baa06d"/>
+          <circle cx="401" cy="307" r="63" fill="url(#metal)" stroke="#5b442b" stroke-width="6"/><circle cx="401" cy="307" r="49" fill="url(#enamel)" stroke="#c5aa76" stroke-width="2"/>
+          <g transform="translate(398 276) rotate(-25)"><rect x="-212" y="-32" width="330" height="64" rx="4" fill="url(#metal)"/><rect x="-91" y="-29" width="170" height="58" fill="url(#enamel)"/><rect x="-160" y="-36" width="12" height="72" fill="url(#metal)"/><rect x="50" y="-36" width="12" height="72" fill="url(#metal)"/><rect x="111" y="-45" width="86" height="90" rx="3" fill="url(#metal)"/><ellipse cx="200" cy="0" rx="17" ry="44" fill="url(#lens)" stroke="#d4bc83" stroke-width="6"/><rect x="-259" y="-19" width="48" height="38" fill="url(#metal)"/><rect x="-280" y="-25" width="25" height="50" rx="6" fill="url(#enamel)"/></g>
+        </svg>

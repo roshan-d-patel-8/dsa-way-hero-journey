@@ -5,6 +5,14 @@ tags:
 
 # Changelog
 
+## 0.1.2 — 2026-09-07
+
+- Ported only the approved three-dimensional Observatory telescope into the original game stage.
+- Added lazy loading, illustrated fallback, reduced-motion support, and cleanup when leaving the chamber.
+- Replaced the shared scroll treatment with matte fieldbook paper, bundled handwriting, and larger, bolder typewritten labels.
+- Preserved the original retro buttons, navigation, backgrounds, titles, outer layout, and all learning content.
+- Added explicit visual guardrails to keep future artifact upgrades from becoming interface redesigns.
+
 ## 0.1.1 — 2026-09-07
 
 - Applied the reviewed plain-language changes to all nine games after CHECKMATE approval.
