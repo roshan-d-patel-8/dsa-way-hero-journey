@@ -5,6 +5,14 @@ tags:
 
 # Changelog
 
+## 0.1.3 — 2026-09-07
+
+- Rebuilt the approved graphics in Boxes 3, 5, 8, and 9 as cohesive dimensional retro instruments with shared map coordinates, lighting, and restrained shading.
+- Integrated the Observatory telescope with its animated star chart; added a layered lock and keys, articulated evidence balance, and dimensional elixir vessel.
+- Connected graphics to existing trial progress without changing questions, answers, controls, fieldbooks, outer layouts, or surrounding artwork.
+- Kept the original graphics as fallbacks; added visibility-aware animation, reduced-motion handling, lazy loading, and renderer cleanup.
+- Expanded the saved visual guardrails to reflect this CHECKMATE scope and added four-scene browser regression coverage.
+
 ## 0.1.2 — 2026-09-07
 
 - Ported only the approved three-dimensional Observatory telescope into the original game stage.

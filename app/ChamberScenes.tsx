@@ -2,16 +2,17 @@
 
 import type { CSSProperties, ReactNode } from "react";
 import { REMAINING_CHAMBER_SPECS, type RemainingBoxNumber } from "./remainingChambersData";
-import { ObservatoryInstrument } from "./ObservatoryInstrument";
+import { DimensionalInstrument, type InstrumentBox } from "./DimensionalInstrument";
+import "./observatory-instrument.css";
 
 type SceneProps = { boxNumber: RemainingBoxNumber; progress: number; current: number };
 
-function SceneChrome({ boxNumber, progress, children }: SceneProps & { children: ReactNode }) {
+function SceneChrome({ boxNumber, progress, current, children }: SceneProps & { children: ReactNode }) {
   const spec = REMAINING_CHAMBER_SPECS[boxNumber];
   return <div className={`rc-scene bespoke-scene rc-box-${boxNumber}`} style={{ "--rc-accent": spec.accent, "--rc-glow": spec.glow, "--rc-secondary": spec.secondary, "--rc-deep": spec.deep } as CSSProperties} aria-label={`${spec.sceneLabel}, ${progress} of 4 trials complete`}>
     <div className="rc-particles" aria-hidden="true">{Array.from({ length: 18 }, (_, index) => <i key={index} style={{ "--i": index } as CSSProperties} />)}</div>
     <div className="rc-scene-label"><span>BOX {String(boxNumber).padStart(2, "0")} · LIVE TOOL</span><b>{spec.sceneLabel}</b></div>
-    {children}
+    {[3,5,8,9].includes(boxNumber) ? <><div className="scene-original">{children}</div><DimensionalInstrument boxNumber={boxNumber as InstrumentBox} progress={progress} current={current} /></> : children}
     <div className="rc-scene-floor" aria-hidden="true" />
   </div>;
 }
@@ -31,7 +32,10 @@ function Observatory({ progress, current }: Omit<SceneProps, "boxNumber">) {
         {points.slice(0, -1).map((point, index) => <line key={index} className={index < progress ? "is-lit" : ""} x1={point[0]} y1={point[1]} x2={points[index + 1][0]} y2={points[index + 1][1]} />)}
         {points.map((point, index) => <g key={trials[index].id} className={stateClass(index, progress, current)} transform={`translate(${point[0]} ${point[1]})`}><circle r="19" /><circle r="6" /><text y="42">{trials[index].glyph} · {trials[index].name}</text></g>)}
       </svg>
-      <ObservatoryInstrument progress={progress} />
+      <div className="observatory-instrument">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="observatory/telescope-fallback.svg" alt="" width="800" height="660" />
+      </div>
       <div className="observatory-readout"><span>COORDINATES FIXED</span><b>{progress}/4</b></div>
     </div>
   </SceneChrome>;

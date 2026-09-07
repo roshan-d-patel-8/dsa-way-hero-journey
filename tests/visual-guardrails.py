@@ -5,7 +5,7 @@ import re
 from pathlib import Path
 from playwright.sync_api import sync_playwright, expect
 
-URL = os.environ.get("DSA_TEST_URL", "http://127.0.0.1:4181/dsa-way-hero-journey/")
+URL = os.environ.get("DSA_TEST_URL", "http://127.0.0.1:4182/dsa-way-hero-journey/")
 OUTPUT = Path(os.environ.get("DSA_TEST_OUTPUT", "/tmp/dsa-artifact-review"))
 OUTPUT.mkdir(parents=True, exist_ok=True)
 TITLES = [
@@ -22,9 +22,9 @@ with sync_playwright() as p:
     errors = []
     page.on("pageerror", lambda e: errors.append(str(e)))
     page.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
-    # Compare the retained retro button to the currently published pre-upgrade site.
+    # Compare the retained retro button to the published site (cache token is not a version pin).
     baseline = browser.new_page(viewport={"width": 1512, "height": 982})
-    baseline.goto("https://roshan-d-patel-8.github.io/dsa-way-hero-journey/?v=672602c", wait_until="networkidle")
+    baseline.goto("https://roshan-d-patel-8.github.io/dsa-way-hero-journey/?v=85bddfe", wait_until="networkidle")
     baseline.get_by_role("button", name=re.compile("^Box 3:")).click()
     baseline_style = baseline.locator(".primary-button").first.evaluate(STYLE)
     baseline_button = baseline.locator(".primary-button").first.inner_text()
@@ -44,12 +44,12 @@ with sync_playwright() as p:
         if number == 3:
             assert page.locator(".primary-button").first.evaluate(STYLE) == baseline_style
             assert page.locator(".primary-button").first.inner_text() == baseline_button
-            page.locator(".observatory-instrument").scroll_into_view_if_needed()
-            expect(page.locator(".observatory-instrument")).to_have_attribute("data-rendering", "ready")
-            page.wait_for_function("""() => {const c=document.querySelector('.observatory-instrument canvas');return c?.dataset.renderedWidth === String(c.parentElement.clientWidth)}""")
+            page.locator(".instrument-viewport").scroll_into_view_if_needed()
+            expect(page.locator(".bespoke-scene")).to_have_attribute("data-instrument", "ready")
+            page.wait_for_function("""() => {const c=document.querySelector('.instrument-viewport canvas');return c?.dataset.renderedWidth === String(c.parentElement.clientWidth)}""")
         page.screenshot(path=str(OUTPUT / f"box-{number}-desktop.png"), full_page=True)
         page.get_by_role("button", name="Return to title screen", exact=True).click()
-        assert page.locator(".observatory-instrument canvas").count() == 0
+        assert page.locator(".instrument-viewport canvas").count() == 0
     # All twelve feedback paths, completion, replay, and repeated renderer cleanup.
     page.get_by_role("button", name=re.compile("^Box 3:")).click()
     page.get_by_role("button", name="Enter The North Star Observatory →", exact=True).press("Enter")
@@ -64,13 +64,13 @@ with sync_playwright() as p:
             page.screenshot(path=str(OUTPUT / "box-3-question.png"), full_page=True)
         page.get_by_role("button", name=re.compile("Claim the chamber tool|Continue to the next trial")).press("Enter")
     expect(page.get_by_role("heading", name="Destination drawn.", exact=True)).to_be_visible()
-    assert page.locator(".observatory-instrument canvas").count() == 0
+    assert page.locator(".instrument-viewport canvas").count() == 0
     for _ in range(4):
         page.get_by_role("button", name="Return to title screen", exact=True).click()
         page.get_by_role("button", name=re.compile("^Box 3:")).click()
-        page.locator(".observatory-instrument").scroll_into_view_if_needed()
-        expect(page.locator(".observatory-instrument")).to_have_attribute("data-rendering", "ready")
-        assert page.locator(".observatory-instrument canvas").count() == 1
+        page.locator(".instrument-viewport").scroll_into_view_if_needed()
+        expect(page.locator(".bespoke-scene")).to_have_attribute("data-instrument", "ready")
+        assert page.locator(".instrument-viewport canvas").count() == 1
     # Phone layouts for all nine notes, plus the upgraded model.
     page.set_viewport_size({"width": 390, "height": 844})
     for number in range(1, 10):
@@ -79,8 +79,8 @@ with sync_playwright() as p:
         expect(page.locator(".fieldbook-copy").first).to_be_visible()
         assert page.locator(".fieldbook-sheet").first.evaluate("e=>e.scrollWidth<=e.clientWidth")
         if number == 3:
-            page.locator(".observatory-instrument").scroll_into_view_if_needed()
-            expect(page.locator(".observatory-instrument")).to_have_attribute("data-rendering", "ready")
+            page.locator(".instrument-viewport").scroll_into_view_if_needed()
+            expect(page.locator(".bespoke-scene")).to_have_attribute("data-instrument", "ready")
         page.screenshot(path=str(OUTPUT / f"box-{number}-mobile.png"), full_page=True)
     for width in [320, 375, 768, 1024]:
         page.set_viewport_size({"width": width, "height": 900})
@@ -89,10 +89,10 @@ with sync_playwright() as p:
         assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
         assert page.locator(".fieldbook-sheet").evaluate("e=>e.scrollWidth<=e.clientWidth")
     page.emulate_media(reduced_motion="reduce")
-    page.locator(".observatory-instrument").scroll_into_view_if_needed()
-    expect(page.locator(".observatory-instrument")).to_have_attribute("data-rendering", "ready")
-    page.evaluate("document.querySelector('.observatory-instrument canvas').getContext('webgl2').getExtension('WEBGL_lose_context').loseContext()")
-    expect(page.locator(".observatory-instrument")).to_have_attribute("data-rendering", "fallback")
+    page.locator(".instrument-viewport").scroll_into_view_if_needed()
+    expect(page.locator(".bespoke-scene")).to_have_attribute("data-instrument", "ready")
+    page.evaluate("document.querySelector('.instrument-viewport canvas').getContext('webgl2').getExtension('WEBGL_lose_context').loseContext()")
+    expect(page.locator(".bespoke-scene")).to_have_attribute("data-instrument", "fallback")
     expect(page.locator(".observatory-instrument>img")).to_be_visible()
     page.get_by_role("button", name="Enter The North Star Observatory →", exact=True).click()
     page.locator('[data-rc-choice="1"]').click()
