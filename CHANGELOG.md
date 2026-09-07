@@ -5,6 +5,14 @@ tags:
 
 # Changelog
 
+## 0.1.4 — 2026-09-07
+
+- Diversified the approved vignettes: AFM-to-Cardiology referral review, Radiology MRI readiness, Surgery consultation access, Dermatology biopsy-result follow-up, Emergency Medicine discharge follow-up, and OB/GYN postpartum communication.
+- Retained the GI, AFM checkout, and Pediatrics cases; preserved the five linked prompts in Box 4 and four prompts in the other games.
+- Updated associated choices, clues, feedback, and completion text while keeping answer logic and all visual assets unchanged.
+- Named the department on each opening and labeled case numbers and targets as fictional local examples, not clinical standards.
+- Added department and stale-reference browser checks covering the six revised games.
+
 ## 0.1.3 — 2026-09-07
 
 - Rebuilt the approved graphics in Boxes 3, 5, 8, and 9 as cohesive dimensional retro instruments with shared map coordinates, lighting, and restrained shading.

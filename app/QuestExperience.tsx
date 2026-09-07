@@ -78,12 +78,12 @@ type KeepCaseQuestion = {
 
 const QUESTIONS: Question[] = [
   {
-    known: "At 10:20 a.m., a patient cancelled a 2:00 p.m. endoscopy. Eleven urgent referrals were waiting, but the slot remained empty.",
+    known: "At 10:20 a.m., a patient cancelled a 2:00 p.m. Surgery consultation. Eleven patients on the clinic’s short-notice waitlist had already been reviewed as suitable for that appointment type, but the slot remained empty.",
     whisper: "A rune glimmers on the door, waiting.",
     options: [
-      "Why didn’t the scheduler fill the slot before the afternoon procedure session?",
-      "How were same-day cancellations matched to patients already waiting for procedures?",
-      "Could Health Connect automatically text every patient on the urgent waitlist?",
+      "Why didn’t the scheduler fill the slot before the afternoon Surgery clinic?",
+      "How were same-day cancellations matched to suitable patients on the consultation waitlist?",
+      "Could Health Connect automatically text every patient on the short-notice waitlist?",
     ],
     correct: 1,
     answer: "The cancellation list was reviewed during the 8:00 a.m. huddle. No one reviewed it again when the 10:20 cancellation appeared.",
@@ -98,22 +98,22 @@ const QUESTIONS: Question[] = [
     options: [
       "What tells the scheduling team that a same-day opening needs another waitlist review?",
       "Should the team add a noon cancellation-list meeting?",
-      "Was the scheduler too busy to notice the empty procedure slot?",
+      "Was the scheduler too busy to notice the empty consultation slot?",
     ],
     correct: 0,
-    answer: "Nothing links a new opening on the procedure schedule to the separate urgent waitlist. The opportunity remains silent.",
+    answer: "Nothing links a new opening on the Surgery consultation schedule to the separate short-notice waitlist. The opportunity remains silent.",
     wrong: {
       1: "That may become an experiment, but it skips understanding how the work happens today. Ask what tells the team to act now.",
       2: "A workload theory may be worth testing later. The evidence only shows separate lists and no visible signal between them.",
     },
   },
   {
-    known: "The procedure schedule and urgent waitlist sit on separate screens, with no signal connecting a new opening to waiting patients.",
+    known: "The consultation schedule and short-notice waitlist sit on separate screens, with no signal connecting a new opening to waiting patients.",
     whisper: "Two runes burn. You feel the door listening.",
     options: [
       "Why hasn’t Health Connect been programmed to send a cancellation alert?",
       "What agreed rule tells the team who fills a new opening, and by when?",
-      "Should one scheduler be assigned to watch the procedure schedule continuously?",
+      "Should one scheduler be assigned to watch the consultation schedule continuously?",
     ],
     correct: 1,
     answer: "The agreed process assigns someone to manage the waitlist each day. It does not say what alerts them to a same-day opening or how quickly to respond.",
@@ -128,7 +128,7 @@ const QUESTIONS: Question[] = [
     options: [
       "Why was daily ownership defined while work to refill same-day openings was left undefined?",
       "Could the chief simply require every open slot to be filled within one hour?",
-      "Should schedulers receive additional training on procedure access and waitlist management?",
+      "Should schedulers receive additional training on consultation access and waitlist management?",
     ],
     correct: 0,
     answer: "The workflow was designed for morning planning. It was never redesigned for responding to new openings after the morning meeting.",
@@ -143,7 +143,7 @@ const QUESTIONS: Question[] = [
     options: [
       "Why wasn’t the missed opportunity detected and corrected earlier?",
       "Should the team publish each scheduler’s same-day fill rate?",
-      "Can leadership purchase a new endoscopy scheduling dashboard?",
+      "Can leadership purchase a new Surgery scheduling dashboard?",
     ],
     correct: 0,
     answer: "The team reviewed monthly utilization, but did not track time-to-refill or whether waiting patients were offered cancelled slots. That missing information kept the gap hidden.",
@@ -432,15 +432,15 @@ const KEEP_CASE_QUESTIONS: KeepCaseQuestion[] = [
 ];
 
 const KEEP_CASE_BRIEF = {
-  label: "SIMULATED CLINICAL CASE · AFM → SPECIALTY REFERRAL",
+  label: "SIMULATED CLINICAL CASE · AFM → CARDIOLOGY REFERRAL",
   time: "TUESDAY · 08:07",
   title: "A referral is owned. Is it moving?",
-  story: "AFM submitted this referral in Health Connect at 08:07. It reached the correct covered pool. Follow it until active review begins, separating system status from observed movement.",
-  tags: ["AFM → SPECIALTY", "HEALTH CONNECT", "ONE REFERRAL · 08:07–15:45"],
+  story: "AFM submitted this routine Cardiology referral in Health Connect at 08:07. It reached the correct covered Cardiology pool. Follow it until active review begins, separating system status from observed movement.",
+  tags: ["AFM → CARDIOLOGY", "HEALTH CONNECT", "ONE REFERRAL · 08:07–15:45"],
 } as const;
 
 const KEEP_LENS_FINDINGS = [
-  { id: "receipt", x: 14, y: 31, official: "Received means the referral is moving through review.", observed: "08:07 · AFM submits in Health Connect · correct specialty pool." },
+  { id: "receipt", x: 14, y: 31, official: "Received means the referral is moving through review.", observed: "08:07 · AFM submits in Health Connect · correct Cardiology pool." },
   { id: "coverage", x: 29, y: 67, official: "An active owner means active work.", observed: "Coverage active · triaging physician logged into the pool · referral not yet opened." },
   { id: "rhythm", x: 50, y: 31, official: "Review proceeds continuously during the day.", observed: "Review blocks at 08:00 and 15:30 · 14 referrals accumulated between them." },
   { id: "waiting", x: 68, y: 68, official: "Review begins promptly after receipt.", observed: "Received 08:07 · first opened 15:42 · advanced 15:45 · 7h 35m wait · 3m active review." },
@@ -1893,7 +1893,7 @@ export function QuestExperience() {
           <h1><span>The Cartographer&apos;s</span><em>Unseen Path</em></h1>
           <ChamberGuide boxNumber={2} />
           <div className="keep-prologue">
-            <p>At 8:07 a.m., an Adult and Family Medicine (AFM) physician submits a specialty referral through Health Connect. It reaches the correct shared referral-review queue, where coverage is active.</p>
+            <p>At 8:07 a.m., an Adult and Family Medicine (AFM) physician submits a routine Cardiology referral through Health Connect. It reaches the correct shared Cardiology referral-review queue, where coverage is active.</p>
             <p>At 2:18 p.m., the patient writes: “I can see that the referral was received. Has anyone reviewed it yet?”</p>
           </div>
           <SenseiMessage boxNumber={2}>We have a referral on the clock. Follow it, uncover where the time went, and separate what the system records from what the patient experiences.</SenseiMessage>
@@ -2182,7 +2182,7 @@ export function QuestExperience() {
           <h1 className="chamber-title">The Door<br />of Whys</h1>
           <ChamberGuide boxNumber={4} />
           <div className="threshold-prose">
-            <p>At 10:20 a.m., a patient cancels a 2:00 p.m. endoscopy. Eleven urgent referrals are waiting, but the slot remains empty.</p>
+            <p>At 10:20 a.m., a patient cancels a 2:00 p.m. Surgery consultation. Eleven patients on the clinic’s short-notice waitlist have already been reviewed as suitable for that appointment type, but the slot remains empty.</p>
             <p>Your mission is to descend from this missed opportunity to the part of the process that allowed it—without blaming the scheduler or jumping to technology.</p>
           </div>
           <SenseiMessage boxNumber={4}>Ask about the work, not the person. If a question already contains a fix, the door will reject it.</SenseiMessage>
@@ -2201,7 +2201,7 @@ export function QuestExperience() {
       </section>}
 
       {stage === "complete" && <section className="complete-screen">
-        <div className="complete-story"><div className="quest-kicker">THE DOOR OPENS</div><h1>Root found.</h1><p className="completion-lead">Five questions, one thread—from an empty procedure slot to a missing part of the process.</p><ol className="root-chain"><li>A same-day cancellation left a procedure slot empty despite an urgent waitlist</li><li>↳ why — the cancellation list was reviewed only during the morning huddle</li><li>↳ why — no signal connected the new opening to the separate waitlist</li><li>↳ why — the agreed process assigned daily responsibility, but no alert or deadline for responding</li><li>↳ why — the process covered morning planning but left out refilling new openings</li><li>↳ why — monthly utilization left time-to-refill and missed offers to waiting patients unseen</li></ol><p>The root is not a careless scheduler or a lack of urgent patients. The system planned the morning well but could not see or recover from change during the day.</p><p>That understanding can now guide a small test aimed at the identified cause.</p></div>
+        <div className="complete-story"><div className="quest-kicker">THE DOOR OPENS</div><h1>Root found.</h1><p className="completion-lead">Five questions, one thread—from an empty consultation slot to a missing part of the process.</p><ol className="root-chain"><li>A same-day cancellation left a consultation slot empty despite a short-notice waitlist</li><li>↳ why — the cancellation list was reviewed only during the morning huddle</li><li>↳ why — no signal connected the new opening to the separate waitlist</li><li>↳ why — the agreed process assigned daily responsibility, but no alert or deadline for responding</li><li>↳ why — the process covered morning planning but left out refilling new openings</li><li>↳ why — monthly utilization left time-to-refill and missed offers to waiting patients unseen</li></ol><p>The root is not a careless scheduler or a lack of suitable waiting patients. The system planned the morning well but could not see or recover from change during the day.</p><p>That understanding can now guide a small test aimed at the identified cause.</p></div>
         <div className="forge-reward-column relic-reward-column">
           <RelicReveal boxNumber={4} relicName="The Five Whys" revealed={whysRevealed} sound={sound} accent="#f08f24" glow="#ffc45e" onReveal={() => setWhysRevealed(true)} />
           {whysRevealed ? <div className="forge-weapon-card relic-card-awakened">

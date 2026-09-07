@@ -111,12 +111,12 @@ test("every chamber is a self-contained mini-adventure with its own visual instr
     readFile(new URL("../src/main.tsx", import.meta.url), "utf8"),
   ]);
   for (const anchor of [
-    "only 58% of next week’s patients",
-    "Forty-two pathology results waited more than three days",
+    "only 58% of next week’s scheduled MRI scans",
+    "At a Dermatology clinic, 42 finalized skin-biopsy reports",
     "31% of patients leave follow-up visits",
     "28 of 30 families demonstrated correct technique",
-    "Late cancellations fell from 17 to 6 per month",
-    "Portal questions fell 34%",
+    "An Emergency Medicine team tested a discharge-follow-up process",
+    "An OB/GYN clinic is finishing a four-week postpartum follow-up pilot",
   ]) assert.match(data, new RegExp(anchor.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   assert.match(data, /Adult and Family Medicine \(AFM\) clinic/);
   assert.match(data, /end-of-visit checklist reminder in Health Connect/);
@@ -126,7 +126,7 @@ test("every chamber is a self-contained mini-adventure with its own visual instr
   assert.doesNotMatch(data, /bowel-prep instruction checklist|28 of 30 patients arrived ready/);
   assert.doesNotMatch(data, /\bBox [1-9]\b/);
   assert.doesNotMatch(source, /The Box Two map exposed/);
-  assert.match(source, /At 10:20 a\.m\., a patient cancels a 2:00 p\.m\. endoscopy/);
+  assert.match(source, /At 10:20 a\.m\., a patient cancels a 2:00 p\.m\. Surgery consultation/);
   assert.match(source, /monthly utilization left time-to-refill and missed offers to waiting patients unseen/);
   assert.match(remaining, /BespokeChamberScene/);
   assert.match(remaining, /ChamberTrialPreview/);
@@ -195,7 +195,7 @@ test("includes the Herald's Forge, corrected current-state case, and full Door o
     stat(new URL("../public/gjallarhorn-reveal.mp3", import.meta.url)),
     stat(new URL("../public/sensei/sensei-box-2.png", import.meta.url)),
   ]);
-  assert.match(source, /a patient cancelled a 2:00 p\.m\. endoscopy/);
+  assert.match(source, /a patient cancelled a 2:00 p\.m\. Surgery consultation/);
   assert.match(source, /Why wasn’t the missed opportunity detected and corrected earlier\?/);
   assert.match(source, /That question carried a solution or a judgment/);
   assert.match(source, /Inspect another path, or continue when you are ready\./);
@@ -229,13 +229,13 @@ test("includes the Herald's Forge, corrected current-state case, and full Door o
   assert.match(source, /GembaLensMap/);
   assert.match(source, /KEEP_LENS_FINDINGS/);
   assert.match(source, /KEEP_CASE_QUESTIONS/);
-  assert.match(source, /SIMULATED CLINICAL CASE · AFM → SPECIALTY REFERRAL/);
-  assert.match(source, /At 8:07 a\.m\., an Adult and Family Medicine \(AFM\) physician submits a specialty referral through Health Connect/);
+  assert.match(source, /SIMULATED CLINICAL CASE · AFM → CARDIOLOGY REFERRAL/);
+  assert.match(source, /At 8:07 a\.m\., an Adult and Family Medicine \(AFM\) physician submits a routine Cardiology referral through Health Connect/);
   const keepBriefBlock = source.slice(source.indexOf("const KEEP_CASE_BRIEF"), source.indexOf("const KEEP_LENS_FINDINGS"));
   assert.doesNotMatch(keepBriefBlock, /GASTROENTEROLOGY REFERRAL|GI REFERRAL|progressive dysphagia/i);
   const keepCaseData = source.slice(source.indexOf("const KEEP_OBSERVATIONS"), source.indexOf("const KEEP_LENS_FINDINGS"));
   assert.doesNotMatch(keepCaseData, /\bGI\b|gastroenterology|dysphagia/i);
-  assert.match(source, /It reached the correct covered pool/);
+  assert.match(source, /It reached the correct covered Cardiology pool/);
   assert.match(source, /Health Connect/);
   assert.match(source, /aria-label="Simulated clinical case briefing"/);
   const keepCaseBlock = source.slice(source.indexOf("const KEEP_CASE_QUESTIONS"), source.indexOf("const KEEP_LENS_FINDINGS"));

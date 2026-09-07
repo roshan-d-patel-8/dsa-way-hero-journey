@@ -22,9 +22,22 @@ const CHAMBER_HELP: Record<number, string> = {
   9: "Hansei means honest reflection that improves future practice. Ask what helped, what remains uncertain, and what you will do differently. Share the full learning so another team can test it locally.",
 };
 
+export const CHAMBER_DEPARTMENTS: Record<number, string> = {
+  1: "Gastroenterology",
+  2: "Adult and Family Medicine → Cardiology",
+  3: "Radiology",
+  4: "Surgery",
+  5: "Dermatology",
+  6: "Adult and Family Medicine",
+  7: "Pediatrics",
+  8: "Emergency Medicine",
+  9: "OB/GYN",
+};
+
 export function ChamberGuide({ boxNumber }: { boxNumber: number }) {
   return <aside className="chamber-plain-guide" aria-label="Your mission in plain language">
     <strong>{CHAMBER_SUBTITLES[boxNumber]}</strong>
     <p>{CHAMBER_HELP[boxNumber]}</p>
+    <p data-case-department={boxNumber}>Fictional case · {CHAMBER_DEPARTMENTS[boxNumber]}. Numbers and targets are illustrative local examples, not clinical standards.</p>
   </aside>;
 }

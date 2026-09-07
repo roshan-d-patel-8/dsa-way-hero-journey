@@ -14,6 +14,7 @@ The original DSA Way site is the design authority. Upgrade the craftsmanship; pr
 6. Every proposed change must fit an artifact upgrade, a fieldbook treatment, or an explicitly approved readability adjustment. Ask before making any other interface change.
 7. Keep future exploratory directions separate until reviewed. CHECKMATE approves the agreed scope; it does not authorize an unrelated redesign or widening site access.
 8. Verify desktop and phone layouts, keyboard use, reduced motion, graphics fallback, navigation away and back, and the original retro controls before release.
+9. The separately approved department-diversity refresh changes vignette wording in Boxes 2, 3, 4, 5, 8, and 9, including their clues, choices, and feedback. Preserve learning objectives and answer logic; retain five prompts in Box 4 and four in the others. Identify all nine case settings and make clear that their numbers and targets are fictional local examples, not clinical standards. This content approval does not authorize visual changes.
 
 ## Backlinks
 
