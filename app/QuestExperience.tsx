@@ -11,6 +11,7 @@ import { RelicReveal } from "./RelicReveal";
 import { IncantationScroll, SenseiMessage } from "./StoryTreatments";
 import { BoxArtifactAtlas } from "./BoxArtifactAtlas";
 import { ChamberGuide, CHAMBER_SUBTITLES } from "./ChamberGuide";
+import { GembaLensPanel } from "./GembaLensPanel";
 import { isBoothBoxNumber, type BoothBoxNumber } from "./boothAtlasData";
 
 type Stage = "cover" | "atlas" | "forge-intro" | "forge-game" | "forge-complete" | "keep-intro" | "keep-lens" | "keep-game" | "keep-complete" | "remaining" | "threshold" | "questions" | "complete";
@@ -1937,10 +1938,14 @@ export function QuestExperience() {
                 }}
               ><i aria-hidden="true">ᛟ</i><span>{gembaLensActive ? "LOWER GEMBA LENS" : "ACTIVATE GEMBA LENS"}</span></button>
             </div>
-            <GembaLensMap
+            <GembaLensPanel
               lensActive={gembaLensActive}
               discovered={chartedObservations}
               currentId={keepObservation.id}
+              findings={KEEP_LENS_FINDINGS.map(finding => {
+                const observation = KEEP_OBSERVATIONS.find(({ id }) => id === finding.id)!;
+                return { id: finding.id, name: observation.name, glyph: observation.glyph };
+              })}
               onDiscover={discoverKeep}
             />
             <p className="keep-lens-instruction">{gembaLensActive ? "Inspect the six evidence seals, or open the case file when the pattern is clear." : "Activate the lens to compare documented work with practiced work."}</p>
