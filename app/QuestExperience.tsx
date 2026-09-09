@@ -7,7 +7,7 @@ import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 import { RemainingChamberQuest } from "./RemainingChamberQuest";
 import { isRemainingBoxNumber, type RemainingBoxNumber } from "./remainingChambersData";
-import { RelicReveal } from "./RelicReveal";
+import { RelicAudioCredit, RelicReveal } from "./RelicReveal";
 import { IncantationScroll, SenseiMessage } from "./StoryTreatments";
 import { BoxArtifactAtlas } from "./BoxArtifactAtlas";
 import { ChamberGuide, CHAMBER_SUBTITLES } from "./ChamberGuide";
@@ -2044,6 +2044,7 @@ export function QuestExperience() {
             <span>LEGENDARY TOOL ACQUIRED</span>
             <h2><small>THE</small> LANTERN OF GEMBA</h2>
             <p>Its light cannot reveal what should happen, why it happens, or how to fix it. It illuminates only what is actually there.</p>
+            <RelicAudioCredit boxNumber={2} />
           </div> : <div className="sealed-reward-card"><span>LEGENDARY TOOL SEALED</span><b>???</b><p>Your four clues have made the current state visible. One final tool is ready to awaken.</p></div>}
           <div className="keep-complete-actions">
             <button className="primary-button" type="button" onClick={() => { resetKeep(); setStage("keep-intro"); playTone("start", sound); }}><span>Walk the Keep again</span><b>↻</b></button>
@@ -2213,6 +2214,7 @@ export function QuestExperience() {
             <span>LEGENDARY TOOL DISCOVERED</span>
             <h2><small>THE</small> FIVE WHYS</h2>
             <p>A hero&apos;s sharpest weapon isn&apos;t steel—it&apos;s curiosity with stamina.</p>
+            <RelicAudioCredit boxNumber={4} />
             <IncantationScroll label="ROOTFINDER INCANTATION">Ask why. Follow the answer. Repeat until the root has nowhere left to hide.</IncantationScroll>
           </div> : <div className="sealed-reward-card"><span>LEGENDARY TOOL SEALED</span><b>???</b><p>Five awakened runes guard one final mystery.</p></div>}
           <div className="completion-meta"><p>Rootfinder — the door barely resisted you</p><strong>This chamber is Box 4 of 9 — Gap Analysis.</strong><p>On an A3, masters of improvement spend most of the journey here, understanding the problem, before a single solution is drawn. Return to the map when you are ready to explore another chamber.</p><button className="primary-button" type="button" onClick={restart}><span>Enter again</span><b>↻</b></button></div>

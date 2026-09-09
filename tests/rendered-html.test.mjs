@@ -182,13 +182,23 @@ test("all eight post-Herald chambers use the shared click-to-awaken relic experi
   assert.match(reveal, /playRelicRevealSound/);
   assert.match(reveal, /audio\.play\(\)/);
   assert.match(reveal, /preload="auto"/);
+  assert.equal((reveal.match(/source: "https:\/\//g) ?? []).length, 8);
+  for (const cue of ["Secret Discovered", "Legendary Item Get", "Item Received", "MW2 Level Up", "Gym Badge", "Character Unlocked", "Victory Royale", "9–15 second excerpt"]) {
+    assert.match(reveal, new RegExp(cue));
+  }
+  assert.match(reveal, /export function RelicAudioCredit/);
+  assert.match(reveal, /target="_blank" rel="noreferrer"/);
+  assert.match(reveal, /Open the Box \$\{boxNumber\} audio source/);
   assert.ok(reveal.includes('aria-label={`Awaken the sealed Box ${boxNumber} relic`}'));
   assert.match(reveal, /herald-horn-scene relic-reveal-stage/);
   assert.ok(remaining.includes("<RelicReveal boxNumber={boxNumber}"));
+  assert.ok(remaining.includes("<RelicAudioCredit boxNumber={boxNumber} />"));
   assert.match(remaining, /className="forge-reward-column relic-reward-column"/);
   assert.match(remaining, /relicRevealed \? <div className="forge-weapon-card relic-card-awakened">/);
   assert.ok(source.includes("<RelicReveal boxNumber={2}"));
   assert.ok(source.includes("<RelicReveal boxNumber={4}"));
+  assert.ok(source.includes("<RelicAudioCredit boxNumber={2} />"));
+  assert.ok(source.includes("<RelicAudioCredit boxNumber={4} />"));
   assert.match(source, /lanternRevealed \? <div className="forge-weapon-card relic-card-awakened">/);
   assert.match(source, /whysRevealed \? <div className="forge-weapon-card relic-card-awakened">/);
   assert.equal((source.match(/forge-reward-column relic-reward-column/g) ?? []).length, 2);

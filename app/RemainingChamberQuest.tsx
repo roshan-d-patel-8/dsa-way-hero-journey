@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type CSSProperties } from "react";
 import { REMAINING_CHAMBER_SPECS, type RemainingBoxNumber } from "./remainingChambersData";
-import { RelicReveal } from "./RelicReveal";
+import { RelicAudioCredit, RelicReveal } from "./RelicReveal";
 import { IncantationScroll, SenseiMessage } from "./StoryTreatments";
 import { BespokeChamberScene, ChamberTrialPreview } from "./ChamberScenes";
 import { ChamberGuide } from "./ChamberGuide";
@@ -111,7 +111,7 @@ export function RemainingChamberQuest({ boxNumber, sound, onExit }: { boxNumber:
     </div>
     <div className="forge-reward-column relic-reward-column">
       <RelicReveal boxNumber={boxNumber} relicName={spec.weapon} revealed={relicRevealed} sound={sound} accent={spec.accent} glow={spec.glow} onReveal={() => setRelicRevealed(true)} />
-      {relicRevealed ? <div className="forge-weapon-card relic-card-awakened"><span>{spec.weaponKicker}</span><h2><small>THE</small>{spec.weapon.replace(/^The\s+/i, "")}</h2><p>{spec.weaponDescription}</p></div> : <div className="sealed-reward-card"><span>LEGENDARY TOOL SEALED</span><b>???</b><p>The four trials have opened one final mystery.</p></div>}
+      {relicRevealed ? <div className="forge-weapon-card relic-card-awakened"><span>{spec.weaponKicker}</span><h2><small>THE</small>{spec.weapon.replace(/^The\s+/i, "")}</h2><p>{spec.weaponDescription}</p><RelicAudioCredit boxNumber={boxNumber} /></div> : <div className="sealed-reward-card"><span>LEGENDARY TOOL SEALED</span><b>???</b><p>The four trials have opened one final mystery.</p></div>}
       <div className="rc-complete-actions"><button className="primary-button" type="button" onClick={() => { reset(); playChamberSound("start", boxNumber, sound); }}><span>Play this chamber again</span><b>↻</b></button><button className="map-return-button" type="button" onClick={onExit}>Return to the nine chambers</button></div>
     </div>
   </section>;

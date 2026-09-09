@@ -5,6 +5,11 @@ import { useRef, type CSSProperties } from "react";
 type RelicArt = {
   image: string;
   audio: string;
+  audioCredit: {
+    cue: string;
+    origin: string;
+    source: string;
+  };
   alt: string;
   symbol: string;
 };
@@ -13,52 +18,100 @@ export const RELIC_ART = {
   2: {
     image: "relics/lantern-of-gemba.webp",
     audio: "relic-audio/box-2-lantern-zelda-secret-discovered.mp3",
+    audioCredit: {
+      cue: "Secret Discovered",
+      origin: "The Legend of Zelda: Ocarina of Time",
+      source: "https://github.com/ryparker/claude-code-sounds/blob/4e9c9063d3c6821a2edbb4959449a884d6fdd039/themes/zelda-oot/sounds/secret-discovered.mp3",
+    },
     alt: "The Lantern of Gemba, an ornate black-and-gold legendary lantern with turquoise jewels",
     symbol: "◈",
   },
   3: {
     image: "relics/north-star-compass.webp",
     audio: "relic-audio/box-3-compass-zelda-legendary-item.mp3",
+    audioCredit: {
+      cue: "Legendary Item Get",
+      origin: "The Legend of Zelda: Breath of the Wild",
+      source: "https://github.com/ryparker/claude-code-sounds/blob/4e9c9063d3c6821a2edbb4959449a884d6fdd039/themes/zelda-botw/sounds/legendary-item-get.mp3",
+    },
     alt: "The North Star Compass, an ornate black-and-gold legendary compass with a midnight-blue face",
     symbol: "✦",
   },
   4: {
     image: "relics/five-whys.webp",
     audio: "relic-audio/box-4-five-whys-final-fantasy-fanfare.mp3",
+    audioCredit: {
+      cue: "Item Received",
+      origin: "Final Fantasy II",
+      source: "https://github.com/Citedy/game-sounds/blob/cc18cd9734f8ec3b2b853a294e56698d746ffadb/sounds/final-fantasy/permission/item-received.mp3",
+    },
     alt: "The Five Whys, an ornate black-and-gold rootfinder blade set with five turquoise stones",
     symbol: "Ⅴ",
   },
   5: {
     image: "relics/quiver-of-countermeasures.webp",
     audio: "relic-audio/box-5-quiver-cod-level-up.mp3",
+    audioCredit: {
+      cue: "MW2 Level Up",
+      origin: "Call of Duty: Modern Warfare 2",
+      source: "https://github.com/ryparker/claude-code-sounds/blob/4e9c9063d3c6821a2edbb4959449a884d6fdd039/themes/cod/sounds/mw2-level-up.mp3",
+    },
     alt: "The Quiver of Countermeasures, an ornate black-and-gold legendary quiver filled with distinct arrows",
     symbol: "⚿",
   },
   6: {
     image: "relics/clockwork-learning-orb.webp",
     audio: "relic-audio/box-6-learning-orb-pokemon-gym-badge.mp3",
+    audioCredit: {
+      cue: "Gym Badge",
+      origin: "Pokémon Generation III",
+      source: "https://github.com/ryparker/claude-code-sounds/blob/4e9c9063d3c6821a2edbb4959449a884d6fdd039/themes/pokemon-gen3/sounds/gym-badge.mp3",
+    },
     alt: "The PDSA Orb, an ornate gold armillary mechanism surrounding a luminous blue glass sphere",
     symbol: "↻",
   },
   7: {
     image: "relics/commanders-war-map.webp",
     audio: "relic-audio/box-7-war-map-smash-character-unlocked.mp3",
+    audioCredit: {
+      cue: "Character Unlocked",
+      origin: "Super Smash Bros. Ultimate",
+      source: "https://soundsverse.com/smash-bros/smash-bros-ultimate/super-smash-bros-ultimate-character-unlocked",
+    },
     alt: "The Commander's War Map, an ornate black-wood and gold campaign map with jeweled routes",
     symbol: "⚑",
   },
   8: {
     image: "relics/truthful-mirror.webp",
     audio: "relic-audio/box-8-truthful-mirror-fortnite-victory.mp3",
+    audioCredit: {
+      cue: "Victory Royale",
+      origin: "Fortnite",
+      source: "https://soundfactory.ai/fortnite-victory-royale/",
+    },
     alt: "The Threefold Mirror, an ornate black-and-gold legendary mirror with amethyst and turquoise jewels",
     symbol: "⚖",
   },
   9: {
     image: "relics/elixir-of-hansei.webp",
     audio: "relic-audio/box-9-elixir-super-mario-trap-remix.mp3",
+    audioCredit: {
+      cue: "9–15 second excerpt",
+      origin: "ZOMBR3X’s Super Mario Theme Song (Official Trap Remix)",
+      source: "https://www.youtube.com/watch?v=hpAvV4MvLWE",
+    },
     alt: "The Elixir of Hansei, an ornate gold-caged decanter filled with luminous violet elixir",
     symbol: "◉",
   },
 } as const satisfies Record<2 | 3 | 4 | 5 | 6 | 7 | 8 | 9, RelicArt>;
+
+export function RelicAudioCredit({ boxNumber }: { boxNumber: keyof typeof RELIC_ART }) {
+  const credit = RELIC_ART[boxNumber].audioCredit;
+  return <p className="gjallarhorn-reference relic-audio-reference">
+    <span>MYTHIC ECHO</span> Reveal sound: <cite>{credit.cue}</cite> from <cite>{credit.origin}</cite>.{" "}
+    <a href={credit.source} target="_blank" rel="noreferrer" aria-label={`Open the Box ${boxNumber} audio source`}>Source ↗</a>
+  </p>;
+}
 
 function playRelicRevealSound(enabled: boolean, audio: HTMLAudioElement | null) {
   if (!enabled || !audio) return;

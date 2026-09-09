@@ -41,6 +41,17 @@ expected = {
     9: "box-9-elixir-super-mario-trap-remix.mp3",
 }
 
+expected_sources = {
+    2: "https://github.com/ryparker/claude-code-sounds/blob/4e9c9063d3c6821a2edbb4959449a884d6fdd039/themes/zelda-oot/sounds/secret-discovered.mp3",
+    3: "https://github.com/ryparker/claude-code-sounds/blob/4e9c9063d3c6821a2edbb4959449a884d6fdd039/themes/zelda-botw/sounds/legendary-item-get.mp3",
+    4: "https://github.com/Citedy/game-sounds/blob/cc18cd9734f8ec3b2b853a294e56698d746ffadb/sounds/final-fantasy/permission/item-received.mp3",
+    5: "https://github.com/ryparker/claude-code-sounds/blob/4e9c9063d3c6821a2edbb4959449a884d6fdd039/themes/cod/sounds/mw2-level-up.mp3",
+    6: "https://github.com/ryparker/claude-code-sounds/blob/4e9c9063d3c6821a2edbb4959449a884d6fdd039/themes/pokemon-gen3/sounds/gym-badge.mp3",
+    7: "https://soundsverse.com/smash-bros/smash-bros-ultimate/super-smash-bros-ultimate-character-unlocked",
+    8: "https://soundfactory.ai/fortnite-victory-royale/",
+    9: "https://www.youtube.com/watch?v=hpAvV4MvLWE",
+}
+
 
 with sync_playwright() as playwright:
     browser = playwright.chromium.launch(headless=True)
@@ -88,6 +99,10 @@ with sync_playwright() as playwright:
         expect(audio).to_have_attribute("src", re.compile(f"relic-audio/{re.escape(expected[box])}$"))
         reveal.click()
         expect(page.locator(".relic-reveal-stage")).to_have_class(re.compile("is-revealed"))
+        source_link = page.get_by_role("link", name=f"Open the Box {box} audio source", exact=True)
+        expect(source_link).to_be_visible()
+        expect(source_link).to_have_attribute("href", expected_sources[box])
+        expect(source_link).to_have_attribute("target", "_blank")
         played[box] = page.evaluate("window.__playedRelicAudio.at(-1)")
         assert played[box].endswith(expected[box]), (box, played[box])
         page.get_by_role("button", name="Return to title screen", exact=True).click()
