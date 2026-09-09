@@ -57,4 +57,19 @@ test("GitHub Pages includes a visible startup shell and deployable assets", asyn
   }
   const hornAudio = await stat(new URL("../dist-pages/gjallarhorn-reveal.mp3", import.meta.url));
   assert.ok(hornAudio.size > 100_000, "the faded Gjallarhorn reveal clip should ship intact");
+  const relicAudio = (await readdir(new URL("../dist-pages/relic-audio/", import.meta.url))).filter((file) => file.endsWith(".mp3"));
+  assert.deepEqual(relicAudio.sort(), [
+    "box-2-lantern-zelda-secret-discovered.mp3",
+    "box-3-compass-zelda-legendary-item.mp3",
+    "box-4-five-whys-final-fantasy-fanfare.mp3",
+    "box-5-quiver-cod-level-up.mp3",
+    "box-6-learning-orb-pokemon-gym-badge.mp3",
+    "box-7-war-map-smash-character-unlocked.mp3",
+    "box-8-truthful-mirror-fortnite-victory.mp3",
+    "box-9-elixir-super-mario-trap-remix.mp3",
+  ]);
+  for (const audio of relicAudio) {
+    const audioStats = await stat(new URL(`../dist-pages/relic-audio/${audio}`, import.meta.url));
+    assert.ok(audioStats.size > 20_000, `${audio} should ship as a nonempty reveal cue`);
+  }
 });

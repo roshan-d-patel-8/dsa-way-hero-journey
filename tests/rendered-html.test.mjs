@@ -165,9 +165,23 @@ test("all eight post-Herald chambers use the shared click-to-awaken relic experi
   for (const asset of ["lantern-of-gemba", "north-star-compass", "five-whys", "quiver-of-countermeasures", "clockwork-learning-orb", "commanders-war-map", "truthful-mirror", "elixir-of-hansei"]) {
     assert.match(reveal, new RegExp(`relics/${asset}\\.webp`));
   }
+  for (const asset of [
+    "box-2-lantern-zelda-secret-discovered",
+    "box-3-compass-zelda-legendary-item",
+    "box-4-five-whys-final-fantasy-fanfare",
+    "box-5-quiver-cod-level-up",
+    "box-6-learning-orb-pokemon-gym-badge",
+    "box-7-war-map-smash-character-unlocked",
+    "box-8-truthful-mirror-fortnite-victory",
+    "box-9-elixir-super-mario-trap-remix",
+  ]) {
+    assert.match(reveal, new RegExp(`relic-audio/${asset}\\.mp3`));
+  }
   assert.match(reveal, /SEALED RELIC/);
   assert.match(reveal, /AWAKEN/);
   assert.match(reveal, /playRelicRevealSound/);
+  assert.match(reveal, /audio\.play\(\)/);
+  assert.match(reveal, /preload="auto"/);
   assert.ok(reveal.includes('aria-label={`Awaken the sealed Box ${boxNumber} relic`}'));
   assert.match(reveal, /herald-horn-scene relic-reveal-stage/);
   assert.ok(remaining.includes("<RelicReveal boxNumber={boxNumber}"));
