@@ -13,6 +13,7 @@ import { BoxArtifactAtlas } from "./BoxArtifactAtlas";
 import { ChamberGuide, CHAMBER_SUBTITLES } from "./ChamberGuide";
 import { GembaLensPanel } from "./GembaLensPanel";
 import { isBoothBoxNumber, type BoothBoxNumber } from "./boothAtlasData";
+import { ForgeInstrument } from "./ForgeInstrument";
 
 type Stage = "cover" | "atlas" | "forge-intro" | "forge-game" | "forge-complete" | "keep-intro" | "keep-lens" | "keep-game" | "keep-complete" | "remaining" | "threshold" | "questions" | "complete";
 
@@ -2057,6 +2058,7 @@ export function QuestExperience() {
         <div className="forge-intro-art">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="a3/box-1.jpg" alt="A handcrafted care roundtable surrounded by the evidence of a problem" width="3840" height="2160" />
+          <ForgeInstrument />
           <div className="forge-vignette" aria-hidden="true" />
           <div className="forge-embers" aria-hidden="true">{Array.from({ length: 18 }, (_, index) => <i key={index} />)}</div>
           <div className="forge-art-caption"><span>BOX I</span><b>REASON FOR ACTION</b></div>

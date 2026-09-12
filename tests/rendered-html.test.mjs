@@ -208,10 +208,14 @@ test("all eight post-Herald chambers use the shared click-to-awaken relic experi
 });
 
 test("includes the Herald's Forge, corrected current-state case, and full Door of Whys experience", async () => {
-  const [source, css, storyTreatments, packageJson, layout, ogImage, hornImage, hornAudio, senseiImage] = await Promise.all([
+  const [source, css, storyTreatments, forgeInstrument, forgeScene, forgeModel, forgeCss, packageJson, layout, ogImage, hornImage, hornAudio, senseiImage] = await Promise.all([
     readFile(new URL("../app/QuestExperience.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
     readFile(new URL("../app/StoryTreatments.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/ForgeInstrument.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/forge/createForgeScene.js", import.meta.url), "utf8"),
+    readFile(new URL("../app/forge/buildAnvil.js", import.meta.url), "utf8"),
+    readFile(new URL("../app/forge-instrument.css", import.meta.url), "utf8"),
     readFile(new URL("../package.json", import.meta.url), "utf8"),
     readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
     stat(new URL("../public/og.png", import.meta.url)),
@@ -219,6 +223,17 @@ test("includes the Herald's Forge, corrected current-state case, and full Door o
     stat(new URL("../public/gjallarhorn-reveal.mp3", import.meta.url)),
     stat(new URL("../public/sensei/sensei-box-2.png", import.meta.url)),
   ]);
+  assert.match(source, /<ForgeInstrument \/>/);
+  assert.match(forgeInstrument, /FORGE INSTRUMENT \/ 01/);
+  assert.match(forgeInstrument, /prefers-reduced-motion/);
+  assert.match(forgeScene, /createForgeScene/);
+  assert.match(forgeScene, /webglcontextlost/);
+  assert.match(forgeScene, /dsa-forge-instrument-v1/);
+  assert.match(forgeModel, /buildAnvil/);
+  assert.match(forgeModel, /ExtrudeGeometry/);
+  assert.match(forgeModel, /\["⌂","!","◎","⚡"\]/);
+  assert.match(forgeCss, /data-forge-instrument="ready"/);
+  assert.match(forgeCss, /@media\(prefers-reduced-motion:reduce\)/);
   assert.match(source, /a patient cancelled a 2:00 p\.m\. Surgery consultation/);
   assert.match(source, /Why wasn’t the missed opportunity detected and corrected earlier\?/);
   assert.match(source, /That question carried a solution or a judgment/);
