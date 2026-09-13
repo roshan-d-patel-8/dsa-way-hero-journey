@@ -54,7 +54,11 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
 .header-title-brand { display: flex; align-items: flex-start; justify-content: center; gap: 9px; }
 .header-wordmark-stack { display: flex; flex: 0 0 auto; flex-direction: column; align-items: center; }
 .header-wordmark { display: block; width: clamp(184.8px, 14.52vw, 220.8px); height: auto; image-rendering: pixelated; }
-.header-pixel-hero { display: block; width: 42px; height: 42px; flex: 0 0 auto; image-rendering: pixelated; filter: drop-shadow(0 4px 0 rgba(0,0,0,.46)) drop-shadow(0 0 8px rgba(48,181,230,.22)); }
+.header-pixel-hero { display: block; width: 42px; height: 42px; flex: 0 0 auto; padding: 0; border: 0; outline: none; background: transparent; cursor: pointer; image-rendering: pixelated; filter: drop-shadow(0 4px 0 rgba(0,0,0,.46)) drop-shadow(0 0 8px rgba(48,181,230,.22)); }
+.header-pixel-hero svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.header-hero-sword { transform-box: view-box; transform-origin: 37px 27px; transition: transform .28s steps(4,end); }
+.header-pixel-hero:is(:hover,:focus-visible) .header-hero-sword { transform: rotate(90deg); }
+.header-pixel-hero:focus-visible { filter: drop-shadow(0 4px 0 rgba(0,0,0,.46)) drop-shadow(0 0 11px rgba(117,226,230,.72)); }
 .header-subtitle { display: block; position: relative; height: clamp(20.4px, 1.44vw, 22.8px); margin-top: 2px; line-height: 0; }
 .header-subtitle-art { display: block; width: clamp(190.08px, 13.536vw, 213.12px); height: auto; margin: 0 auto; filter: drop-shadow(0 2px 5px rgba(0,0,0,.7)); }
 .header-actions { justify-self: end; display: flex; gap: 8px; }
@@ -533,8 +537,6 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
 @keyframes fieldNoteIn { from{opacity:0;transform:translateY(-12px);filter:blur(5px)}to{opacity:1;transform:translateY(0);filter:blur(0)} }
 
 @media (max-width: 980px) {
-  .quest-header { grid-template-columns: 1fr auto; }
-  .header-title { display: none; }
   .threshold-screen, .question-screen, .complete-screen { grid-template-columns: 1fr; }
   .a3-home-heading { grid-template-columns: 1fr; gap: 16px; }
   .a3-home-heading > p { max-width: 650px; }
@@ -573,6 +575,11 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
   .brand-drawer-close { width:36px;height:36px;font-size:1.1rem; }
   .brand-lockup { width: 40px; height: 40px; }
   .brand-home-icon { width: 31px; height: 31px; }
+  .header-title-brand { align-items: center; gap: 4px; }
+  .header-wordmark { width: clamp(96px,28vw,118px); }
+  .header-subtitle { height: clamp(10px,2.8vw,13px); margin-top: 1px; }
+  .header-subtitle-art { width: clamp(94px,27vw,114px); }
+  .header-pixel-hero { width:30px;height:30px; }
   .header-icon-button { width:40px;height:40px; }
   .header-action-icon { width:31px;height:31px; }
   .a3-home { min-height: calc(100svh - 72px); padding: 32px 0 28px; }
@@ -649,6 +656,18 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
   .complete-story { padding: 36px 28px 70px; }
   .rc-shell{min-height:calc(100svh - 72px)}.rc-intro-art,.rc-game-world,.rc-complete>.rc-scene{min-height:430px}.rc-intro-copy,.rc-complete-copy{padding:48px 23px 60px}.rc-intro-copy h1{font-size:clamp(3.1rem,16vw,5rem)}.rc-trial-preview span{min-height:63px;padding:9px}.rc-trial-preview b{font-size:.56rem}.rc-question-panel{padding:34px 20px 55px}.rc-heading-row{flex-direction:column}.rc-progress{width:100%;justify-content:space-between}.rc-progress span{width:34px;height:34px}.rc-question-panel h1{font-size:clamp(2.65rem,14vw,4.2rem)}.rc-choice-list button{min-height:98px;grid-template-columns:33px 1fr 19px;gap:9px;padding:12px 11px}.rc-choice-list button>b{font-size:.7rem}.rc-advance{align-items:stretch;flex-direction:column}.rc-advance .primary-button{width:100%}.rc-ritual-ring{width:68%}.rc-ritual-ring>span{width:56px;height:56px;margin:-28px;transform:rotate(var(--angle)) translateY(-130px) rotate(calc(var(--angle) * -1))}.rc-ritual-ring>span b{width:92px;font-size:.42rem}.rc-ritual-ring>span.is-current{animation:none}.rc-scene-core{width:108px;height:108px}.rc-scene-core i{font-size:1.8rem}.rc-scene-core b{bottom:10px}.rc-scene-label{left:13px;top:14px;padding:9px 11px}.rc-dossier{left:12px;right:12px;bottom:12px}.rc-complete-copy h1{font-size:clamp(1.75rem,8vw,3.5rem);letter-spacing:-.08em}.rc-complete-actions{align-items:stretch;flex-direction:column}.rc-complete-actions .primary-button{width:100%}
   .rc-sealed-reward{margin-inline:0}.whys-sealed-reward{margin:-26px 8px 0 18px}
+}
+
+@media (max-width: 360px) {
+  .quest-header { padding: 10px 10px 10px 17px; }
+  .brand-lockup,.header-icon-button { width:36px;height:36px; }
+  .brand-home-icon,.header-action-icon { width:28px;height:28px; }
+  .header-actions { gap:6px; }
+  .header-title-brand { gap:3px; }
+  .header-wordmark { width:84px; }
+  .header-subtitle { height:10px; }
+  .header-subtitle-art { width:82px; }
+  .header-pixel-hero { width:24px;height:24px; }
 }
 
 @media (hover: none) {

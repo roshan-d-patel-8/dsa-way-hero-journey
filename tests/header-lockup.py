@@ -18,10 +18,11 @@ results = []
 
 with sync_playwright() as playwright:
     browser = playwright.chromium.launch(headless=True)
-    for label, viewport, lockup_visible in [
-        ("desktop", {"width": 1512, "height": 982}, True),
-        ("tablet", {"width": 980, "height": 900}, False),
-        ("mobile", {"width": 390, "height": 844}, False),
+    for label, viewport, wordmark_range, subtitle_range, hero_range in [
+        ("desktop", {"width": 1512, "height": 982}, (219, 221), (204, 206), (41, 43)),
+        ("tablet", {"width": 980, "height": 900}, (184, 186), (189, 192), (41, 43)),
+        ("mobile", {"width": 390, "height": 844}, (108, 111), (104, 107), (29, 31)),
+        ("narrow", {"width": 320, "height": 760}, (83, 85), (81, 83), (23, 25)),
     ]:
         page = browser.new_page(viewport=viewport)
         errors = []
@@ -54,7 +55,7 @@ with sync_playwright() as playwright:
         assert home_metrics["complete"]
         assert home_metrics["naturalWidth"] == 48
         assert home_metrics["naturalHeight"] == 48
-        assert 30 <= home_metrics["renderedWidth"] <= 38
+        assert 27.5 <= home_metrics["renderedWidth"] <= 38
         action_metrics = action_icons.evaluate_all(
             """images => images.map(image => ({
               complete: image.complete,
@@ -65,7 +66,7 @@ with sync_playwright() as playwright:
         )
         assert all(metric["complete"] for metric in action_metrics)
         assert all(metric["naturalWidth"] == 48 and metric["naturalHeight"] == 48 for metric in action_metrics)
-        assert all(30 <= metric["renderedWidth"] <= 38 for metric in action_metrics)
+        assert all(27.5 <= metric["renderedWidth"] <= 38 for metric in action_metrics)
 
         sound_tooltip = page.get_by_text("Sound on — click to mute", exact=True)
         map_tooltip = page.get_by_text("Open the quest map", exact=True)
@@ -78,50 +79,64 @@ with sync_playwright() as playwright:
         expect(map_tooltip).to_be_visible()
         page.mouse.move(1, viewport["height"] - 1)
         expect(map_tooltip).to_be_hidden()
-        if lockup_visible:
-            expect(lockup).to_be_visible()
-            expect(wordmark).to_be_visible()
-            expect(hero).to_be_visible()
-            expect(subtitle).to_be_visible()
-            wordmark_metrics = wordmark.evaluate(
-                """image => ({
-                  complete: image.complete,
-                  naturalWidth: image.naturalWidth,
-                  naturalHeight: image.naturalHeight,
-                  renderedWidth: image.getBoundingClientRect().width,
-                  wordmarkLeft: image.getBoundingClientRect().left,
-                  heroRight: document.querySelector('.header-pixel-hero').getBoundingClientRect().right,
-                  wordmarkRight: image.getBoundingClientRect().right,
-                })"""
-            )
-            assert wordmark_metrics["complete"]
-            assert wordmark_metrics["naturalWidth"] == 744
-            assert wordmark_metrics["naturalHeight"] == 136
-            assert wordmark_metrics["heroRight"] > wordmark_metrics["wordmarkRight"]
-            assert 219 <= wordmark_metrics["renderedWidth"] <= 221
-            subtitle_metrics = subtitle.evaluate(
-                """image => ({
-                  complete: image.complete,
-                  naturalWidth: image.naturalWidth,
-                  naturalHeight: image.naturalHeight,
-                  renderedWidth: image.getBoundingClientRect().width,
-                  renderedHeight: image.getBoundingClientRect().height,
-                  subtitleLeft: image.getBoundingClientRect().left,
-                  subtitleRight: image.getBoundingClientRect().right,
-                })"""
-            )
-            assert subtitle_metrics["complete"]
-            assert subtitle_metrics["naturalWidth"] == 2012
-            assert subtitle_metrics["naturalHeight"] == 211
-            assert 204 <= subtitle_metrics["renderedWidth"] <= 206
-            assert 21 <= subtitle_metrics["renderedHeight"] <= 22
-            wordmark_center = (wordmark_metrics["wordmarkLeft"] + wordmark_metrics["wordmarkRight"]) / 2
-            subtitle_center = (subtitle_metrics["subtitleLeft"] + subtitle_metrics["subtitleRight"]) / 2
-            assert abs(wordmark_center - subtitle_center) <= 0.5
-        else:
-            expect(lockup).to_be_hidden()
-            wordmark_metrics = None
-            subtitle_metrics = None
+        expect(lockup).to_be_visible()
+        expect(wordmark).to_be_visible()
+        expect(hero).to_be_visible()
+        expect(subtitle).to_be_visible()
+        wordmark_metrics = wordmark.evaluate(
+            """image => ({
+              complete: image.complete,
+              naturalWidth: image.naturalWidth,
+              naturalHeight: image.naturalHeight,
+              renderedWidth: image.getBoundingClientRect().width,
+              wordmarkLeft: image.getBoundingClientRect().left,
+              heroRight: document.querySelector('.header-pixel-hero').getBoundingClientRect().right,
+              wordmarkRight: image.getBoundingClientRect().right,
+            })"""
+        )
+        assert wordmark_metrics["complete"]
+        assert wordmark_metrics["naturalWidth"] == 744
+        assert wordmark_metrics["naturalHeight"] == 136
+        assert wordmark_metrics["heroRight"] > wordmark_metrics["wordmarkRight"]
+        assert wordmark_range[0] <= wordmark_metrics["renderedWidth"] <= wordmark_range[1]
+        subtitle_metrics = subtitle.evaluate(
+            """image => ({
+              complete: image.complete,
+              naturalWidth: image.naturalWidth,
+              naturalHeight: image.naturalHeight,
+              renderedWidth: image.getBoundingClientRect().width,
+              renderedHeight: image.getBoundingClientRect().height,
+              subtitleLeft: image.getBoundingClientRect().left,
+              subtitleRight: image.getBoundingClientRect().right,
+            })"""
+        )
+        assert subtitle_metrics["complete"]
+        assert subtitle_metrics["naturalWidth"] == 2012
+        assert subtitle_metrics["naturalHeight"] == 211
+        assert subtitle_range[0] <= subtitle_metrics["renderedWidth"] <= subtitle_range[1]
+        wordmark_center = (wordmark_metrics["wordmarkLeft"] + wordmark_metrics["wordmarkRight"]) / 2
+        subtitle_center = (subtitle_metrics["subtitleLeft"] + subtitle_metrics["subtitleRight"]) / 2
+        assert abs(wordmark_center - subtitle_center) <= 0.5
+        hero_metrics = hero.evaluate(
+            """element => ({
+              renderedWidth: element.getBoundingClientRect().width,
+              renderedHeight: element.getBoundingClientRect().height,
+            })"""
+        )
+        assert hero_range[0] <= hero_metrics["renderedWidth"] <= hero_range[1]
+        sword = page.locator(".header-hero-sword")
+        sword_resting = sword.evaluate("element => getComputedStyle(element).transform")
+        hero.hover()
+        page.wait_for_timeout(350)
+        sword_swung = sword.evaluate("element => getComputedStyle(element).transform")
+        assert sword_swung != sword_resting
+        page.mouse.move(1, viewport["height"] - 1)
+        hero.focus()
+        page.wait_for_timeout(350)
+        sword_focused = sword.evaluate("element => getComputedStyle(element).transform")
+        assert sword_focused == sword_swung
+        if label == "desktop":
+            page.locator(".quest-header").screenshot(path=output / "desktop-sword-swing.png")
 
         page_metrics = page.evaluate(
             """() => ({
@@ -184,6 +199,10 @@ with sync_playwright() as playwright:
                 "uiSoundStarts": ui_sound_starts,
                 "wordmark": wordmark_metrics,
                 "subtitle": subtitle_metrics,
+                "hero": hero_metrics,
+                "swordResting": sword_resting,
+                "swordSwung": sword_swung,
+                "swordFocused": sword_focused,
                 "errors": errors,
             }
         )

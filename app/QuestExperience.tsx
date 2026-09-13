@@ -1933,9 +1933,38 @@ export function QuestExperience() {
                 <img className="header-subtitle-art" src="branding/hero-journey-blackwood.png" alt="" width="2012" height="211" aria-hidden="true" />
               </small>
             </span>
-            {/* Decorative companion; the wordmark and hidden subtitle provide the accessible text. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="header-pixel-hero" src="branding/hero-with-sword.svg" alt="" width="48" height="48" aria-hidden="true" />
+            <button className="header-pixel-hero" type="button" aria-label="Swing the pixel hero's sword">
+              <svg viewBox="0 0 48 48" width="48" height="48" aria-hidden="true" focusable="false" shapeRendering="crispEdges">
+                <rect x="7" y="44" width="35" height="3" fill="#02080c" opacity=".8" />
+                <rect x="12" y="8" width="17" height="4" fill="#061b2b" />
+                <rect x="9" y="12" width="23" height="13" fill="#0069a7" />
+                <rect x="12" y="9" width="17" height="3" fill="#30b5e6" />
+                <rect x="13" y="15" width="15" height="8" fill="#102638" />
+                <rect x="15" y="17" width="3" height="2" fill="#75e2e6" />
+                <rect x="23" y="17" width="3" height="2" fill="#75e2e6" />
+                <rect x="29" y="14" width="4" height="7" fill="#30b5e6" />
+                <rect x="11" y="25" width="20" height="14" fill="#0069a7" />
+                <rect x="15" y="25" width="12" height="4" fill="#30b5e6" />
+                <rect x="11" y="35" width="20" height="4" fill="#981f59" />
+                <rect x="18" y="28" width="5" height="5" fill="#ffc45e" />
+                <rect x="19" y="29" width="3" height="3" fill="#061b2b" />
+                <rect x="7" y="27" width="4" height="10" fill="#102638" />
+                <rect x="31" y="27" width="5" height="5" fill="#30b5e6" />
+                <rect x="34" y="29" width="5" height="4" fill="#0069a7" />
+                <rect x="12" y="39" width="8" height="6" fill="#102638" />
+                <rect x="23" y="39" width="8" height="6" fill="#102638" />
+                <rect x="9" y="43" width="11" height="3" fill="#0069a7" />
+                <rect x="23" y="43" width="11" height="3" fill="#0069a7" />
+                <g className="header-hero-sword">
+                  <path d="M39 2h5v22h-5z" fill="#dff8fa" />
+                  <path d="M41 2h3v22h-3z" fill="#75e2e6" />
+                  <path d="M39 2h5l-2.5-2z" fill="#eaf5f7" />
+                  <rect x="35" y="24" width="13" height="4" fill="#f08f24" />
+                  <rect x="39" y="28" width="5" height="12" fill="#981f59" />
+                  <rect x="37" y="40" width="9" height="4" fill="#ffc45e" />
+                </g>
+              </svg>
+            </button>
           </span>
         </div>
         <div className="header-actions">

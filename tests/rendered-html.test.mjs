@@ -26,7 +26,7 @@ test("server-renders the DSA Way quest", async () => {
   assert.match(html, /no prior experience required/);
   assert.match(html, /The Hero(?:&#x27;|')s Journey/);
   assert.match(html, /branding\/dsa-way-wordmark\.png/);
-  assert.match(html, /branding\/hero-with-sword\.svg/);
+  assert.match(html, /class="header-hero-sword"/);
   assert.match(html, /branding\/pixel-home\.svg/);
   assert.match(html, /branding\/pixel-sound-on\.svg/);
   assert.match(html, /branding\/pixel-quest-map\.svg/);
@@ -36,7 +36,7 @@ test("server-renders the DSA Way quest", async () => {
   assert.match(html, /Click here to see our DSA Way\.\.\./);
   assert.match(html, /branding\/dsa-way-overview\.png/);
   assert.match(html, /alt="the DSA WAY"/);
-  assert.match(html, /class="header-pixel-hero"[^>]*alt=""[^>]*aria-hidden="true"/);
+  assert.match(html, /class="header-pixel-hero"[^>]*type="button"[^>]*aria-label="Swing the pixel hero(?:&#x27;|')s sword"/);
   assert.match(html, /class="sr-only">The Hero(?:&#x27;|')s Journey/);
   assert.match(html, /class="header-subtitle-art"[^>]*width="2012"[^>]*height="211"[^>]*aria-hidden="true"/);
   assert.match(html, /aria-label="Return to title screen"/);
