@@ -127,8 +127,9 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
 .a3-tile-overlay { position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 18px; color: #fff; text-align: center; opacity: 0; transform: translateY(9px); transition: opacity .32s ease, transform .42s cubic-bezier(.2,.8,.2,1); text-shadow: 0 3px 18px #000, 0 1px 2px #000; }
 .a3-tile-overlay small { margin-bottom: 12px; color: #ffc45e; font: 400 clamp(1.08rem,1.75vw,2rem)/1.05 "Press Start 2P", "Courier New", monospace; letter-spacing: .055em; text-shadow: 3px 3px 0 #6d1c43, 0 0 16px rgba(240,143,36,.72); }
 .a3-tile-overlay b { max-width: 90%; font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.08rem,1.75vw,2rem); font-weight: 500; line-height: 1.02; letter-spacing: -.025em; text-wrap: balance; }
-.a3-quest-name { max-width: 90%; margin-top: 12px; display: flex; justify-content: center; font-style: normal; line-height: 0; }
-.a3-tile .a3-quest-name-art { position: static; inset: auto; display: block; width: auto; max-width: 100%; height: clamp(.546rem,.624vw,.728rem); object-fit: contain; filter: drop-shadow(0 2px 5px #000); transform: none; transition: none; }
+.a3-quest-name { max-width: 94%; margin-top: 12px; display: flex; justify-content: center; font-style: normal; line-height: 0; }
+.a3-tile .a3-quest-name-art { position: static; inset: auto; display: block; width: auto; max-width: 100%; height: clamp(1.638rem,1.872vw,2.184rem); object-fit: contain; filter: drop-shadow(0 2px 5px #000); transform: none; transition: none; }
+.a3-tile .a3-quest-name-art.is-multiline { height: clamp(3.04rem,3.474vw,4.054rem); }
 .a3-tile-subtitle { max-width: 34ch; margin-top: 8px; color: #eef7f8; font: 500 clamp(.7rem,.9vw,.9rem)/1.35 Georgia, serif; text-wrap: balance; }
 .chamber-plain-guide { margin: 18px 0; padding: 13px 16px; border-left: 2px solid #75e2e6; background: rgba(48,181,230,.065); color: #eef7f8; }
 .chamber-plain-guide strong { display: block; font: 600 1rem/1.4 Georgia, serif; }

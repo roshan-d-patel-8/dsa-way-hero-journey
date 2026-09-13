@@ -182,6 +182,8 @@ const CHAMBER_QUEST_NAMES: Record<number, string> = {
   9: "RETURN WITH THE ELIXIR",
 };
 
+const MULTILINE_QUEST_LABELS = new Set<number>([2, 3, 5, 6, 7, 8, 9]);
+
 const FORGE_SEALS: ForgeSeal[] = [
   {
     id: "background",
@@ -2013,7 +2015,7 @@ export function QuestExperience() {
                 <em className="a3-quest-name" aria-hidden="true">
                   {/* Blackwood Castle is rendered to artwork so its font file is not published. */}
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img className="a3-quest-name-art" src={`branding/quest-labels/box-${box.number}.png`} alt="" />
+                  <img className={`a3-quest-name-art${MULTILINE_QUEST_LABELS.has(box.number) ? " is-multiline" : ""}`} src={`branding/quest-labels/box-${box.number}.png`} alt="" />
                 </em>
               </span>
               <span className="a3-playable-badge" aria-hidden="true">CLICK TO PLAY</span>

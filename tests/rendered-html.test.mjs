@@ -61,7 +61,7 @@ test("server-renders the DSA Way quest", async () => {
   assert.match(html, /Enter RETURN WITH THE ELIXIR/);
   assert.match(html, /Select any box to inspect its original 4K artifact/);
   assert.equal((html.match(/CLICK TO PLAY/g) ?? []).length, 9);
-  assert.equal((html.match(/class="a3-quest-name-art" src="branding\/quest-labels\/box-\d\.png"/g) ?? []).length, 9);
+  assert.equal((html.match(/class="a3-quest-name-art(?: is-multiline)?" src="branding\/quest-labels\/box-\d\.png"/g) ?? []).length, 9);
   assert.doesNotMatch(html, /Hover to reveal each chamber\. Select Box 4 to enter The Door of Whys\./);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton|Your site is taking shape/i);
 });

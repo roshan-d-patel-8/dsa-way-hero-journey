@@ -63,8 +63,31 @@ with sync_playwright() as playwright:
     assert label_metrics["complete"]
     assert label_metrics["naturalWidth"] > 1500
     assert label_metrics["naturalHeight"] >= 130
-    assert 8.5 <= label_metrics["renderedHeight"] <= 12, label_metrics
+    assert 27.5 <= label_metrics["renderedHeight"] <= 29.5, label_metrics
     page.locator(".a3-grid").screenshot(path=output / "hover.png")
+
+    tiles.nth(5).hover()
+    expect(labels.nth(5)).to_be_visible()
+    page.wait_for_timeout(250)
+    longest_label_metrics = labels.nth(5).evaluate(
+        """image => {
+          const imageBox = image.getBoundingClientRect();
+          const tileBox = image.closest('.a3-tile').getBoundingClientRect();
+          return {
+            naturalWidth: image.naturalWidth,
+            naturalHeight: image.naturalHeight,
+            renderedWidth: imageBox.width,
+            renderedHeight: imageBox.height,
+            contained: imageBox.left >= tileBox.left && imageBox.right <= tileBox.right,
+          };
+        }"""
+    )
+    assert longest_label_metrics["contained"], longest_label_metrics
+    assert 51 <= longest_label_metrics["renderedHeight"] <= 54, longest_label_metrics
+    natural_ratio = longest_label_metrics["naturalWidth"] / longest_label_metrics["naturalHeight"]
+    rendered_ratio = longest_label_metrics["renderedWidth"] / longest_label_metrics["renderedHeight"]
+    assert abs(natural_ratio - rendered_ratio) <= 0.05, longest_label_metrics
+    page.locator(".a3-grid").screenshot(path=output / "longest-hover.png")
 
     page.mouse.move(1, 1)
     expect(badges.first).to_be_hidden()
@@ -94,6 +117,7 @@ with sync_playwright() as playwright:
         "labelArtwork": labels.count(),
         "badge": metrics,
         "firstLabel": label_metrics,
+        "longestLabel": longest_label_metrics,
         "touchBadgeHidden": True,
         "errors": errors,
     }
