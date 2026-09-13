@@ -1844,7 +1844,10 @@ export function QuestExperience() {
     <main className={`quest-shell stage-${stage}`}>
       <div className="brand-strata" aria-hidden="true"><i /><i /><i /><i /><i /></div><div className="scanlines" aria-hidden="true" />
       <header className="quest-header">
-        <button className="brand-lockup" type="button" onClick={returnHome} aria-label="Return to title screen"><span>PERMANENTE MEDICINE</span><small>The Permanente Medical Group</small></button>
+        <button className="brand-lockup" type="button" onClick={returnHome} aria-label="Return to title screen">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="brand-home-icon" src="branding/pixel-home.svg" alt="" width="48" height="48" aria-hidden="true" />
+        </button>
         <div className="header-title" aria-label="the DSA WAY — The Hero's Journey">
           <span className="header-title-brand">
             {/* eslint-disable-next-line @next/next/no-img-element */}

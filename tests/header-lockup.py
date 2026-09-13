@@ -32,6 +32,22 @@ with sync_playwright() as playwright:
         lockup = page.locator(".header-title")
         wordmark = page.locator(".header-wordmark")
         hero = page.locator(".header-pixel-hero")
+        home_button = page.get_by_role("button", name="Return to title screen")
+        home_icon = page.locator(".brand-home-icon")
+        expect(home_button).to_be_visible()
+        expect(home_icon).to_be_visible()
+        home_metrics = home_icon.evaluate(
+            """image => ({
+              complete: image.complete,
+              naturalWidth: image.naturalWidth,
+              naturalHeight: image.naturalHeight,
+              renderedWidth: image.getBoundingClientRect().width,
+            })"""
+        )
+        assert home_metrics["complete"]
+        assert home_metrics["naturalWidth"] == 48
+        assert home_metrics["naturalHeight"] == 48
+        assert 30 <= home_metrics["renderedWidth"] <= 38
         if lockup_visible:
             expect(lockup).to_be_visible()
             expect(wordmark).to_be_visible()
@@ -68,6 +84,7 @@ with sync_playwright() as playwright:
             {
                 "viewport": label,
                 "page": page_metrics,
+                "home": home_metrics,
                 "wordmark": wordmark_metrics,
                 "errors": errors,
             }

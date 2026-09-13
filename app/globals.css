@@ -44,9 +44,10 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
 .brand-strata i:nth-child(5) { background: var(--cyan); }
 
 .quest-header { height: 82px; padding: 14px clamp(22px, 4.8vw, 74px); display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; border-bottom: 1px solid var(--line); background: rgba(5,13,20,.88); backdrop-filter: blur(16px); position: relative; z-index: 30; box-shadow: 0 12px 38px rgba(0,0,0,.28); }
-.brand-lockup { justify-self: start; display: flex; flex-direction: column; border: 0; padding: 0; background: none; cursor: pointer; color: var(--blue); line-height: 1; text-align: left; }
-.brand-lockup span { font-weight: 850; letter-spacing: .035em; font-size: .82rem; }
-.brand-lockup small { font-weight: 650; font-size: .64rem; margin-top: 5px; }
+.brand-lockup { justify-self: start; width: 48px; height: 48px; display: grid; place-items: center; border: 1px solid rgba(48,181,230,.28); padding: 0; background: rgba(10,26,36,.74); cursor: pointer; box-shadow: inset 0 0 0 2px rgba(5,13,20,.82), 4px 4px 0 rgba(0,105,167,.18); transition: transform .14s steps(2,end), border-color .14s ease, background .14s ease, box-shadow .14s ease; }
+.brand-lockup:is(:hover,:focus-visible) { transform: translateY(-2px); border-color: rgba(117,226,230,.76); background: rgba(16,41,54,.96); box-shadow: inset 0 0 0 2px rgba(5,13,20,.82), 4px 5px 0 rgba(152,31,89,.7), 0 0 18px rgba(48,181,230,.2); }
+.brand-lockup:active { transform: translateY(0); }
+.brand-home-icon { display: block; width: 36px; height: 36px; image-rendering: pixelated; filter: drop-shadow(0 3px 0 rgba(0,0,0,.38)); }
 .header-title { min-width: 0; text-align: center; }
 .header-title-brand { display: flex; align-items: center; justify-content: center; gap: 9px; }
 .header-wordmark { display: block; width: clamp(154px, 12.1vw, 184px); height: auto; image-rendering: pixelated; }
@@ -527,8 +528,8 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
 @media (max-width: 680px) {
   .sensei-message{grid-template-columns:66px minmax(0,1fr);gap:9px;margin:15px 0 17px}.sensei-bubble{min-height:72px;padding:11px 12px}.sensei-bubble::before{left:-10px;bottom:15px;width:14px;height:14px}.sensei-bubble p{font-size:.68rem;line-height:1.42}.sensei-portrait span{padding:4px 2px;font-size:.31rem}.incantation-scroll{grid-template-columns:12px minmax(0,1fr) 12px;margin:14px 0 17px}.incantation-scroll>div{min-height:64px;padding:10px 13px}.incantation-scroll span{font-size:.4rem}.incantation-scroll p{font-size:.93rem;line-height:1.28}
   .quest-header { height: 72px; padding: 12px 18px 12px 25px; }
-  .brand-lockup span { font-size: .68rem; }
-  .brand-lockup small { font-size: .55rem; }
+  .brand-lockup { width: 40px; height: 40px; }
+  .brand-home-icon { width: 31px; height: 31px; }
   .sound-button { width: 38px; overflow: hidden; white-space: nowrap; padding: 10px; gap: 0; font-size: 0; }
   .sound-button span { font-size: .85rem; }
   .map-button { padding-inline: 10px; }
