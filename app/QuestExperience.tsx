@@ -1848,7 +1848,7 @@ export function QuestExperience() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img className="brand-home-icon" src="branding/pixel-home.svg" alt="" width="48" height="48" aria-hidden="true" />
         </button>
-        <div className="header-title" aria-label="the DSA WAY — The Hero's Journey">
+        <div className="header-title">
           <span className="header-title-brand">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img className="header-wordmark" src="branding/dsa-way-wordmark.png" alt="the DSA WAY" width="744" height="136" />
@@ -1856,7 +1856,12 @@ export function QuestExperience() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img className="header-pixel-hero" src="branding/hero-with-sword.svg" alt="" width="48" height="48" aria-hidden="true" />
           </span>
-          <small>The Hero&apos;s Journey</small>
+          <small className="header-subtitle">
+            <span className="sr-only">The Hero&apos;s Journey</span>
+            {/* Blackwood Castle is rendered to artwork so its restricted font file is not published. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className="header-subtitle-art" src="branding/hero-journey-blackwood.png" alt="" width="2012" height="211" aria-hidden="true" />
+          </small>
         </div>
         <div className="header-actions">
           <button className="sound-button" type="button" aria-pressed={sound} onClick={() => setSound((value) => !value)}><span aria-hidden="true">{sound ? "♫" : "×"}</span> SOUND {sound ? "ON" : "OFF"}</button>

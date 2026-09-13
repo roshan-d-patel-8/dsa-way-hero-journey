@@ -22,6 +22,7 @@ html, body { margin: 0; min-height: 100%; background: var(--paper); }
 body { color: var(--text); font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif; }
 button { color: inherit; font: inherit; }
 button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
+.sr-only { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip: rect(0,0,0,0) !important; white-space: nowrap !important; border: 0 !important; }
 
 .quest-shell {
   min-height: 100svh;
@@ -52,7 +53,8 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
 .header-title-brand { display: flex; align-items: center; justify-content: center; gap: 9px; }
 .header-wordmark { display: block; width: clamp(154px, 12.1vw, 184px); height: auto; image-rendering: pixelated; }
 .header-pixel-hero { display: block; width: 42px; height: 42px; flex: 0 0 auto; image-rendering: pixelated; filter: drop-shadow(0 4px 0 rgba(0,0,0,.46)) drop-shadow(0 0 8px rgba(48,181,230,.22)); }
-.header-title small { display: block; color: var(--muted); font: 650 .52rem/1 "Courier New", monospace; letter-spacing: .16em; margin-top: 3px; text-transform: uppercase; }
+.header-subtitle { display: block; position: relative; height: clamp(14px, 1vw, 16px); margin-top: 3px; line-height: 0; }
+.header-subtitle-art { display: block; width: clamp(132px, 9.4vw, 148px); height: auto; margin: 0 auto; filter: drop-shadow(0 2px 5px rgba(0,0,0,.7)); }
 .header-actions { justify-self: end; display: flex; gap: 8px; }
 .sound-button, .map-button { border: 1px solid rgba(48,181,230,.3); background: rgba(11,33,46,.82); color: var(--text); padding: 10px 13px; cursor: pointer; font: 800 .62rem/1 "Courier New", monospace; letter-spacing: .08em; }
 .sound-button span { color: var(--berry); margin-right: 3px; }

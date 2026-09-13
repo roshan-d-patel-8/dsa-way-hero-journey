@@ -25,8 +25,11 @@ test("server-renders the DSA Way quest", async () => {
   assert.match(html, /branding\/dsa-way-wordmark\.png/);
   assert.match(html, /branding\/hero-with-sword\.svg/);
   assert.match(html, /branding\/pixel-home\.svg/);
+  assert.match(html, /branding\/hero-journey-blackwood\.png/);
   assert.match(html, /alt="the DSA WAY"/);
   assert.match(html, /class="header-pixel-hero"[^>]*alt=""[^>]*aria-hidden="true"/);
+  assert.match(html, /class="sr-only">The Hero(?:&#x27;|')s Journey/);
+  assert.match(html, /class="header-subtitle-art"[^>]*width="2012"[^>]*height="211"[^>]*aria-hidden="true"/);
   assert.match(html, /aria-label="Return to title screen"/);
   assert.doesNotMatch(html, /PERMANENTE MEDICINE|The Permanente Medical Group/);
   assert.match(html, /Reason for Action/);

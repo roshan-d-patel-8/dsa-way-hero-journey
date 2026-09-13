@@ -32,6 +32,7 @@ with sync_playwright() as playwright:
         lockup = page.locator(".header-title")
         wordmark = page.locator(".header-wordmark")
         hero = page.locator(".header-pixel-hero")
+        subtitle = page.locator(".header-subtitle-art")
         home_button = page.get_by_role("button", name="Return to title screen")
         home_icon = page.locator(".brand-home-icon")
         expect(home_button).to_be_visible()
@@ -52,6 +53,7 @@ with sync_playwright() as playwright:
             expect(lockup).to_be_visible()
             expect(wordmark).to_be_visible()
             expect(hero).to_be_visible()
+            expect(subtitle).to_be_visible()
             wordmark_metrics = wordmark.evaluate(
                 """image => ({
                   complete: image.complete,
@@ -67,9 +69,24 @@ with sync_playwright() as playwright:
             assert wordmark_metrics["naturalHeight"] == 136
             assert wordmark_metrics["heroRight"] > wordmark_metrics["wordmarkRight"]
             assert 150 <= wordmark_metrics["renderedWidth"] <= 190
+            subtitle_metrics = subtitle.evaluate(
+                """image => ({
+                  complete: image.complete,
+                  naturalWidth: image.naturalWidth,
+                  naturalHeight: image.naturalHeight,
+                  renderedWidth: image.getBoundingClientRect().width,
+                  renderedHeight: image.getBoundingClientRect().height,
+                })"""
+            )
+            assert subtitle_metrics["complete"]
+            assert subtitle_metrics["naturalWidth"] == 2012
+            assert subtitle_metrics["naturalHeight"] == 211
+            assert 132 <= subtitle_metrics["renderedWidth"] <= 149
+            assert 13 <= subtitle_metrics["renderedHeight"] <= 16
         else:
             expect(lockup).to_be_hidden()
             wordmark_metrics = None
+            subtitle_metrics = None
 
         page_metrics = page.evaluate(
             """() => ({
@@ -86,6 +103,7 @@ with sync_playwright() as playwright:
                 "page": page_metrics,
                 "home": home_metrics,
                 "wordmark": wordmark_metrics,
+                "subtitle": subtitle_metrics,
                 "errors": errors,
             }
         )
