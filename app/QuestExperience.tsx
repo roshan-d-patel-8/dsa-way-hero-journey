@@ -10,7 +10,7 @@ import { isRemainingBoxNumber, type RemainingBoxNumber } from "./remainingChambe
 import { RelicAudioCredit, RelicReveal } from "./RelicReveal";
 import { IncantationScroll, SenseiMessage } from "./StoryTreatments";
 import { BoxArtifactAtlas } from "./BoxArtifactAtlas";
-import { ChamberGuide, CHAMBER_SUBTITLES } from "./ChamberGuide";
+import { ChamberGuide } from "./ChamberGuide";
 import { GembaLensPanel } from "./GembaLensPanel";
 import { isBoothBoxNumber, type BoothBoxNumber } from "./boothAtlasData";
 import { ForgeInstrument } from "./ForgeInstrument";
@@ -157,15 +157,15 @@ const QUESTIONS: Question[] = [
 ];
 
 const A3_BOXES = [
-  { number: 1, label: "Reason for Action" },
-  { number: 2, label: "Current State" },
-  { number: 3, label: "Target State" },
-  { number: 4, label: "Gap Analysis" },
-  { number: 5, label: "Solutions Approach" },
-  { number: 6, label: "Rapid Experiments" },
-  { number: 7, label: "Completion Plan" },
-  { number: 8, label: "Confirmed State" },
-  { number: 9, label: "Insights" },
+  { number: 1, label: "Reason for Action", hoverLabel: "Focus the Problem" },
+  { number: 2, label: "Current State", hoverLabel: "Understand the Current Condition" },
+  { number: 3, label: "Target State", hoverLabel: "Set a Clear Goal" },
+  { number: 4, label: "Gap Analysis", hoverLabel: "Analyze Root Causes" },
+  { number: 5, label: "Solutions Approach", hoverLabel: "Design Smart Countermeasures" },
+  { number: 6, label: "Rapid Experiments", hoverLabel: "Run Rapid Experiments" },
+  { number: 7, label: "Completion Plan", hoverLabel: "Complete the Plan" },
+  { number: 8, label: "Confirmed State", hoverLabel: "Confirm the New State" },
+  { number: 9, label: "Insights", hoverLabel: "Capture Insights" },
 ] as const;
 
 const CHAMBERS = A3_BOXES.map(({ label }) => label);
@@ -2032,15 +2032,14 @@ export function QuestExperience() {
               type="button"
               key={box.number}
               onClick={() => enterBox(box.number)}
-              aria-label={`Box ${box.number}: ${box.label}. Enter ${CHAMBER_QUEST_NAMES[box.number]}`}
+              aria-label={`Box ${box.number}: ${box.hoverLabel}. Enter ${CHAMBER_QUEST_NAMES[box.number]}`}
             >
               {/* Public-path artwork stays compatible with both the app runtime and GitHub Pages. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={`a3/box-${box.number}.jpg`} alt="" width="3840" height="2160" loading={box.number <= 4 ? "eager" : "lazy"} decoding="async" />
               <span className="a3-tile-overlay">
                 <small>BOX {String(box.number).padStart(2, "0")}</small>
-                <b>{box.label}</b>
-                <span className="a3-tile-subtitle">{CHAMBER_SUBTITLES[box.number]}</span>
+                <b>{box.hoverLabel}</b>
                 <em className="a3-quest-name" aria-hidden="true">
                   {/* Blackwood Castle is rendered to artwork so its font file is not published. */}
                   {/* eslint-disable-next-line @next/next/no-img-element */}

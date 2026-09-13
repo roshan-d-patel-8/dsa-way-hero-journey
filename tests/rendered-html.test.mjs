@@ -51,6 +51,19 @@ test("server-renders the DSA Way quest", async () => {
   assert.match(html, /Reason for Action/);
   assert.match(html, /Current State/);
   assert.match(html, /Gap Analysis/);
+  for (const hoverLabel of [
+    "Focus the Problem",
+    "Understand the Current Condition",
+    "Set a Clear Goal",
+    "Analyze Root Causes",
+    "Design Smart Countermeasures",
+    "Run Rapid Experiments",
+    "Complete the Plan",
+    "Confirm the New State",
+    "Capture Insights",
+  ]) {
+    assert.match(html, new RegExp(`<b>${hoverLabel}</b>`));
+  }
   assert.match(html, /Enter THE HERALD(?:&#x27;|')S FORGE/);
   assert.match(html, /Enter THE CARTOGRAPHER(?:&#x27;|')S UNSEEN PATH/);
   assert.match(html, /Enter THE NORTH STAR OBSERVATORY/);

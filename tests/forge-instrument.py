@@ -27,7 +27,7 @@ with sync_playwright() as playwright:
         page.on("pageerror", lambda error: errors.append(str(error)))
         page.on("console", lambda message: errors.append(message.text) if message.type == "error" else None)
         page.goto(args.url, wait_until="networkidle")
-        page.get_by_role("button", name="Box 1: Reason for Action. Enter THE HERALD'S FORGE").click()
+        page.get_by_role("button", name="Box 1: Focus the Problem. Enter THE HERALD'S FORGE").click()
         instrument = page.locator(".forge-dimensional-instrument")
         expect(instrument).to_be_visible()
         expect(page.locator(".forge-intro-art")).to_have_attribute("data-forge-instrument", "ready")

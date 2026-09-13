@@ -15,6 +15,56 @@ args = parser.parse_args()
 output = Path(args.output)
 output.mkdir(parents=True, exist_ok=True)
 
+expected_hover_labels = [
+    "Focus the Problem",
+    "Understand the Current Condition",
+    "Set a Clear Goal",
+    "Analyze Root Causes",
+    "Design Smart Countermeasures",
+    "Run Rapid Experiments",
+    "Complete the Plan",
+    "Confirm the New State",
+    "Capture Insights",
+]
+
+content_layout_expression = """tile => {
+  const tileBox = tile.getBoundingClientRect();
+  const parts = [
+    ['box-number', tile.querySelector('.a3-tile-overlay small')],
+    ['title', tile.querySelector('.a3-tile-overlay b')],
+    ['quest-label', tile.querySelector('.a3-quest-name-art')],
+  ].filter(([, element]) => getComputedStyle(element).display !== 'none' && element.getClientRects().length > 0)
+    .map(([name, element]) => ({ name, element, box: element.getBoundingClientRect() }));
+  const overlaps = (a, b) =>
+    a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+  const collisions = [];
+  for (let first = 0; first < parts.length; first += 1) {
+    for (let second = first + 1; second < parts.length; second += 1) {
+      if (overlaps(parts[first].box, parts[second].box)) {
+        collisions.push(`${parts[first].name}:${parts[second].name}`);
+      }
+    }
+  }
+  const titleRange = document.createRange();
+  titleRange.selectNodeContents(tile.querySelector('.a3-tile-overlay b'));
+  const outside = parts.filter(({ box }) =>
+    box.left < tileBox.left - 1 || box.right > tileBox.right + 1 ||
+    box.top < tileBox.top - 1 || box.bottom > tileBox.bottom + 1
+  ).map(({ name, box }) => ({
+    name,
+    left: box.left,
+    right: box.right,
+    top: box.top,
+    bottom: box.bottom,
+  }));
+  return {
+    contained: outside.length === 0,
+    outside,
+    collisions,
+    titleLines: new Set([...titleRange.getClientRects()].map(rect => Math.round(rect.top))).size,
+  };
+}"""
+
 with sync_playwright() as playwright:
     browser = playwright.chromium.launch(headless=True)
     page = browser.new_page(viewport={"width": 1512, "height": 982})
@@ -26,7 +76,9 @@ with sync_playwright() as playwright:
     tiles = page.locator(".a3-tile")
     badges = page.locator(".a3-playable-badge")
     labels = page.locator(".a3-quest-name-art")
-    assert tiles.count() == badges.count() == labels.count() == 9
+    hover_labels = page.locator(".a3-tile-overlay > b")
+    assert tiles.count() == badges.count() == labels.count() == hover_labels.count() == 9
+    assert hover_labels.all_text_contents() == expected_hover_labels
     for index in range(9):
         assert badges.nth(index).locator(":scope > span").all_text_contents() == [
             "CLICK",
@@ -106,14 +158,18 @@ with sync_playwright() as playwright:
                   const badgeBox = badge.getBoundingClientRect();
                   const wordBoxes = [...badge.children].map(word => word.getBoundingClientRect());
                   const textBoxes = [...tile.querySelectorAll(
-                    '.a3-tile-overlay small, .a3-tile-overlay b, .a3-tile-subtitle, .a3-quest-name-art'
-                  )].map(element => ({
-                    selector: element.matches('small') ? 'box-number'
+                    '.a3-tile-overlay small, .a3-tile-overlay b, .a3-quest-name-art'
+                  )].flatMap(element => {
+                    const selector = element.matches('small') ? 'box-number'
                       : element.matches('b') ? 'title'
-                      : element.matches('.a3-tile-subtitle') ? 'subtitle'
-                      : 'quest-label',
-                    box: element.getBoundingClientRect(),
-                  }));
+                      : 'quest-label';
+                    if (element.matches('img')) {
+                      return [{ selector, box: element.getBoundingClientRect() }];
+                    }
+                    const range = document.createRange();
+                    range.selectNodeContents(element);
+                    return [...range.getClientRects()].map(box => ({ selector, box }));
+                  });
                   const overlaps = (a, b) =>
                     a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
                   return {
@@ -122,7 +178,13 @@ with sync_playwright() as playwright:
                     wordTops: wordBoxes.map(box => box.top),
                     wordCenters: wordBoxes.map(box => box.left + box.width / 2),
                     badgeCenter: badgeBox.left + badgeBox.width / 2,
-                    collisions: textBoxes.filter(item => overlaps(badgeBox, item.box)).map(item => item.selector),
+                    collisions: textBoxes.filter(item => overlaps(badgeBox, item.box)).map(item => ({
+                      selector: item.selector,
+                      left: item.box.left,
+                      right: item.box.right,
+                      top: item.box.top,
+                      bottom: item.box.bottom,
+                    })),
                   };
                 }"""
             )
@@ -133,7 +195,20 @@ with sync_playwright() as playwright:
                 abs(center - layout["badgeCenter"]) <= 1 for center in layout["wordCenters"]
             ), layout
             assert layout["collisions"] == [], layout
-            layout_checks.append({"viewport": viewport_width, "box": index + 1, **layout})
+            content_layout = tiles.nth(index).evaluate(content_layout_expression)
+            assert content_layout["contained"], content_layout
+            assert content_layout["collisions"] == [], content_layout
+            assert 1 <= content_layout["titleLines"] <= 2, content_layout
+            layout_checks.append(
+                {
+                    "viewport": viewport_width,
+                    "box": index + 1,
+                    **layout,
+                    "content": content_layout,
+                }
+            )
+            if viewport_width == 980 and index in (1, 4):
+                tiles.nth(index).screenshot(path=output / f"tablet-box-{index + 1}.png")
     page.set_viewport_size({"width": 1512, "height": 982})
 
     page.mouse.move(1, 1)
@@ -155,6 +230,15 @@ with sync_playwright() as playwright:
     touch_page.goto(args.url, wait_until="networkidle")
     expect(touch_page.locator(".a3-playable-badge").first).to_be_hidden()
     expect(touch_page.locator(".a3-tile-overlay").first).to_be_visible()
+    touch_layouts = []
+    for index in range(9):
+        content_layout = touch_page.locator(".a3-tile").nth(index).evaluate(
+            content_layout_expression
+        )
+        assert content_layout["contained"], {"box": index + 1, **content_layout}
+        assert content_layout["collisions"] == [], content_layout
+        assert 1 <= content_layout["titleLines"] <= 2, content_layout
+        touch_layouts.append(content_layout)
     touch_page.locator(".a3-grid-viewport").screenshot(path=output / "touch.png")
     assert not touch_errors, touch_errors
     touch_context.close()
@@ -166,6 +250,7 @@ with sync_playwright() as playwright:
         "firstLabel": label_metrics,
         "longestLabel": longest_label_metrics,
         "layoutChecks": layout_checks,
+        "touchLayouts": touch_layouts,
         "touchBadgeHidden": True,
         "errors": errors,
     }
