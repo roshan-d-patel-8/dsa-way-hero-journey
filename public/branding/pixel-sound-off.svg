@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" role="img" aria-labelledby="title desc" shape-rendering="crispEdges">
+  <title id="title">Sound off</title>
+  <desc id="desc">A retro pixel speaker marked with a berry-colored mute symbol.</desc>
+  <rect x="5" y="18" width="10" height="13" fill="#30b5e6"/>
+  <path d="M15 15h5v-4h7v27h-7v-4h-5z" fill="#0069a7"/>
+  <rect x="19" y="18" width="4" height="13" fill="#75e2e6"/>
+  <path d="M32 15h5v5h5v5h-5v-5h-5z" fill="#981f59"/>
+  <path d="M37 25h5v5h-5v5h-5v-5h5z" fill="#e7562f"/>
+  <rect x="5" y="31" width="15" height="4" fill="#102638"/>
+</svg>

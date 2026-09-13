@@ -479,6 +479,40 @@ function playTone(kind: "start" | "step" | "wrong" | "rune" | "open", enabled: b
   window.setTimeout(() => void ctx.close(), 900);
 }
 
+type UiSound = "select" | "drawer" | "map" | "home" | "toggle" | "close";
+
+function playUiSound(kind: UiSound, enabled: boolean) {
+  if (!enabled || typeof window === "undefined") return;
+  const AudioCtor = window.AudioContext ??
+    (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+  if (!AudioCtor) return;
+  const ctx = new AudioCtor();
+  const now = ctx.currentTime;
+  const cues: Record<UiSound, { notes: number[]; spacing: number; wave: OscillatorType; volume: number }> = {
+    select: { notes: [261.63, 392, 523.25], spacing: .075, wave: "square", volume: .038 },
+    drawer: { notes: [783.99, 1046.5, 1567.98], spacing: .065, wave: "triangle", volume: .048 },
+    map: { notes: [196, 293.66, 440], spacing: .06, wave: "square", volume: .032 },
+    home: { notes: [523.25, 392, 261.63], spacing: .065, wave: "triangle", volume: .04 },
+    toggle: { notes: [440, 659.25], spacing: .08, wave: "square", volume: .036 },
+    close: { notes: [329.63, 220], spacing: .07, wave: "triangle", volume: .032 },
+  };
+  const cue = cues[kind];
+  cue.notes.forEach((frequency, index) => {
+    const start = now + index * cue.spacing;
+    const oscillator = ctx.createOscillator();
+    const gain = ctx.createGain();
+    oscillator.type = cue.wave;
+    oscillator.frequency.setValueAtTime(frequency, start);
+    gain.gain.setValueAtTime(.0001, start);
+    gain.gain.exponentialRampToValueAtTime(cue.volume, start + .012);
+    gain.gain.exponentialRampToValueAtTime(.0001, start + .13);
+    oscillator.connect(gain).connect(ctx.destination);
+    oscillator.start(start);
+    oscillator.stop(start + .15);
+  });
+  window.setTimeout(() => void ctx.close(), 650);
+}
+
 type KeepSound = "footsteps" | "stopwatch" | "handoff" | "rework" | "voices" | "parchment" | "lantern";
 const KEEP_SOUND_CUES: KeepSound[] = ["footsteps", "stopwatch", "handoff", "rework", "voices", "parchment"];
 
@@ -1718,6 +1752,7 @@ export function QuestExperience() {
   };
 
   const returnHome = () => {
+    playUiSound("home", sound);
     resetForge();
     resetKeep();
     setQuestionIndex(0);
@@ -1732,19 +1767,18 @@ export function QuestExperience() {
   };
 
   const enterBox = (boxNumber: number) => {
+    playUiSound("select", sound);
     setAtlasBoxNumber(null);
     if (boxNumber === 1) {
       resetForge();
       setRemainingBoxNumber(null);
       setStage("forge-intro");
-      playTone("start", sound);
       return;
     }
     if (boxNumber === 2) {
       resetKeep();
       setRemainingBoxNumber(null);
       setStage("keep-intro");
-      playTone("start", sound);
       return;
     }
     if (boxNumber === 4) {
@@ -1754,21 +1788,42 @@ export function QuestExperience() {
       setCorrect(false);
       setWhysRevealed(false);
       setStage("threshold");
-      playTone("start", sound);
       return;
     }
     if (isRemainingBoxNumber(boxNumber)) {
       setRemainingBoxNumber(boxNumber);
       setStage("remaining");
-      playTone("start", sound);
     }
   };
   const openBoxAtlas = (boxNumber: number) => {
     if (!isBoothBoxNumber(boxNumber)) return;
+    playUiSound("map", sound);
     setAtlasBoxNumber(boxNumber);
     setMenuOpen(false);
     setStage("atlas");
     window.scrollTo({ top: 0, behavior: "auto" });
+  };
+  const toggleSound = () => {
+    playUiSound("toggle", true);
+    setSound((value) => !value);
+  };
+  const toggleQuestMap = () => {
+    playUiSound(menuOpen ? "close" : "map", sound);
+    setMenuOpen((value) => !value);
+    setBrandPanelOpen(false);
+  };
+  const closeQuestMap = () => {
+    if (menuOpen) playUiSound("close", sound);
+    setMenuOpen(false);
+  };
+  const toggleBrandPanel = () => {
+    playUiSound(brandPanelOpen ? "close" : "drawer", sound);
+    setBrandPanelOpen((value) => !value);
+    setMenuOpen(false);
+  };
+  const closeBrandPanel = () => {
+    if (brandPanelOpen) playUiSound("close", sound);
+    setBrandPanelOpen(false);
   };
   const discoverKeep = (observationId: string) => {
     const index = KEEP_OBSERVATIONS.findIndex(({ id }) => id === observationId);
@@ -1882,8 +1937,16 @@ export function QuestExperience() {
           </span>
         </div>
         <div className="header-actions">
-          <button className="sound-button" type="button" aria-pressed={sound} onClick={() => setSound((value) => !value)}><span aria-hidden="true">{sound ? "♫" : "×"}</span> SOUND {sound ? "ON" : "OFF"}</button>
-          <button className="map-button" type="button" aria-expanded={menuOpen} onClick={() => { setMenuOpen((value) => !value); setBrandPanelOpen(false); }}>QUEST MAP</button>
+          <button className="header-icon-button sound-button" type="button" aria-label={sound ? "SOUND ON" : "SOUND OFF"} aria-pressed={sound} onClick={toggleSound}>
+            <span className="header-icon-tooltip" aria-hidden="true">{sound ? "Sound on — click to mute" : "Sound off — click to enable"}</span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className="header-action-icon" src={sound ? "branding/pixel-sound-on.svg" : "branding/pixel-sound-off.svg"} alt="" width="48" height="48" aria-hidden="true" />
+          </button>
+          <button className="header-icon-button map-button" type="button" aria-label="QUEST MAP" aria-expanded={menuOpen} onClick={toggleQuestMap}>
+            <span className="header-icon-tooltip" aria-hidden="true">Open the quest map</span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className="header-action-icon" src="branding/pixel-quest-map.svg" alt="" width="48" height="48" aria-hidden="true" />
+          </button>
         </div>
       </header>
       <button
@@ -1892,16 +1955,16 @@ export function QuestExperience() {
         aria-controls="dsa-way-overview"
         aria-expanded={brandPanelOpen}
         aria-label={brandPanelOpen ? "Close the DSA Way overview" : "Open the DSA Way mission, vision, and values"}
-        onClick={() => { setBrandPanelOpen((value) => !value); setMenuOpen(false); }}
+        onClick={toggleBrandPanel}
       >
         <span className="brand-coin-sparkle" aria-hidden="true" />
         <span className="brand-coin-tooltip" aria-hidden="true">Click here to see our DSA Way...</span>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img className="brand-star-coin" src="branding/star-coin.svg" alt="" width="48" height="48" aria-hidden="true" />
       </button>
-      <div className={`brand-drawer-scrim ${brandPanelOpen ? "is-open" : ""}`} aria-hidden="true" onClick={() => setBrandPanelOpen(false)} />
+      <div className={`brand-drawer-scrim ${brandPanelOpen ? "is-open" : ""}`} aria-hidden="true" onClick={closeBrandPanel} />
       <aside id="dsa-way-overview" className={`brand-drawer ${brandPanelOpen ? "is-open" : ""}`} aria-hidden={!brandPanelOpen} aria-label="DSA Way mission, vision, values, and priorities">
-        <button className="brand-drawer-close" type="button" onClick={() => setBrandPanelOpen(false)} disabled={!brandPanelOpen} tabIndex={brandPanelOpen ? 0 : -1} aria-label="Close the DSA Way overview">×</button>
+        <button className="brand-drawer-close" type="button" onClick={closeBrandPanel} disabled={!brandPanelOpen} tabIndex={brandPanelOpen ? 0 : -1} aria-label="Close the DSA Way overview">×</button>
         <figure>
           {/* Supplied mission, vision, values, KPI, and identity artwork. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -1916,7 +1979,7 @@ export function QuestExperience() {
         </div>
       </aside>
       <aside className={`quest-map ${menuOpen ? "is-open" : ""}`} aria-label="The Nine Chambers">
-        <div className="map-heading"><span>THE NINE CHAMBERS</span><button onClick={() => setMenuOpen(false)} aria-label="Close quest map">×</button></div>
+        <div className="map-heading"><span>THE NINE CHAMBERS</span><button onClick={closeQuestMap} aria-label="Close quest map">×</button></div>
         <ol>{CHAMBERS.map((chamber, index) => {
           const active = index === activeChamber;
           return <li className={active ? "active" : "ready"} key={chamber}><button type="button" onClick={() => openBoxAtlas(index + 1)} aria-label={`Open the annotated 4K artwork for Box ${index + 1}: ${chamber}`}><span>{String(index + 1).padStart(2, "0")}</span><b>{chamber}</b></button></li>;

@@ -28,6 +28,8 @@ test("server-renders the DSA Way quest", async () => {
   assert.match(html, /branding\/dsa-way-wordmark\.png/);
   assert.match(html, /branding\/hero-with-sword\.svg/);
   assert.match(html, /branding\/pixel-home\.svg/);
+  assert.match(html, /branding\/pixel-sound-on\.svg/);
+  assert.match(html, /branding\/pixel-quest-map\.svg/);
   assert.match(html, /branding\/hero-journey-blackwood\.png/);
   assert.match(html, /branding\/star-coin\.svg/);
   assert.match(html, /brand-coin-sparkle/);
@@ -38,6 +40,8 @@ test("server-renders the DSA Way quest", async () => {
   assert.match(html, /class="sr-only">The Hero(?:&#x27;|')s Journey/);
   assert.match(html, /class="header-subtitle-art"[^>]*width="2012"[^>]*height="211"[^>]*aria-hidden="true"/);
   assert.match(html, /aria-label="Return to title screen"/);
+  assert.match(html, /Sound on — click to mute/);
+  assert.match(html, /Open the quest map/);
   assert.match(html, /aria-controls="dsa-way-overview"/);
   assert.doesNotMatch(html, /THE COLORS BEHIND THE QUEST|What guides the journey/);
   assert.doesNotMatch(html, /The rainbow rail carries/);
@@ -71,6 +75,7 @@ test("quest map opens nine annotated native-4K booth artifact pages", async () =
     readFile(new URL("../src/main.tsx", import.meta.url), "utf8"),
     ...Array.from({ length: 9 }, (_, index) => stat(new URL(`../public/a3/box-${index + 1}.jpg`, import.meta.url))),
   ]);
+  assert.match(source, /branding\/pixel-sound-off\.svg/);
   assert.match(source, /type Stage = [^;]+"atlas"/);
   assert.match(source, /openBoxAtlas\(index \+ 1\)/);
   assert.match(source, /Open the annotated 4K artwork/);
@@ -364,6 +369,10 @@ test("includes the Herald's Forge, corrected current-state case, and full Door o
   assert.match(source, /hornRevealed/);
   assert.match(source, /revealHorn/);
   assert.match(source, /const returnHome = \(\) =>/);
+  assert.match(source, /function playUiSound/);
+  assert.match(source, /playUiSound\("select", sound\)/);
+  assert.match(source, /playUiSound\(brandPanelOpen \? "close" : "drawer", sound\)/);
+  assert.match(source, /playUiSound\(menuOpen \? "close" : "map", sound\)/);
   assert.match(source, /hornAudioRef\.current\.pause\(\)/);
   assert.match(source, /hornAudioRef\.current\.currentTime = 0/);
   assert.match(source, /onClick=\{returnHome\}/);

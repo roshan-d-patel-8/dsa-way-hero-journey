@@ -35,8 +35,14 @@ with sync_playwright() as playwright:
         subtitle = page.locator(".header-subtitle-art")
         home_button = page.get_by_role("button", name="Return to title screen")
         home_icon = page.locator(".brand-home-icon")
+        sound_button = page.get_by_role("button", name="SOUND ON", exact=True)
+        map_button = page.get_by_role("button", name="QUEST MAP", exact=True)
+        action_icons = page.locator(".header-action-icon")
         expect(home_button).to_be_visible()
         expect(home_icon).to_be_visible()
+        expect(sound_button).to_be_visible()
+        expect(map_button).to_be_visible()
+        assert action_icons.count() == 2
         home_metrics = home_icon.evaluate(
             """image => ({
               complete: image.complete,
@@ -49,6 +55,29 @@ with sync_playwright() as playwright:
         assert home_metrics["naturalWidth"] == 48
         assert home_metrics["naturalHeight"] == 48
         assert 30 <= home_metrics["renderedWidth"] <= 38
+        action_metrics = action_icons.evaluate_all(
+            """images => images.map(image => ({
+              complete: image.complete,
+              naturalWidth: image.naturalWidth,
+              naturalHeight: image.naturalHeight,
+              renderedWidth: image.getBoundingClientRect().width,
+            }))"""
+        )
+        assert all(metric["complete"] for metric in action_metrics)
+        assert all(metric["naturalWidth"] == 48 and metric["naturalHeight"] == 48 for metric in action_metrics)
+        assert all(30 <= metric["renderedWidth"] <= 38 for metric in action_metrics)
+
+        sound_tooltip = page.get_by_text("Sound on — click to mute", exact=True)
+        map_tooltip = page.get_by_text("Open the quest map", exact=True)
+        expect(sound_tooltip).to_be_hidden()
+        sound_button.hover()
+        expect(sound_tooltip).to_be_visible()
+        page.mouse.move(1, viewport["height"] - 1)
+        expect(sound_tooltip).to_be_hidden()
+        map_button.hover()
+        expect(map_tooltip).to_be_visible()
+        page.mouse.move(1, viewport["height"] - 1)
+        expect(map_tooltip).to_be_hidden()
         if lockup_visible:
             expect(lockup).to_be_visible()
             expect(wordmark).to_be_visible()
@@ -100,6 +129,49 @@ with sync_playwright() as playwright:
               viewportWidth: window.innerWidth,
             })"""
         )
+        ui_sound_starts = None
+        if label == "desktop":
+            page.evaluate(
+                """() => {
+                  window.__uiSoundStarts = 0;
+                  class Param {
+                    setValueAtTime() {}
+                    exponentialRampToValueAtTime() {}
+                  }
+                  class Node {
+                    connect() { return this; }
+                  }
+                  class Oscillator extends Node {
+                    constructor() { super(); this.frequency = new Param(); this.type = 'triangle'; }
+                    start() { window.__uiSoundStarts += 1; }
+                    stop() {}
+                  }
+                  class Gain extends Node { constructor() { super(); this.gain = new Param(); } }
+                  class FakeAudioContext {
+                    constructor() { this.currentTime = 0; this.destination = {}; }
+                    createOscillator() { return new Oscillator(); }
+                    createGain() { return new Gain(); }
+                    close() { return Promise.resolve(); }
+                  }
+                  Object.defineProperty(window, 'AudioContext', { configurable: true, value: FakeAudioContext });
+                }"""
+            )
+            sound_button.click()
+            expect(page.get_by_role("button", name="SOUND OFF", exact=True)).to_be_visible()
+            page.get_by_role("button", name="SOUND OFF", exact=True).click()
+            map_button.click()
+            expect(page.locator(".quest-map")).to_have_class("quest-map is-open")
+            page.get_by_role("button", name="Close quest map", exact=True).click()
+            coin_button = page.get_by_role("button", name="Open the DSA Way mission, vision, and values")
+            coin_button.click()
+            expect(page.locator("#dsa-way-overview")).to_have_attribute("aria-hidden", "false")
+            page.locator("#dsa-way-overview").get_by_role("button", name="Close the DSA Way overview").click()
+            page.locator(".a3-tile").first.click()
+            expect(page.locator(".forge-intro-screen")).to_be_visible()
+            home_button.click()
+            expect(page.locator(".a3-home")).to_be_visible()
+            ui_sound_starts = page.evaluate("window.__uiSoundStarts")
+            assert ui_sound_starts >= 18
         assert page_metrics["scrollWidth"] <= page_metrics["viewportWidth"] + 1
         assert not errors, errors
         page.locator(".quest-header").screenshot(path=output / f"{label}.png")
@@ -108,6 +180,8 @@ with sync_playwright() as playwright:
                 "viewport": label,
                 "page": page_metrics,
                 "home": home_metrics,
+                "actions": action_metrics,
+                "uiSoundStarts": ui_sound_starts,
                 "wordmark": wordmark_metrics,
                 "subtitle": subtitle_metrics,
                 "errors": errors,
