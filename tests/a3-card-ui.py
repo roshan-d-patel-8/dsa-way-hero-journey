@@ -27,7 +27,12 @@ with sync_playwright() as playwright:
     badges = page.locator(".a3-playable-badge")
     labels = page.locator(".a3-quest-name-art")
     assert tiles.count() == badges.count() == labels.count() == 9
-    assert badges.all_text_contents() == ["CLICK TO PLAY"] * 9
+    for index in range(9):
+        assert badges.nth(index).locator(":scope > span").all_text_contents() == [
+            "CLICK",
+            "TO",
+            "PLAY",
+        ]
     expect(badges.first).to_be_hidden()
 
     unloaded = labels.evaluate_all(
@@ -89,6 +94,48 @@ with sync_playwright() as playwright:
     assert abs(natural_ratio - rendered_ratio) <= 0.05, longest_label_metrics
     page.locator(".a3-grid").screenshot(path=output / "longest-hover.png")
 
+    layout_checks = []
+    for viewport_width in (1512, 980):
+        page.set_viewport_size({"width": viewport_width, "height": 982})
+        for index in range(9):
+            tiles.nth(index).hover()
+            page.wait_for_timeout(220)
+            layout = tiles.nth(index).evaluate(
+                """tile => {
+                  const badge = tile.querySelector('.a3-playable-badge');
+                  const badgeBox = badge.getBoundingClientRect();
+                  const wordBoxes = [...badge.children].map(word => word.getBoundingClientRect());
+                  const textBoxes = [...tile.querySelectorAll(
+                    '.a3-tile-overlay small, .a3-tile-overlay b, .a3-tile-subtitle, .a3-quest-name-art'
+                  )].map(element => ({
+                    selector: element.matches('small') ? 'box-number'
+                      : element.matches('b') ? 'title'
+                      : element.matches('.a3-tile-subtitle') ? 'subtitle'
+                      : 'quest-label',
+                    box: element.getBoundingClientRect(),
+                  }));
+                  const overlaps = (a, b) =>
+                    a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+                  return {
+                    width: badgeBox.width,
+                    height: badgeBox.height,
+                    wordTops: wordBoxes.map(box => box.top),
+                    wordCenters: wordBoxes.map(box => box.left + box.width / 2),
+                    badgeCenter: badgeBox.left + badgeBox.width / 2,
+                    collisions: textBoxes.filter(item => overlaps(badgeBox, item.box)).map(item => item.selector),
+                  };
+                }"""
+            )
+            assert abs(layout["width"] - layout["height"]) <= 1, layout
+            assert layout["wordTops"] == sorted(layout["wordTops"]), layout
+            assert len(set(layout["wordTops"])) == 3, layout
+            assert all(
+                abs(center - layout["badgeCenter"]) <= 1 for center in layout["wordCenters"]
+            ), layout
+            assert layout["collisions"] == [], layout
+            layout_checks.append({"viewport": viewport_width, "box": index + 1, **layout})
+    page.set_viewport_size({"width": 1512, "height": 982})
+
     page.mouse.move(1, 1)
     expect(badges.first).to_be_hidden()
     tiles.nth(1).focus()
@@ -118,6 +165,7 @@ with sync_playwright() as playwright:
         "badge": metrics,
         "firstLabel": label_metrics,
         "longestLabel": longest_label_metrics,
+        "layoutChecks": layout_checks,
         "touchBadgeHidden": True,
         "errors": errors,
     }

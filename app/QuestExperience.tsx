@@ -2047,7 +2047,11 @@ export function QuestExperience() {
                   <img className={`a3-quest-name-art${MULTILINE_QUEST_LABELS.has(box.number) ? " is-multiline" : ""}`} src={`branding/quest-labels/box-${box.number}.png`} alt="" />
                 </em>
               </span>
-              <span className="a3-playable-badge" aria-hidden="true">CLICK TO PLAY</span>
+              <span className="a3-playable-badge" aria-hidden="true">
+                <span>CLICK</span>
+                <span>TO</span>
+                <span>PLAY</span>
+              </span>
             </button>)}
           </div>
         </div>
