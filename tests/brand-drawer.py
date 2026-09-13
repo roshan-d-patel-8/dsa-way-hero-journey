@@ -39,6 +39,8 @@ with sync_playwright() as playwright:
         expect(opener).to_be_visible()
         expect(opener).to_have_attribute("aria-expanded", "false")
         expect(panel).to_have_attribute("aria-hidden", "true")
+        assert page.get_by_text("THE COLORS BEHIND THE QUEST", exact=True).count() == 0
+        assert page.get_by_text("What guides the journey", exact=True).count() == 0
 
         closed_metrics = opener.evaluate(
             """button => ({

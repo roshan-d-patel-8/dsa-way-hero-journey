@@ -1898,11 +1898,8 @@ export function QuestExperience() {
         <img className="brand-star-coin" src="branding/star-coin.svg" alt="" width="48" height="48" aria-hidden="true" />
       </button>
       <div className={`brand-drawer-scrim ${brandPanelOpen ? "is-open" : ""}`} aria-hidden="true" onClick={() => setBrandPanelOpen(false)} />
-      <aside id="dsa-way-overview" className={`brand-drawer ${brandPanelOpen ? "is-open" : ""}`} aria-hidden={!brandPanelOpen} aria-labelledby="dsa-way-overview-title">
-        <div className="brand-drawer-heading">
-          <div><small>THE COLORS BEHIND THE QUEST</small><h2 id="dsa-way-overview-title">What guides the journey</h2></div>
-          <button type="button" onClick={() => setBrandPanelOpen(false)} disabled={!brandPanelOpen} tabIndex={brandPanelOpen ? 0 : -1} aria-label="Close the DSA Way overview">×</button>
-        </div>
+      <aside id="dsa-way-overview" className={`brand-drawer ${brandPanelOpen ? "is-open" : ""}`} aria-hidden={!brandPanelOpen} aria-label="DSA Way mission, vision, values, and priorities">
+        <button className="brand-drawer-close" type="button" onClick={() => setBrandPanelOpen(false)} disabled={!brandPanelOpen} tabIndex={brandPanelOpen ? 0 : -1} aria-label="Close the DSA Way overview">×</button>
         <figure>
           {/* Supplied mission, vision, values, KPI, and identity artwork. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -69,12 +69,9 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
 .brand-pull-tab:is(:hover,:focus-visible) .brand-star-coin { transform:translateY(-2px);filter:drop-shadow(3px 6px 0 rgba(0,0,0,.72)) drop-shadow(0 0 16px rgba(255,196,94,.55)); }
 .brand-drawer-scrim { position:fixed;z-index:55;inset:82px 0 0;background:rgba(1,6,10,.74);opacity:0;pointer-events:none;backdrop-filter:blur(4px);transition:opacity .35s ease; }
 .brand-drawer-scrim.is-open { opacity:1;pointer-events:auto; }
-.brand-drawer { --brand-drawer-width:min(1180px,calc(100vw - 58px));position:fixed;z-index:60;left:0;top:82px;width:var(--brand-drawer-width);height:calc(100svh - 82px);padding:clamp(22px,3vw,42px);overflow:auto;color:#edf9fa;background:radial-gradient(circle at 12% 18%,rgba(152,31,89,.22),transparent 32%),linear-gradient(145deg,#071923,#02080d 72%);border-right:3px solid var(--orange);box-shadow:28px 0 80px rgba(0,0,0,.58);transform:translateX(calc(-100% - 8px));visibility:hidden;transition:transform .5s cubic-bezier(.2,.8,.2,1),visibility 0s linear .5s; }
+.brand-drawer { --brand-drawer-width:min(1180px,calc(100vw - 58px));position:fixed;z-index:60;left:0;top:82px;width:var(--brand-drawer-width);height:calc(100svh - 82px);padding:64px clamp(22px,3vw,42px) clamp(22px,3vw,42px);overflow:auto;color:#edf9fa;background:radial-gradient(circle at 12% 18%,rgba(152,31,89,.22),transparent 32%),linear-gradient(145deg,#071923,#02080d 72%);border-right:3px solid var(--orange);box-shadow:28px 0 80px rgba(0,0,0,.58);transform:translateX(calc(-100% - 8px));visibility:hidden;transition:transform .5s cubic-bezier(.2,.8,.2,1),visibility 0s linear .5s; }
 .brand-drawer.is-open { transform:translateX(0);visibility:visible;transition-delay:0s; }
-.brand-drawer-heading { display:flex;align-items:end;justify-content:space-between;gap:24px;margin:0 auto 20px;max-width:1080px; }
-.brand-drawer-heading small { color:#ffc45e;font:400 .52rem/1 "Press Start 2P","Courier New",monospace;letter-spacing:.07em; }
-.brand-drawer-heading h2 { margin:10px 0 0;font:500 clamp(1.65rem,3vw,3.25rem)/.95 Georgia,"Times New Roman",serif;letter-spacing:-.035em; }
-.brand-drawer-heading button { flex:0 0 auto;width:42px;height:42px;border:1px solid rgba(117,226,230,.42);background:#102638;color:#fff;cursor:pointer;font:400 1.5rem/1 "Press Start 2P",monospace; }
+.brand-drawer-close { position:absolute;z-index:2;top:10px;right:10px;width:42px;height:42px;border:1px solid rgba(117,226,230,.58);background:rgba(5,13,20,.9);color:#fff;cursor:pointer;font:400 1.5rem/1 "Press Start 2P",monospace;box-shadow:3px 3px 0 rgba(0,0,0,.65); }
 .brand-drawer figure { max-width:1080px;margin:0 auto; }
 .brand-drawer figure img { display:block;width:100%;height:auto;border:3px solid #02080c;outline:1px solid rgba(117,226,230,.24);box-shadow:0 24px 70px rgba(0,0,0,.55); }
 .brand-drawer figcaption { margin:16px auto 0;max-width:78ch;color:#91aab5;font:650 .68rem/1.55 "Courier New",monospace;letter-spacing:.035em;text-align:center; }
@@ -552,11 +549,8 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
   .brand-pull-tab { --brand-drawer-width:calc(100vw - 56px);top:82px;width:48px;height:48px; }
   .brand-star-coin { width:44px;height:44px; }
   .brand-drawer-scrim { inset-block-start:72px; }
-  .brand-drawer { --brand-drawer-width:calc(100vw - 56px);top:72px;height:calc(100svh - 72px);padding:24px 16px; }
-  .brand-drawer-heading { align-items:start;margin-bottom:15px; }
-  .brand-drawer-heading small { font-size:.42rem;line-height:1.5; }
-  .brand-drawer-heading h2 { font-size:1.65rem;line-height:1; }
-  .brand-drawer-heading button { width:36px;height:36px;font-size:1.1rem; }
+  .brand-drawer { --brand-drawer-width:calc(100vw - 56px);top:72px;height:calc(100svh - 72px);padding:54px 16px 24px; }
+  .brand-drawer-close { width:36px;height:36px;font-size:1.1rem; }
   .brand-drawer figcaption { font-size:.59rem;text-align:left; }
   .brand-lockup { width: 40px; height: 40px; }
   .brand-home-icon { width: 31px; height: 31px; }
