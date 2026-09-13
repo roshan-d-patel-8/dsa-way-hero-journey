@@ -1845,7 +1845,16 @@ export function QuestExperience() {
       <div className="brand-strata" aria-hidden="true"><i /><i /><i /><i /><i /></div><div className="scanlines" aria-hidden="true" />
       <header className="quest-header">
         <button className="brand-lockup" type="button" onClick={returnHome} aria-label="Return to title screen"><span>PERMANENTE MEDICINE</span><small>The Permanente Medical Group</small></button>
-        <div className="header-title"><b>the</b> DSA WAY <small>The Hero&apos;s Journey</small></div>
+        <div className="header-title" aria-label="the DSA WAY — The Hero's Journey">
+          <span className="header-title-brand">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className="header-wordmark" src="branding/dsa-way-wordmark.png" alt="the DSA WAY" width="744" height="136" />
+            {/* Decorative companion to the wordmark; the lockup's accessible name is on the parent. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className="header-pixel-hero" src="branding/hero-with-sword.svg" alt="" width="48" height="48" aria-hidden="true" />
+          </span>
+          <small>The Hero&apos;s Journey</small>
+        </div>
         <div className="header-actions">
           <button className="sound-button" type="button" aria-pressed={sound} onClick={() => setSound((value) => !value)}><span aria-hidden="true">{sound ? "♫" : "×"}</span> SOUND {sound ? "ON" : "OFF"}</button>
           <button className="map-button" type="button" aria-expanded={menuOpen} onClick={() => setMenuOpen((value) => !value)}>QUEST MAP</button>

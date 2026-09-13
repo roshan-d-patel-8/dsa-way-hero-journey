@@ -22,6 +22,10 @@ test("server-renders the DSA Way quest", async () => {
   assert.match(html, /A DSA LEARNING QUEST/);
   assert.match(html, /The DSA Way:/);
   assert.match(html, /The Hero(?:&#x27;|')s Journey/);
+  assert.match(html, /branding\/dsa-way-wordmark\.png/);
+  assert.match(html, /branding\/hero-with-sword\.svg/);
+  assert.match(html, /alt="the DSA WAY"/);
+  assert.match(html, /class="header-pixel-hero"[^>]*alt=""[^>]*aria-hidden="true"/);
   assert.match(html, /Reason for Action/);
   assert.match(html, /Current State/);
   assert.match(html, /Gap Analysis/);
