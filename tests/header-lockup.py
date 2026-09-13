@@ -60,6 +60,7 @@ with sync_playwright() as playwright:
                   naturalWidth: image.naturalWidth,
                   naturalHeight: image.naturalHeight,
                   renderedWidth: image.getBoundingClientRect().width,
+                  wordmarkLeft: image.getBoundingClientRect().left,
                   heroRight: document.querySelector('.header-pixel-hero').getBoundingClientRect().right,
                   wordmarkRight: image.getBoundingClientRect().right,
                 })"""
@@ -76,13 +77,18 @@ with sync_playwright() as playwright:
                   naturalHeight: image.naturalHeight,
                   renderedWidth: image.getBoundingClientRect().width,
                   renderedHeight: image.getBoundingClientRect().height,
+                  subtitleLeft: image.getBoundingClientRect().left,
+                  subtitleRight: image.getBoundingClientRect().right,
                 })"""
             )
             assert subtitle_metrics["complete"]
             assert subtitle_metrics["naturalWidth"] == 2012
             assert subtitle_metrics["naturalHeight"] == 211
-            assert 132 <= subtitle_metrics["renderedWidth"] <= 149
-            assert 13 <= subtitle_metrics["renderedHeight"] <= 16
+            assert 158 <= subtitle_metrics["renderedWidth"] <= 178
+            assert 16.5 <= subtitle_metrics["renderedHeight"] <= 19
+            wordmark_center = (wordmark_metrics["wordmarkLeft"] + wordmark_metrics["wordmarkRight"]) / 2
+            subtitle_center = (subtitle_metrics["subtitleLeft"] + subtitle_metrics["subtitleRight"]) / 2
+            assert abs(wordmark_center - subtitle_center) <= 0.5
         else:
             expect(lockup).to_be_hidden()
             wordmark_metrics = None

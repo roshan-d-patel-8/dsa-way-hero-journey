@@ -1850,18 +1850,20 @@ export function QuestExperience() {
         </button>
         <div className="header-title">
           <span className="header-title-brand">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="header-wordmark" src="branding/dsa-way-wordmark.png" alt="the DSA WAY" width="744" height="136" />
-            {/* Decorative companion to the wordmark; the lockup's accessible name is on the parent. */}
+            <span className="header-wordmark-stack">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img className="header-wordmark" src="branding/dsa-way-wordmark.png" alt="the DSA WAY" width="744" height="136" />
+              <small className="header-subtitle">
+                <span className="sr-only">The Hero&apos;s Journey</span>
+                {/* Blackwood Castle is rendered to artwork so its restricted font file is not published. */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img className="header-subtitle-art" src="branding/hero-journey-blackwood.png" alt="" width="2012" height="211" aria-hidden="true" />
+              </small>
+            </span>
+            {/* Decorative companion; the wordmark and hidden subtitle provide the accessible text. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img className="header-pixel-hero" src="branding/hero-with-sword.svg" alt="" width="48" height="48" aria-hidden="true" />
           </span>
-          <small className="header-subtitle">
-            <span className="sr-only">The Hero&apos;s Journey</span>
-            {/* Blackwood Castle is rendered to artwork so its restricted font file is not published. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="header-subtitle-art" src="branding/hero-journey-blackwood.png" alt="" width="2012" height="211" aria-hidden="true" />
-          </small>
         </div>
         <div className="header-actions">
           <button className="sound-button" type="button" aria-pressed={sound} onClick={() => setSound((value) => !value)}><span aria-hidden="true">{sound ? "♫" : "×"}</span> SOUND {sound ? "ON" : "OFF"}</button>
