@@ -72,7 +72,9 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
 .brand-coin-sparkle::before { left:6px;top:0;width:3px;height:15px; }
 .brand-coin-sparkle::after { left:0;top:6px;width:15px;height:3px; }
 .brand-coin-tooltip { position:absolute;z-index:4;left:58px;top:50%;width:max-content;max-width:min(310px,calc(100vw - 78px));padding:10px 12px;color:#fffdf0;background:#061b2b;border:2px solid #30b5e6;box-shadow:4px 4px 0 rgba(0,0,0,.82);font:400 .52rem/1.55 "Press Start 2P","Courier New",monospace;letter-spacing:.025em;text-align:left;text-shadow:0 2px 0 #000;opacity:0;visibility:hidden;pointer-events:none;transform:translate(-7px,-50%);transition:opacity .14s ease,transform .14s steps(2,end),visibility 0s linear .14s; }
-.brand-coin-tooltip::before { content:"";position:absolute;left:-7px;top:50%;width:7px;height:10px;background:#102638;border-left:1px solid rgba(117,226,230,.62);border-bottom:1px solid rgba(117,226,230,.62);transform:translateY(-50%) skewX(-35deg); }
+.brand-coin-tooltip::before,.brand-coin-tooltip::after { content:"";position:absolute;top:50%;clip-path:polygon(100% 0,100% 100%,0 50%);transform:translateY(-50%); }
+.brand-coin-tooltip::before { left:-12px;width:12px;height:16px;background:#30b5e6; }
+.brand-coin-tooltip::after { left:-8px;width:8px;height:10px;background:#061b2b; }
 .brand-pull-tab:not(.is-open):is(:hover,:focus-visible) .brand-coin-tooltip { opacity:1;visibility:visible;transform:translate(0,-50%);transition-delay:0s; }
 @keyframes brandCoinSparkle { 0%,4% { opacity:0;transform:scale(.35); } 5%,9% { opacity:1;transform:scale(1); } 10%,13% { opacity:0;transform:scale(.45); } 14%,17% { opacity:.9;transform:scale(.68); } 18%,100% { opacity:0;transform:scale(.35); } }
 .brand-drawer-scrim { position:fixed;z-index:55;inset:82px 0 0;background:rgba(1,6,10,.74);opacity:0;pointer-events:none;backdrop-filter:blur(4px);transition:opacity .35s ease; }
