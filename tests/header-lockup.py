@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import re
 from pathlib import Path
 
 from playwright.sync_api import expect, sync_playwright
@@ -15,6 +16,17 @@ args = parser.parse_args()
 output = Path(args.output)
 output.mkdir(parents=True, exist_ok=True)
 results = []
+expected_map_labels = [
+    "Focus the Problem",
+    "Understand the Current Condition",
+    "Set a Clear Goal",
+    "Analyze Root Causes",
+    "Design Smart Countermeasures",
+    "Run Rapid Experiments",
+    "Complete the Plan",
+    "Confirm the New State",
+    "Capture Insights",
+]
 
 with sync_playwright() as playwright:
     browser = playwright.chromium.launch(headless=True)
@@ -138,6 +150,30 @@ with sync_playwright() as playwright:
         if label == "desktop":
             page.locator(".quest-header").screenshot(path=output / "desktop-sword-swing.png")
 
+        map_button.click()
+        map_drawer = page.locator(".quest-map")
+        expect(map_drawer).to_have_class("quest-map is-open")
+        map_labels = map_drawer.locator("ol li button b")
+        assert map_labels.all_text_contents() == expected_map_labels
+        map_layouts = map_drawer.locator("ol li button").evaluate_all(
+            """buttons => buttons.map(button => {
+              const label = button.querySelector('b');
+              const buttonBox = button.getBoundingClientRect();
+              const labelBox = label.getBoundingClientRect();
+              return {
+                contained: labelBox.left >= buttonBox.left && labelBox.right <= buttonBox.right &&
+                  labelBox.top >= buttonBox.top && labelBox.bottom <= buttonBox.bottom,
+                scrollWidth: button.scrollWidth,
+                clientWidth: button.clientWidth,
+              };
+            })"""
+        )
+        assert all(item["contained"] for item in map_layouts), map_layouts
+        assert all(item["scrollWidth"] <= item["clientWidth"] for item in map_layouts), map_layouts
+        map_drawer.screenshot(path=output / f"map-{label}.png")
+        page.get_by_role("button", name="Close quest map", exact=True).click()
+        expect(map_drawer).to_have_class(re.compile(r"^quest-map\s*$"))
+
         page_metrics = page.evaluate(
             """() => ({
               scrollWidth: document.documentElement.scrollWidth,
@@ -196,6 +232,7 @@ with sync_playwright() as playwright:
                 "page": page_metrics,
                 "home": home_metrics,
                 "actions": action_metrics,
+                "map": map_layouts,
                 "uiSoundStarts": ui_sound_starts,
                 "wordmark": wordmark_metrics,
                 "subtitle": subtitle_metrics,

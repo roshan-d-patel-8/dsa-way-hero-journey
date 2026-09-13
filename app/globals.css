@@ -123,6 +123,8 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
 .a3-home-heading h1 span, .a3-home-heading h1 em { display: block; white-space: nowrap; }
 .a3-home-heading h1 em { color: #ffc45e; font-style: italic; text-shadow: 0 0 25px rgba(240,143,36,.22); }
 .a3-home-heading > p { margin: 0 0 3px; color: var(--muted); font-family: Georgia, "Times New Roman", serif; font-size: clamp(.92rem,1.15vw,1.1rem); line-height: 1.55; }
+.a3-home-mindset { white-space: nowrap; }
+.a3-home-invite { display: block; margin-top: 9px; color: #ffc45e; font-style: italic; font-weight: 600; text-shadow: 0 0 18px rgba(240,143,36,.18); }
 .a3-grid-viewport { max-width: 1520px; margin: 0 auto; position: relative; z-index: 2; }
 .a3-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); grid-template-rows: repeat(3,minmax(0,1fr)); gap: 0; overflow: hidden; }
 .a3-tile { min-width: 0; aspect-ratio: 16 / 9; padding: 0; position: relative; overflow: hidden; isolation: isolate; border: 0; background: #07131b; cursor: pointer; box-shadow: none; transition: opacity .36s ease, box-shadow .36s ease; }

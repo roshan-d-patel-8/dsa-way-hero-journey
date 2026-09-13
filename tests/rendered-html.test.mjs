@@ -23,8 +23,10 @@ test("server-renders the DSA Way quest", async () => {
   assert.match(html, /Learn A3 Thinking/);
   assert.match(html, /One Quest at a Time/);
   assert.match(html, /<h1><span>Learn A3 Thinking<\/span><em>One Quest at a Time\.<\/em><\/h1>/);
-  assert.match(html, /New to the A3\? Start anywhere/);
-  assert.match(html, /no prior experience required/);
+  assert.match(html, /New to A3 thinking\? Good! Start anywhere\./);
+  assert.match(html, /<span class="a3-home-mindset">9 games - 1 mindset\.<\/span>/);
+  assert.match(html, /short, guided game - no prior experience required\./);
+  assert.match(html, /<strong class="a3-home-invite">Ready, hero\? Your first quest awaits\.<\/strong>/);
   assert.match(html, /The Hero(?:&#x27;|')s Journey/);
   assert.match(html, /branding\/dsa-way-wordmark\.png/);
   assert.match(html, /class="header-hero-sword"/);
@@ -48,9 +50,6 @@ test("server-renders the DSA Way quest", async () => {
   assert.doesNotMatch(html, /The rainbow rail carries/);
   assert.match(html, /aria-label="DSA Way mission, vision, values, and priorities"/);
   assert.doesNotMatch(html, /PERMANENTE MEDICINE|The Permanente Medical Group/);
-  assert.match(html, /Reason for Action/);
-  assert.match(html, /Current State/);
-  assert.match(html, /Gap Analysis/);
   for (const hoverLabel of [
     "Focus the Problem",
     "Understand the Current Condition",
@@ -62,7 +61,7 @@ test("server-renders the DSA Way quest", async () => {
     "Confirm the New State",
     "Capture Insights",
   ]) {
-    assert.match(html, new RegExp(`<b>${hoverLabel}</b>`));
+    assert.equal((html.match(new RegExp(`<b>${hoverLabel}</b>`, "g")) ?? []).length, 2);
   }
   assert.match(html, /Enter THE HERALD(?:&#x27;|')S FORGE/);
   assert.match(html, /Enter THE CARTOGRAPHER(?:&#x27;|')S UNSEEN PATH/);
@@ -287,14 +286,11 @@ test("includes the Herald's Forge, corrected current-state case, and full Door o
   assert.match(source, /runeStrokes/);
   assert.match(source, /import \* as THREE from "three"/);
   assert.match(source, /AudioContext/);
-  assert.match(source, /Reason for Action/);
-  assert.match(source, /Current State/);
-  assert.match(source, /Target State/);
-  assert.match(source, /Solutions Approach/);
-  assert.match(source, /Rapid Experiments/);
-  assert.match(source, /Completion Plan/);
-  assert.match(source, /Confirmed State/);
-  assert.match(source, /Insights/);
+  assert.match(source, /label: "Focus the Problem"/);
+  assert.match(source, /label: "Understand the Current Condition"/);
+  assert.match(source, /label: "Analyze Root Causes"/);
+  assert.match(source, /label: "Design Smart Countermeasures"/);
+  assert.match(source, /label: "Capture Insights"/);
   assert.match(source, /boxNumber === 4/);
   assert.match(source, /boxNumber === 1/);
   assert.match(source, /boxNumber === 2/);

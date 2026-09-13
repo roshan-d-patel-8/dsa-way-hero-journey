@@ -54,7 +54,8 @@ with sync_playwright() as playwright:
         assert [line["lineCount"] for line in title_layout["lines"]] == [1, 1]
         assert title_layout["lines"][1]["top"] >= title_layout["lines"][0]["bottom"] - 1
         assert title_layout["scrollWidth"] <= title_layout["clientWidth"]
-        expect(page.get_by_text("New to the A3? Start anywhere.", exact=False)).to_be_visible()
+        expect(page.get_by_text("New to A3 thinking? Good! Start anywhere.", exact=False)).to_be_visible()
+        expect(page.get_by_text("Ready, hero? Your first quest awaits.", exact=True)).to_be_visible()
         assert page.get_by_text("A DSA LEARNING QUEST", exact=True).count() == 0
         page.screenshot(path=output / f"landing-{label}.png")
 

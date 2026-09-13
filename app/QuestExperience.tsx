@@ -157,15 +157,15 @@ const QUESTIONS: Question[] = [
 ];
 
 const A3_BOXES = [
-  { number: 1, label: "Reason for Action", hoverLabel: "Focus the Problem" },
-  { number: 2, label: "Current State", hoverLabel: "Understand the Current Condition" },
-  { number: 3, label: "Target State", hoverLabel: "Set a Clear Goal" },
-  { number: 4, label: "Gap Analysis", hoverLabel: "Analyze Root Causes" },
-  { number: 5, label: "Solutions Approach", hoverLabel: "Design Smart Countermeasures" },
-  { number: 6, label: "Rapid Experiments", hoverLabel: "Run Rapid Experiments" },
-  { number: 7, label: "Completion Plan", hoverLabel: "Complete the Plan" },
-  { number: 8, label: "Confirmed State", hoverLabel: "Confirm the New State" },
-  { number: 9, label: "Insights", hoverLabel: "Capture Insights" },
+  { number: 1, label: "Focus the Problem" },
+  { number: 2, label: "Understand the Current Condition" },
+  { number: 3, label: "Set a Clear Goal" },
+  { number: 4, label: "Analyze Root Causes" },
+  { number: 5, label: "Design Smart Countermeasures" },
+  { number: 6, label: "Run Rapid Experiments" },
+  { number: 7, label: "Complete the Plan" },
+  { number: 8, label: "Confirm the New State" },
+  { number: 9, label: "Capture Insights" },
 ] as const;
 
 const CHAMBERS = A3_BOXES.map(({ label }) => label);
@@ -2023,7 +2023,7 @@ export function QuestExperience() {
       {stage === "cover" && <section className="a3-home">
         <div className="a3-home-heading">
           <div><h1><span>Learn A3 Thinking</span><em>One Quest at a Time.</em></h1></div>
-          <p>New to the A3? Start anywhere. Each chamber turns one part of the improvement story into a short, guided game—no prior experience required.</p>
+          <p>New to A3 thinking? Good! Start anywhere. <span className="a3-home-mindset">9 games - 1 mindset.</span> Each chamber turns one part of the improvement story into a short, guided game - no prior experience required.<strong className="a3-home-invite">Ready, hero? Your first quest awaits.</strong></p>
         </div>
         <div className="a3-grid-viewport">
           <div className="a3-grid" aria-label="The nine boxes of the A3">
@@ -2032,14 +2032,14 @@ export function QuestExperience() {
               type="button"
               key={box.number}
               onClick={() => enterBox(box.number)}
-              aria-label={`Box ${box.number}: ${box.hoverLabel}. Enter ${CHAMBER_QUEST_NAMES[box.number]}`}
+              aria-label={`Box ${box.number}: ${box.label}. Enter ${CHAMBER_QUEST_NAMES[box.number]}`}
             >
               {/* Public-path artwork stays compatible with both the app runtime and GitHub Pages. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={`a3/box-${box.number}.jpg`} alt="" width="3840" height="2160" loading={box.number <= 4 ? "eager" : "lazy"} decoding="async" />
               <span className="a3-tile-overlay">
                 <small>BOX {String(box.number).padStart(2, "0")}</small>
-                <b>{box.hoverLabel}</b>
+                <b>{box.label}</b>
                 <em className="a3-quest-name" aria-hidden="true">
                   {/* Blackwood Castle is rendered to artwork so its font file is not published. */}
                   {/* eslint-disable-next-line @next/next/no-img-element */}
