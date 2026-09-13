@@ -1629,6 +1629,7 @@ export function QuestExperience() {
   const [correct, setCorrect] = useState(false);
   const [sound, setSound] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [brandPanelOpen, setBrandPanelOpen] = useState(false);
   const [atlasBoxNumber, setAtlasBoxNumber] = useState<BoothBoxNumber | null>(null);
   const [remainingBoxNumber, setRemainingBoxNumber] = useState<RemainingBoxNumber | null>(null);
   const [forgeIndex, setForgeIndex] = useState(0);
@@ -1677,6 +1678,20 @@ export function QuestExperience() {
     return () => window.cancelAnimationFrame(frame);
   }, [inKeep, keepCaseIndex, stage]);
 
+  useEffect(() => {
+    if (!brandPanelOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setBrandPanelOpen(false);
+    };
+    document.body.style.overflow = "hidden";
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [brandPanelOpen]);
+
   const resetForge = () => {
     setForgeIndex(0);
     setForgedSeals([]);
@@ -1712,6 +1727,7 @@ export function QuestExperience() {
     setAtlasBoxNumber(null);
     setRemainingBoxNumber(null);
     setMenuOpen(false);
+    setBrandPanelOpen(false);
     setStage("cover");
   };
 
@@ -1867,9 +1883,40 @@ export function QuestExperience() {
         </div>
         <div className="header-actions">
           <button className="sound-button" type="button" aria-pressed={sound} onClick={() => setSound((value) => !value)}><span aria-hidden="true">{sound ? "♫" : "×"}</span> SOUND {sound ? "ON" : "OFF"}</button>
-          <button className="map-button" type="button" aria-expanded={menuOpen} onClick={() => setMenuOpen((value) => !value)}>QUEST MAP</button>
+          <button className="map-button" type="button" aria-expanded={menuOpen} onClick={() => { setMenuOpen((value) => !value); setBrandPanelOpen(false); }}>QUEST MAP</button>
         </div>
       </header>
+      <button
+        className={`brand-pull-tab ${brandPanelOpen ? "is-open" : ""}`}
+        type="button"
+        aria-controls="dsa-way-overview"
+        aria-expanded={brandPanelOpen}
+        aria-label={brandPanelOpen ? "Close the DSA Way overview" : "Open the DSA Way mission, vision, and values"}
+        onClick={() => { setBrandPanelOpen((value) => !value); setMenuOpen(false); }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img className="brand-star-coin" src="branding/star-coin.svg" alt="" width="48" height="48" aria-hidden="true" />
+      </button>
+      <div className={`brand-drawer-scrim ${brandPanelOpen ? "is-open" : ""}`} aria-hidden="true" onClick={() => setBrandPanelOpen(false)} />
+      <aside id="dsa-way-overview" className={`brand-drawer ${brandPanelOpen ? "is-open" : ""}`} aria-hidden={!brandPanelOpen} aria-labelledby="dsa-way-overview-title">
+        <div className="brand-drawer-heading">
+          <div><small>THE COLORS BEHIND THE QUEST</small><h2 id="dsa-way-overview-title">What guides the journey</h2></div>
+          <button type="button" onClick={() => setBrandPanelOpen(false)} disabled={!brandPanelOpen} tabIndex={brandPanelOpen ? 0 : -1} aria-label="Close the DSA Way overview">×</button>
+        </div>
+        <figure>
+          {/* Supplied mission, vision, values, KPI, and identity artwork. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="branding/dsa-way-overview.png" alt="" width="1672" height="941" />
+          <figcaption>The rainbow rail carries the mission, vision, values, measures, and identity that guide every improvement quest.</figcaption>
+        </figure>
+        <div className="sr-only">
+          <p>Mission: Delivering nation leading health care for the patients and communities we serve. Integrated. Physician owned. Physician led.</p>
+          <p>Vision: Transforming health care—empowering you to live your best life.</p>
+          <p>Values: Safety, Compassion, Integrity, Excellence, and Continuous Improvement.</p>
+          <p>Key performance indicators: People, Care Availability, Quality and Safety, Care Experience, and Stewardship.</p>
+          <p>Who we are: Imagine Possibilities—Improve Every Day, Inspire Innovation, Try, Learn, Adapt. Unlock Potential—Nurture Curiosity, Cultivate Talent, Engage Teams. Deliver the Extraordinary—Own the Why, Challenge Bias, Achieve Results.</p>
+        </div>
+      </aside>
       <aside className={`quest-map ${menuOpen ? "is-open" : ""}`} aria-label="The Nine Chambers">
         <div className="map-heading"><span>THE NINE CHAMBERS</span><button onClick={() => setMenuOpen(false)} aria-label="Close quest map">×</button></div>
         <ol>{CHAMBERS.map((chamber, index) => {
@@ -1883,8 +1930,8 @@ export function QuestExperience() {
 
       {stage === "cover" && <section className="a3-home">
         <div className="a3-home-heading">
-          <div><div className="eyebrow"><span>09</span> A DSA LEARNING QUEST</div><h1>The DSA Way: <em>The Hero&apos;s Journey</em></h1></div>
-          <p>An A3 tells the improvement story on one page. Explore its nine steps through these short games. Choose any box to begin.</p>
+          <div><h1>Learn the Nine-Box A3, <em>One Quest at a Time.</em></h1></div>
+          <p>New to the A3? Start anywhere. Each chamber turns one part of the improvement story into a short, guided game—no prior experience required.</p>
         </div>
         <div className="a3-grid-viewport">
           <div className="a3-grid" aria-label="The nine boxes of the A3">

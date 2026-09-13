@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" role="img" aria-labelledby="title desc" shape-rendering="crispEdges">
+  <title id="title">Star coin</title>
+  <desc id="desc">A retro gold coin with a bright star at its center.</desc>
+  <path d="M14 2h20v4h7v7h5v22h-5v7h-7v4H14v-4H7v-7H2V13h5V6h7z" fill="#102638"/>
+  <path d="M14 5h20v4h7v7h3v16h-3v7h-7v4H14v-4H7v-7H4V16h3V9h7z" fill="#f08f24"/>
+  <path d="M15 8h18v4h6v6h3v12h-3v6h-6v4H15v-4H9v-6H6V18h3v-6h6z" fill="#ffc45e"/>
+  <path d="M18 10h12v3h6v5h3v5H9v-5h3v-5h6z" fill="#fff0a8" opacity=".72"/>
+  <path d="M21 13h6v7h7v6h-5v9H19v-9h-5v-6h7z" fill="#fffdf0"/>
+  <path d="M23 17h3v7h5v3h-5v6h-4v-8h-5v-3h6z" fill="#e7562f" opacity=".34"/>
+  <rect x="9" y="33" width="4" height="4" fill="#e7562f"/>
+  <rect x="35" y="10" width="4" height="4" fill="#fff7c7"/>
+</svg>
