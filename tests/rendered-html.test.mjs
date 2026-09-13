@@ -38,6 +38,7 @@ test("server-renders the DSA Way quest", async () => {
   assert.match(html, /aria-label="Return to title screen"/);
   assert.match(html, /aria-controls="dsa-way-overview"/);
   assert.doesNotMatch(html, /THE COLORS BEHIND THE QUEST|What guides the journey/);
+  assert.doesNotMatch(html, /The rainbow rail carries/);
   assert.match(html, /aria-label="DSA Way mission, vision, values, and priorities"/);
   assert.doesNotMatch(html, /PERMANENTE MEDICINE|The Permanente Medical Group/);
   assert.match(html, /Reason for Action/);

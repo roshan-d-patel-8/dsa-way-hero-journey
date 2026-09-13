@@ -1,12 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" role="img" aria-labelledby="title desc" shape-rendering="crispEdges">
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" role="img" aria-labelledby="title desc" shape-rendering="crispEdges">
   <title id="title">Plus coin</title>
-  <desc id="desc">A round retro gold coin with a bright white plus at its center.</desc>
-  <path d="M16 1h16v3h7v4h4v5h3v7h2v8h-2v7h-3v5h-4v4h-7v3H16v-3H9v-4H5v-5H2v-7H0v-8h2v-7h3V8h4V4h7z" fill="#061b2b"/>
-  <path d="M16 4h16v3h7v5h4v8h2v8h-2v8h-4v5h-7v3H16v-3H9v-5H5v-8H3v-8h2v-8h4V7h7z" fill="#e7562f"/>
-  <path d="M17 7h14v3h7v5h4v7h2v4h-2v7h-4v5h-7v3H17v-3h-7v-5H6v-7H4v-4h2v-7h4v-5h7z" fill="#ffc45e"/>
-  <path d="M17 9h14v3h7v5h3v5H7v-5h3v-5h7z" fill="#fff0a8"/>
-  <path d="M19 12h10v8h8v10h-8v8H19v-8h-8V20h8z" fill="#102638"/>
-  <path d="M21 15h6v8h8v4h-8v8h-6v-8h-8v-4h8z" fill="#fffdf0"/>
-  <rect x="8" y="30" width="4" height="4" fill="#f08f24"/>
-  <rect x="34" y="10" width="4" height="4" fill="#fff7c7"/>
+  <desc id="desc">A circular retro gold coin with a recessed dark plus at its center.</desc>
+  <circle cx="12" cy="12" r="11" fill="#061b2b"/>
+  <circle cx="12" cy="12" r="9" fill="#e7562f"/>
+  <circle cx="12" cy="12" r="7" fill="#ffc45e"/>
+  <path d="M9 5h6v4h4v6h-4v4H9v-4H5V9h4z" fill="#fff0a8"/>
+  <path d="M10 7h4v4h3v3h-3v3h-4v-3H7v-3h3z" fill="#541d36"/>
+  <path d="M10 7h4v1h-3v4H8v2H7v-3h3z" fill="#2a101d"/>
+  <path d="M11 16h3v-3h2v-2h1v3h-3v3h-3z" fill="#a73a50"/>
+  <rect x="6" y="6" width="2" height="1" fill="#fff7c7"/>
+  <rect x="16" y="17" width="2" height="1" fill="#b83933"/>
 </svg>

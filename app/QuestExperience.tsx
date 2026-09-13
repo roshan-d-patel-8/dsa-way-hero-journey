@@ -1904,7 +1904,6 @@ export function QuestExperience() {
           {/* Supplied mission, vision, values, KPI, and identity artwork. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="branding/dsa-way-overview.png" alt="" width="1672" height="941" />
-          <figcaption>The rainbow rail carries the mission, vision, values, measures, and identity that guide every improvement quest.</figcaption>
         </figure>
         <div className="sr-only">
           <p>Mission: Delivering nation leading health care for the patients and communities we serve. Integrated. Physician owned. Physician led.</p>

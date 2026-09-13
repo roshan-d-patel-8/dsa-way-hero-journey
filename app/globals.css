@@ -74,7 +74,6 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
 .brand-drawer-close { position:absolute;z-index:2;top:10px;right:10px;width:42px;height:42px;border:1px solid rgba(117,226,230,.58);background:rgba(5,13,20,.9);color:#fff;cursor:pointer;font:400 1.5rem/1 "Press Start 2P",monospace;box-shadow:3px 3px 0 rgba(0,0,0,.65); }
 .brand-drawer figure { max-width:1080px;margin:0 auto; }
 .brand-drawer figure img { display:block;width:100%;height:auto;border:3px solid #02080c;outline:1px solid rgba(117,226,230,.24);box-shadow:0 24px 70px rgba(0,0,0,.55); }
-.brand-drawer figcaption { margin:16px auto 0;max-width:78ch;color:#91aab5;font:650 .68rem/1.55 "Courier New",monospace;letter-spacing:.035em;text-align:center; }
 
 .quest-map { position: fixed; z-index: 50; top: 0; right: 0; width: min(390px, 94vw); height: 100svh; padding: 28px; background: var(--night); color: #fff; transform: translateX(105%); transition: transform .45s cubic-bezier(.2,.8,.2,1); box-shadow: -30px 0 80px rgba(6,27,43,.25); overflow: auto; }
 .quest-map.is-open { transform: translateX(0); }
@@ -551,7 +550,6 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
   .brand-drawer-scrim { inset-block-start:72px; }
   .brand-drawer { --brand-drawer-width:calc(100vw - 56px);top:72px;height:calc(100svh - 72px);padding:54px 16px 24px; }
   .brand-drawer-close { width:36px;height:36px;font-size:1.1rem; }
-  .brand-drawer figcaption { font-size:.59rem;text-align:left; }
   .brand-lockup { width: 40px; height: 40px; }
   .brand-home-icon { width: 31px; height: 31px; }
   .sound-button { width: 38px; overflow: hidden; white-space: nowrap; padding: 10px; gap: 0; font-size: 0; }
