@@ -1,12 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" role="img" aria-labelledby="title desc" shape-rendering="crispEdges">
   <title id="title">Quest map</title>
-  <desc id="desc">A retro pixel map with a glowing route and destination marker.</desc>
-  <path d="M4 9h12l8 5 8-5h12v32H32l-8-5-8 5H4z" fill="#102638"/>
-  <path d="M7 13h8l7 4v15l-7 5H7z" fill="#30b5e6"/>
-  <path d="M25 17l7-4h8v24h-8l-7-4z" fill="#0069a7"/>
-  <path d="M11 29h5v-4h8v-4h7v4h-5v4h-8v4h-7z" fill="#ffc45e"/>
-  <rect x="29" y="16" width="7" height="7" fill="#981f59"/>
-  <rect x="31" y="18" width="3" height="3" fill="#fff0a8"/>
-  <rect x="7" y="37" width="9" height="4" fill="#75e2e6"/>
-  <rect x="32" y="37" width="8" height="4" fill="#f08f24"/>
+  <desc id="desc">A warm yellow-orange folded quest map with a dark winding route.</desc>
+
+  <path d="M3 7l14 4 13-5 15 4v31l-15-4-13 5-14-4z" fill="#102638"/>
+  <path d="M6 11l10 3v23L6 34z" fill="#ffc45e"/>
+  <path d="M19 14l10-4v23l-10 4z" fill="#f08f24"/>
+  <path d="M32 10l10 3v23l-10-3z" fill="#ffc45e"/>
+
+  <path d="M8 14l6 2v3l-6-2zM21 16l6-2v3l-6 2zM34 13l6 2v3l-6-2z" fill="#fff0a8"/>
+  <path d="M16 14h3v23h-3zM29 10h3v23h-3z" fill="#e7562f"/>
+
+  <path d="M9 30l5-4 6 2 5-6 6 2 6-7" fill="none" stroke="#061b2b" stroke-width="3" stroke-linecap="square" stroke-linejoin="round"/>
+  <rect x="7" y="29" width="5" height="5" fill="#981f59"/>
+  <path d="M34 13h6v3h-2v5h-3v-5h-1z" fill="#981f59"/>
+  <rect x="36" y="14" width="2" height="2" fill="#fff0a8"/>
 </svg>
