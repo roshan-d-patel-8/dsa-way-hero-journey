@@ -1894,6 +1894,8 @@ export function QuestExperience() {
         aria-label={brandPanelOpen ? "Close the DSA Way overview" : "Open the DSA Way mission, vision, and values"}
         onClick={() => { setBrandPanelOpen((value) => !value); setMenuOpen(false); }}
       >
+        <span className="brand-coin-sparkle" aria-hidden="true" />
+        <span className="brand-coin-tooltip" aria-hidden="true">Click here to see our DSA Way...</span>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img className="brand-star-coin" src="branding/star-coin.svg" alt="" width="48" height="48" aria-hidden="true" />
       </button>

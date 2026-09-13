@@ -30,6 +30,8 @@ test("server-renders the DSA Way quest", async () => {
   assert.match(html, /branding\/pixel-home\.svg/);
   assert.match(html, /branding\/hero-journey-blackwood\.png/);
   assert.match(html, /branding\/star-coin\.svg/);
+  assert.match(html, /brand-coin-sparkle/);
+  assert.match(html, /Click here to see our DSA Way\.\.\./);
   assert.match(html, /branding\/dsa-way-overview\.png/);
   assert.match(html, /alt="the DSA WAY"/);
   assert.match(html, /class="header-pixel-hero"[^>]*alt=""[^>]*aria-hidden="true"/);

@@ -34,11 +34,19 @@ with sync_playwright() as playwright:
         page.screenshot(path=output / f"landing-{label}.png")
 
         opener = page.get_by_role("button", name="Open the DSA Way mission, vision, and values")
+        tooltip = page.get_by_text("Click here to see our DSA Way...", exact=True)
         panel = page.locator("#dsa-way-overview")
         infographic = panel.locator("figure > img")
         expect(opener).to_be_visible()
         expect(opener).to_have_attribute("aria-expanded", "false")
         expect(panel).to_have_attribute("aria-hidden", "true")
+        expect(tooltip).to_be_hidden()
+        opener.hover()
+        expect(tooltip).to_be_visible()
+        page.screenshot(path=output / f"tooltip-{label}.png")
+        page.mouse.move(viewport["width"] - 10, viewport["height"] - 10)
+        expect(tooltip).to_be_hidden()
+        assert page.locator(".brand-coin-sparkle").evaluate("sparkle => getComputedStyle(sparkle).animationDuration") == "5s"
         assert page.get_by_text("THE COLORS BEHIND THE QUEST", exact=True).count() == 0
         assert page.get_by_text("What guides the journey", exact=True).count() == 0
         assert page.get_by_text("The rainbow rail carries", exact=False).count() == 0
