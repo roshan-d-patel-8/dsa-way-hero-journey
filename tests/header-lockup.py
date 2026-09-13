@@ -69,7 +69,7 @@ with sync_playwright() as playwright:
             assert wordmark_metrics["naturalWidth"] == 744
             assert wordmark_metrics["naturalHeight"] == 136
             assert wordmark_metrics["heroRight"] > wordmark_metrics["wordmarkRight"]
-            assert 150 <= wordmark_metrics["renderedWidth"] <= 190
+            assert 219 <= wordmark_metrics["renderedWidth"] <= 221
             subtitle_metrics = subtitle.evaluate(
                 """image => ({
                   complete: image.complete,
@@ -84,8 +84,8 @@ with sync_playwright() as playwright:
             assert subtitle_metrics["complete"]
             assert subtitle_metrics["naturalWidth"] == 2012
             assert subtitle_metrics["naturalHeight"] == 211
-            assert 158 <= subtitle_metrics["renderedWidth"] <= 178
-            assert 16.5 <= subtitle_metrics["renderedHeight"] <= 19
+            assert 204 <= subtitle_metrics["renderedWidth"] <= 206
+            assert 21 <= subtitle_metrics["renderedHeight"] <= 22
             wordmark_center = (wordmark_metrics["wordmarkLeft"] + wordmark_metrics["wordmarkRight"]) / 2
             subtitle_center = (subtitle_metrics["subtitleLeft"] + subtitle_metrics["subtitleRight"]) / 2
             assert abs(wordmark_center - subtitle_center) <= 0.5
