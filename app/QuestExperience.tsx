@@ -2006,8 +2006,17 @@ export function QuestExperience() {
               {/* Public-path artwork stays compatible with both the app runtime and GitHub Pages. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={`a3/box-${box.number}.jpg`} alt="" width="3840" height="2160" loading={box.number <= 4 ? "eager" : "lazy"} decoding="async" />
-              <span className="a3-tile-overlay"><small>BOX {String(box.number).padStart(2, "0")}</small><b>{box.label}</b><span className="a3-tile-subtitle">{CHAMBER_SUBTITLES[box.number]}</span><em>{`ENTER ${CHAMBER_QUEST_NAMES[box.number]}`}</em></span>
-              <span className="a3-playable-badge">PLAYABLE</span>
+              <span className="a3-tile-overlay">
+                <small>BOX {String(box.number).padStart(2, "0")}</small>
+                <b>{box.label}</b>
+                <span className="a3-tile-subtitle">{CHAMBER_SUBTITLES[box.number]}</span>
+                <em className="a3-quest-name" aria-hidden="true">
+                  {/* Blackwood Castle is rendered to artwork so its font file is not published. */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img className="a3-quest-name-art" src={`branding/quest-labels/box-${box.number}.png`} alt="" />
+                </em>
+              </span>
+              <span className="a3-playable-badge" aria-hidden="true">CLICK TO PLAY</span>
             </button>)}
           </div>
         </div>

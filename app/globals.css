@@ -127,19 +127,22 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
 .a3-tile-overlay { position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 18px; color: #fff; text-align: center; opacity: 0; transform: translateY(9px); transition: opacity .32s ease, transform .42s cubic-bezier(.2,.8,.2,1); text-shadow: 0 3px 18px #000, 0 1px 2px #000; }
 .a3-tile-overlay small { margin-bottom: 12px; color: #ffc45e; font: 400 clamp(1.08rem,1.75vw,2rem)/1.05 "Press Start 2P", "Courier New", monospace; letter-spacing: .055em; text-shadow: 3px 3px 0 #6d1c43, 0 0 16px rgba(240,143,36,.72); }
 .a3-tile-overlay b { max-width: 90%; font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.08rem,1.75vw,2rem); font-weight: 500; line-height: 1.02; letter-spacing: -.025em; text-wrap: balance; }
-.a3-tile-overlay em { margin-top: 12px; color: rgba(255,255,255,.72); font: 700 clamp(.42rem,.48vw,.56rem)/1.2 "Courier New", monospace; font-style: normal; letter-spacing: .11em; }
+.a3-quest-name { max-width: 90%; margin-top: 12px; display: flex; justify-content: center; font-style: normal; line-height: 0; }
+.a3-tile .a3-quest-name-art { position: static; inset: auto; display: block; width: auto; max-width: 100%; height: clamp(.546rem,.624vw,.728rem); object-fit: contain; filter: drop-shadow(0 2px 5px #000); transform: none; transition: none; }
 .a3-tile-subtitle { max-width: 34ch; margin-top: 8px; color: #eef7f8; font: 500 clamp(.7rem,.9vw,.9rem)/1.35 Georgia, serif; text-wrap: balance; }
 .chamber-plain-guide { margin: 18px 0; padding: 13px 16px; border-left: 2px solid #75e2e6; background: rgba(48,181,230,.065); color: #eef7f8; }
 .chamber-plain-guide strong { display: block; font: 600 1rem/1.4 Georgia, serif; }
 .chamber-plain-guide p { margin: 7px 0 0; font: 400 .9rem/1.55 Georgia, serif; color: #c3d5df; }
 @media (max-width: 680px) { .a3-tile-subtitle { font-size: .68rem; margin-top: 5px; } }
-.a3-playable-badge { position: absolute; z-index: 4; top: 11px; right: 11px; padding: 7px 8px 6px; color: #07131b; background: #ffc45e; font: 900 clamp(.43rem,.5vw,.57rem)/1 "Courier New", monospace; letter-spacing: .11em; box-shadow: 3px 3px 0 var(--berry); }
+.a3-playable-badge { position: absolute; z-index: 4; top: 11px; right: 11px; padding: 9px 10px 8px; color: #07131b; background: #ffc45e; border: 2px solid #fff0a8; clip-path: polygon(4px 0,calc(100% - 4px) 0,100% 4px,100% calc(100% - 4px),calc(100% - 4px) 100%,4px 100%,0 calc(100% - 4px),0 4px); font: 400 clamp(.42rem,.48vw,.54rem)/1 "Press Start 2P", "Courier New", monospace; letter-spacing: .045em; box-shadow: 3px 3px 0 var(--berry),5px 5px 0 #061b2b; opacity: 0; visibility: hidden; transform: translateY(-5px) scale(.94); transform-origin: top right; transition: opacity .18s ease, transform .2s steps(2,end), visibility 0s linear .2s; }
 .a3-tile.is-playable { box-shadow: inset 0 0 42px rgba(240,143,36,.16); }
 .a3-grid:has(.a3-tile:is(:hover,:focus-visible)) .a3-tile:not(:hover):not(:focus-visible) { opacity: .36; }
 .a3-tile:is(:hover,:focus-visible), .a3-tile.is-previewed { z-index: 5; box-shadow: inset 0 0 70px rgba(0,0,0,.58); }
 .a3-tile:is(:hover,:focus-visible) img, .a3-tile.is-previewed img { filter: brightness(.27) saturate(.72) contrast(1.12); transform: scale(1.035); }
+.a3-tile:is(:hover,:focus-visible) .a3-quest-name-art, .a3-tile.is-previewed .a3-quest-name-art { filter: drop-shadow(0 2px 5px #000); transform: none; }
 .a3-tile:is(:hover,:focus-visible)::after, .a3-tile.is-previewed::after { background: radial-gradient(circle at 50% 47%,rgba(4,12,18,.16),rgba(2,7,11,.68)); }
 .a3-tile:is(:hover,:focus-visible) .a3-tile-overlay, .a3-tile.is-previewed .a3-tile-overlay { opacity: 1; transform: translateY(0); }
+.a3-tile:is(:hover,:focus-visible) .a3-playable-badge, .a3-tile.is-previewed .a3-playable-badge { opacity: 1; visibility: visible; transform: translateY(0) scale(1); transition-delay: 0s; }
 .a3-box-1 { grid-column: 1; grid-row: 1; }.a3-box-2 { grid-column: 1; grid-row: 2; }.a3-box-3 { grid-column: 1; grid-row: 3; }
 .a3-box-4 { grid-column: 2; grid-row: 1; }.a3-box-5 { grid-column: 2; grid-row: 2; }.a3-box-6 { grid-column: 2; grid-row: 3; }
 .a3-box-7 { grid-column: 3; grid-row: 1; }.a3-box-8 { grid-column: 3; grid-row: 2; }.a3-box-9 { grid-column: 3; grid-row: 3; }
@@ -654,7 +657,8 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
   .a3-tile-overlay { justify-content: flex-end; align-items: flex-start; padding: 13px; text-align: left; opacity: 1; transform: none; }
   .a3-tile-overlay small { margin-bottom: 7px; font-size: .72rem; text-shadow: 2px 2px 0 #6d1c43; }
   .a3-tile-overlay b { max-width: 100%; font-size: 1rem; }
-  .a3-tile-overlay em { display: none; }
+  .a3-quest-name { display: none; }
+  .a3-playable-badge { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
