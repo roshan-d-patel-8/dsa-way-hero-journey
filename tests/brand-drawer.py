@@ -21,6 +21,7 @@ with sync_playwright() as playwright:
     for label, viewport in [
         ("desktop", {"width": 1512, "height": 982}),
         ("mobile", {"width": 390, "height": 844}),
+        ("narrow", {"width": 320, "height": 760}),
     ]:
         page = browser.new_page(viewport=viewport)
         errors = []
@@ -28,7 +29,31 @@ with sync_playwright() as playwright:
         page.on("console", lambda message: errors.append(message.text) if message.type == "error" else None)
         page.goto(args.url, wait_until="networkidle")
 
-        expect(page.get_by_role("heading", name="Learn the Nine-Box A3, One Quest at a Time.")).to_be_visible()
+        title = page.get_by_role("heading", name="Learn A3 Thinking One Quest at a Time.")
+        expect(title).to_be_visible()
+        title_layout = title.evaluate(
+            """heading => {
+              const lines = [...heading.children].map(element => {
+                const range = document.createRange();
+                range.selectNodeContents(element);
+                const rects = [...range.getClientRects()];
+                return {
+                  text: element.textContent,
+                  lineCount: new Set(rects.map(rect => Math.round(rect.top))).size,
+                  top: element.getBoundingClientRect().top,
+                  bottom: element.getBoundingClientRect().bottom,
+                };
+              });
+              return { lines, scrollWidth: heading.scrollWidth, clientWidth: heading.clientWidth };
+            }"""
+        )
+        assert [line["text"] for line in title_layout["lines"]] == [
+            "Learn A3 Thinking",
+            "One Quest at a Time.",
+        ]
+        assert [line["lineCount"] for line in title_layout["lines"]] == [1, 1]
+        assert title_layout["lines"][1]["top"] >= title_layout["lines"][0]["bottom"] - 1
+        assert title_layout["scrollWidth"] <= title_layout["clientWidth"]
         expect(page.get_by_text("New to the A3? Start anywhere.", exact=False)).to_be_visible()
         assert page.get_by_text("A DSA LEARNING QUEST", exact=True).count() == 0
         page.screenshot(path=output / f"landing-{label}.png")
@@ -91,7 +116,7 @@ with sync_playwright() as playwright:
 
         page.keyboard.press("Escape")
         expect(panel).to_have_attribute("aria-hidden", "true")
-        results.append({"viewport": label, "closed": closed_metrics, "open": open_metrics, "errors": errors})
+        results.append({"viewport": label, "title": title_layout, "closed": closed_metrics, "open": open_metrics, "errors": errors})
         page.close()
     browser.close()
 

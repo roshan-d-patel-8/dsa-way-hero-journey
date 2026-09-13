@@ -20,8 +20,9 @@ test("server-renders the DSA Way quest", async () => {
   const html = await response.text();
   assert.match(html, /<title>The DSA Way: The Hero(?:&#x27;|')s Journey<\/title>/i);
   assert.doesNotMatch(html, /A DSA LEARNING QUEST/);
-  assert.match(html, /Learn the Nine-Box A3/);
+  assert.match(html, /Learn A3 Thinking/);
   assert.match(html, /One Quest at a Time/);
+  assert.match(html, /<h1><span>Learn A3 Thinking<\/span><em>One Quest at a Time\.<\/em><\/h1>/);
   assert.match(html, /New to the A3\? Start anywhere/);
   assert.match(html, /no prior experience required/);
   assert.match(html, /The Hero(?:&#x27;|')s Journey/);

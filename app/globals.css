@@ -120,7 +120,8 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
 .a3-home-heading { max-width: 1520px; margin: 0 auto clamp(24px,3.2vw,46px); display: grid; grid-template-columns: minmax(0,1.5fr) minmax(280px,.5fr); align-items: end; gap: clamp(28px,7vw,110px); position: relative; z-index: 2; }
 .a3-home-heading .eyebrow { margin-bottom: 17px; }
 .a3-home-heading h1 { margin: 0; color: #f5fbfc; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.3rem,4.15vw,5rem); font-weight: 500; line-height: .98; letter-spacing: -.045em; text-wrap: balance; text-shadow: 0 8px 38px rgba(0,0,0,.55); }
-.a3-home-heading h1 em { color: #ffc45e; font-style: italic; white-space: nowrap; text-shadow: 0 0 25px rgba(240,143,36,.22); }
+.a3-home-heading h1 span, .a3-home-heading h1 em { display: block; white-space: nowrap; }
+.a3-home-heading h1 em { color: #ffc45e; font-style: italic; text-shadow: 0 0 25px rgba(240,143,36,.22); }
 .a3-home-heading > p { margin: 0 0 3px; color: var(--muted); font-family: Georgia, "Times New Roman", serif; font-size: clamp(.92rem,1.15vw,1.1rem); line-height: 1.55; }
 .a3-grid-viewport { max-width: 1520px; margin: 0 auto; position: relative; z-index: 2; }
 .a3-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); grid-template-rows: repeat(3,minmax(0,1fr)); gap: 0; overflow: hidden; }
@@ -585,8 +586,7 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
   .header-action-icon { width:31px;height:31px; }
   .a3-home { min-height: calc(100svh - 72px); padding: 32px 0 28px; }
   .a3-home-heading { padding: 48px 22px 0; }
-  .a3-home-heading h1 { font-size: clamp(2.3rem,11.5vw,3.7rem); }
-  .a3-home-heading h1 em { white-space: normal; }
+  .a3-home-heading h1 { font-size: clamp(1.85rem,8.8vw,2.15rem); }
   .a3-grid-viewport { overflow-x: auto; padding: 4px 22px 18px; scrollbar-color: var(--orange) rgba(255,255,255,.08); }
   .a3-grid { width: 740px; }
   .a3-tile-overlay b { font-size: 1.2rem; }

@@ -2022,7 +2022,7 @@ export function QuestExperience() {
 
       {stage === "cover" && <section className="a3-home">
         <div className="a3-home-heading">
-          <div><h1>Learn the Nine-Box A3, <em>One Quest at a Time.</em></h1></div>
+          <div><h1><span>Learn A3 Thinking</span><em>One Quest at a Time.</em></h1></div>
           <p>New to the A3? Start anywhere. Each chamber turns one part of the improvement story into a short, guided game—no prior experience required.</p>
         </div>
         <div className="a3-grid-viewport">
