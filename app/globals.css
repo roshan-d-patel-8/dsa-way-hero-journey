@@ -117,7 +117,7 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
 
 .a3-home { min-height: calc(100svh - 82px); padding: clamp(32px,4.7vw,70px) clamp(22px,5.2vw,82px) 34px; position: relative; }
 .a3-home::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at 50% 5%, rgba(240,143,36,.08), transparent 34%), linear-gradient(135deg, rgba(48,181,230,.035), transparent 40%); }
-.a3-home-heading { max-width: 1520px; margin: 0 auto clamp(24px,3.2vw,46px); display: grid; grid-template-columns: minmax(0,1.5fr) minmax(280px,.5fr); align-items: end; gap: clamp(28px,7vw,110px); position: relative; z-index: 2; }
+.a3-home-heading { max-width: 1520px; margin: 0 auto clamp(24px,3.2vw,46px); display: grid; grid-template-columns: minmax(0,1.1fr) minmax(400px,.9fr); align-items: end; gap: clamp(28px,4vw,64px); position: relative; z-index: 2; }
 .a3-home-heading .eyebrow { margin-bottom: 17px; }
 .a3-home-heading h1 { margin: 0; color: #f5fbfc; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.3rem,4.15vw,5rem); font-weight: 500; line-height: .98; letter-spacing: -.045em; text-wrap: balance; text-shadow: 0 8px 38px rgba(0,0,0,.55); }
 .a3-home-heading h1 span, .a3-home-heading h1 em { display: block; white-space: nowrap; }
