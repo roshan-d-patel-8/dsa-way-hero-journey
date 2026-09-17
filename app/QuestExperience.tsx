@@ -1997,7 +1997,7 @@ export function QuestExperience() {
       <aside id="dsa-way-overview" className={`brand-drawer ${brandPanelOpen ? "is-open" : ""}`} aria-hidden={!brandPanelOpen} aria-label="DSA Way mission, vision, values, and priorities">
         <button className="brand-drawer-close" type="button" onClick={closeBrandPanel} disabled={!brandPanelOpen} tabIndex={brandPanelOpen ? 0 : -1} aria-label="Close the DSA Way overview">×</button>
         <figure>
-          {/* Supplied mission, vision, values, KPI, and identity artwork. */}
+          {/* Supplied mission, vision, values, TPMG core priorities, and identity artwork. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="branding/dsa-way-overview.png" alt="" width="1672" height="941" />
         </figure>
