@@ -48,14 +48,16 @@ with sync_playwright() as playwright:
         subtitle = page.locator(".header-subtitle-art")
         home_button = page.get_by_role("button", name="Return to title screen")
         home_icon = page.locator(".brand-home-icon")
+        about_button = page.get_by_role("button", name="ABOUT US", exact=True)
         sound_button = page.get_by_role("button", name="SOUND ON", exact=True)
         map_button = page.get_by_role("button", name="QUEST MAP", exact=True)
         action_icons = page.locator(".header-action-icon")
         expect(home_button).to_be_visible()
         expect(home_icon).to_be_visible()
+        expect(about_button).to_be_visible()
         expect(sound_button).to_be_visible()
         expect(map_button).to_be_visible()
-        assert action_icons.count() == 2
+        assert action_icons.count() == 3
         home_metrics = home_icon.evaluate(
             """image => ({
               complete: image.complete,
@@ -74,14 +76,24 @@ with sync_playwright() as playwright:
               naturalWidth: image.naturalWidth,
               naturalHeight: image.naturalHeight,
               renderedWidth: image.getBoundingClientRect().width,
+              left: image.getBoundingClientRect().left,
+              right: image.getBoundingClientRect().right,
             }))"""
         )
         assert all(metric["complete"] for metric in action_metrics)
-        assert all(metric["naturalWidth"] == 48 and metric["naturalHeight"] == 48 for metric in action_metrics)
+        assert action_metrics[0]["naturalWidth"] == 192 and action_metrics[0]["naturalHeight"] == 192
+        assert all(metric["naturalWidth"] == 48 and metric["naturalHeight"] == 48 for metric in action_metrics[1:])
         assert all(27.5 <= metric["renderedWidth"] <= 38 for metric in action_metrics)
+        assert all(metric["left"] >= 0 and metric["right"] <= viewport["width"] for metric in action_metrics)
 
+        about_tooltip = page.get_by_text("About Us", exact=True)
         sound_tooltip = page.get_by_text("Sound on — click to mute", exact=True)
         map_tooltip = page.get_by_text("Open the quest map", exact=True)
+        expect(about_tooltip).to_be_hidden()
+        about_button.hover()
+        expect(about_tooltip).to_be_visible()
+        page.mouse.move(1, viewport["height"] - 1)
+        expect(about_tooltip).to_be_hidden()
         expect(sound_tooltip).to_be_hidden()
         sound_button.hover()
         expect(sound_tooltip).to_be_visible()
@@ -213,6 +225,9 @@ with sync_playwright() as playwright:
             map_button.click()
             expect(page.locator(".quest-map")).to_have_class("quest-map is-open")
             page.get_by_role("button", name="Close quest map", exact=True).click()
+            about_button.click()
+            expect(page.locator("#dsa-way-overview")).to_have_attribute("aria-hidden", "false")
+            page.locator("#dsa-way-overview").get_by_role("button", name="Close the DSA Way overview").click()
             coin_button = page.get_by_role("button", name="Open the DSA Way mission, vision, and values")
             coin_button.click()
             expect(page.locator("#dsa-way-overview")).to_have_attribute("aria-hidden", "false")

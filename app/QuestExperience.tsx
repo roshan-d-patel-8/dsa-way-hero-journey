@@ -1968,6 +1968,18 @@ export function QuestExperience() {
           </span>
         </div>
         <div className="header-actions">
+          <button
+            className="header-icon-button about-button"
+            type="button"
+            aria-label="ABOUT US"
+            aria-controls="dsa-way-overview"
+            aria-expanded={brandPanelOpen}
+            onClick={toggleBrandPanel}
+          >
+            <span className="header-icon-tooltip" aria-hidden="true">About Us</span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className="header-action-icon about-action-icon" src="branding/dsa-about-us.png" alt="" width="192" height="192" aria-hidden="true" />
+          </button>
           <button className="header-icon-button sound-button" type="button" aria-label={sound ? "SOUND ON" : "SOUND OFF"} aria-pressed={sound} onClick={toggleSound}>
             <span className="header-icon-tooltip" aria-hidden="true">{sound ? "Sound on — click to mute" : "Sound off — click to enable"}</span>
             {/* eslint-disable-next-line @next/next/no-img-element */}

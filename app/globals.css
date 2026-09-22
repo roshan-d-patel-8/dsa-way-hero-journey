@@ -71,7 +71,7 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
 .header-icon-tooltip::before { top:-10px;width:14px;height:10px;background:#30b5e6; }
 .header-icon-tooltip::after { top:-6px;right:16px;width:8px;height:6px;background:#061b2b; }
 .header-icon-button:is(:hover,:focus-visible) .header-icon-tooltip { opacity:1;visibility:visible;transform:translateY(0);transition-delay:0s; }
-.map-button[aria-expanded="true"] .header-icon-tooltip { opacity:0;visibility:hidden; }
+.about-button[aria-expanded="true"] .header-icon-tooltip,.map-button[aria-expanded="true"] .header-icon-tooltip { opacity:0;visibility:hidden; }
 
 .brand-pull-tab { --brand-drawer-width:min(1180px,calc(100vw - 58px));position:fixed;z-index:75;left:3px;top:94px;width:52px;height:52px;padding:2px;border:0;background:transparent;cursor:pointer;transition:transform .5s cubic-bezier(.2,.8,.2,1); }
 .brand-pull-tab::before { content:"";position:absolute;z-index:-1;left:-3px;top:12px;width:20px;height:28px;background:linear-gradient(180deg,var(--berry),var(--ember),var(--orange),var(--green),var(--cyan));box-shadow:3px 3px 0 #02080c; }
