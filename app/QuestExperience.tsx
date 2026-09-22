@@ -2022,7 +2022,7 @@ export function QuestExperience() {
 
       {stage === "cover" && <section className="a3-home">
         <div className="a3-home-heading">
-          <div><h1><span>Learn A3 Thinking</span><em>One Quest at a Time.</em></h1></div>
+          <div><h1><span className="home-blackwood-title"><img src="branding/learn-a3-thinking-blackwood.png" alt="Learn A3 Thinking" width="1337" height="203" /></span><em>One Quest at a Time.</em></h1></div>
           <p>New to A3 thinking? Good! Start anywhere. <span className="a3-home-mindset">9 games - 1 mindset.</span> Each chamber turns one part of the improvement story into a short, guided game - no prior experience required.<strong className="a3-home-invite">Ready, hero? Your first quest awaits.</strong></p>
         </div>
         <div className="a3-grid-viewport">

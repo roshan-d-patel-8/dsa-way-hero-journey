@@ -121,6 +121,8 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
 .a3-home-heading .eyebrow { margin-bottom: 17px; }
 .a3-home-heading h1 { margin: 0; color: #f5fbfc; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.3rem,4.15vw,5rem); font-weight: 500; line-height: .98; letter-spacing: -.045em; text-wrap: balance; text-shadow: 0 8px 38px rgba(0,0,0,.55); }
 .a3-home-heading h1 span, .a3-home-heading h1 em { display: block; white-space: nowrap; }
+.a3-home-heading h1 .home-blackwood-title { max-width: 100%; white-space: normal; }
+.home-blackwood-title img { display: block; width: 100%; height: auto; filter: drop-shadow(0 8px 20px rgba(0,0,0,.55)); }
 .a3-home-heading h1 em { color: #ffc45e; font-style: italic; text-shadow: 0 0 25px rgba(240,143,36,.22); }
 .a3-home-heading > p { margin: 0 0 3px; color: var(--muted); font-family: Georgia, "Times New Roman", serif; font-size: clamp(.92rem,1.15vw,1.1rem); line-height: 1.55; }
 .a3-home-mindset { white-space: nowrap; }

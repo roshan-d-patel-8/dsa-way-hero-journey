@@ -22,7 +22,7 @@ test("server-renders the DSA Way quest", async () => {
   assert.doesNotMatch(html, /A DSA LEARNING QUEST/);
   assert.match(html, /Learn A3 Thinking/);
   assert.match(html, /One Quest at a Time/);
-  assert.match(html, /<h1><span>Learn A3 Thinking<\/span><em>One Quest at a Time\.<\/em><\/h1>/);
+  assert.match(html, /<h1><span class="home-blackwood-title"><img[^>]+src="branding\/learn-a3-thinking-blackwood\.png"[^>]+alt="Learn A3 Thinking"[^>]*\/><\/span><em>One Quest at a Time\.<\/em><\/h1>/);
   assert.match(html, /New to A3 thinking\? Good! Start anywhere\./);
   assert.match(html, /<span class="a3-home-mindset">9 games - 1 mindset\.<\/span>/);
   assert.match(html, /short, guided game - no prior experience required\./);
