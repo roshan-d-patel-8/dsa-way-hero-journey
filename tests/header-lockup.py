@@ -184,7 +184,8 @@ with sync_playwright() as playwright:
         creator = sensei_page.locator(".sensei-creator")
         expect(creator.get_by_role("heading", name="Roshan Patel, MD", exact=True)).to_be_visible()
         expect(creator).to_contain_text("Creator of the Hero's Journey game")
-        expect(creator).to_contain_text("without formal technical training")
+        expect(creator).to_contain_text("gamification might make A3 thinking easier to learn, practice, and remember")
+        expect(creator).to_contain_text("valuable both in my personal life and while working as part of the larger DSA team")
         expect(creator.get_by_role("link", name="Let's connect")).to_have_attribute("href", "https://www.linkedin.com/in/roshan-patel-93a4199b")
         creator_image = creator.get_by_role("img", name="Monochrome portrait of Roshan Patel, MD")
         creator_image_metrics = creator_image.evaluate(

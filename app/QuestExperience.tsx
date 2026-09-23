@@ -1725,7 +1725,7 @@ function SenseiTeamPage({ onBack }: { onBack: () => void }) {
         <span>ABOUT THE CREATOR</span>
         <h2 id="sensei-creator-title">Roshan Patel, MD</h2>
         <p className="sensei-creator-role">Gastroenterologist · Creator of the Hero&apos;s Journey game</p>
-        <p>I&apos;m a gastroenterologist with a deep interest in performance improvement, Lean thinking, and the ways systems shape care. I created the Hero&apos;s Journey game as an experiment in what physicians can build with AI—even without formal technical training. If you&apos;re exploring similar ideas or would simply like to compare notes, I&apos;d be glad to hear from you.</p>
+        <p>I created the Hero&apos;s Journey game to explore how gamification might make A3 thinking easier to learn, practice, and remember. I&apos;ve found A3 principles valuable both in my personal life and while working as part of the larger DSA team. My hope is that this experience offers others an approachable way to discover those same ideas—one quest at a time.</p>
         <a href="https://www.linkedin.com/in/roshan-patel-93a4199b" target="_blank" rel="noreferrer">Let&apos;s connect <b aria-hidden="true">↗</b></a>
       </div>
     </aside>
