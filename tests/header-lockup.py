@@ -181,6 +181,20 @@ with sync_playwright() as playwright:
         )
         assert all(image["complete"] and image["naturalHeight"] == 1200 for image in sensei_images)
         assert [image["naturalWidth"] for image in sensei_images] == [1000, 1000, 998]
+        creator = sensei_page.locator(".sensei-creator")
+        expect(creator.get_by_role("heading", name="Roshan Patel, MD", exact=True)).to_be_visible()
+        expect(creator).to_contain_text("Creator of the Hero's Journey game")
+        expect(creator).to_contain_text("without formal technical training")
+        expect(creator.get_by_role("link", name="Let's connect")).to_have_attribute("href", "https://www.linkedin.com/in/roshan-patel-93a4199b")
+        creator_image = creator.get_by_role("img", name="Monochrome portrait of Roshan Patel, MD")
+        creator_image_metrics = creator_image.evaluate(
+            "image => ({complete:image.complete,naturalWidth:image.naturalWidth,naturalHeight:image.naturalHeight,renderedWidth:image.getBoundingClientRect().width})"
+        )
+        assert creator_image_metrics["complete"]
+        assert creator_image_metrics["naturalWidth"] == 1145
+        assert creator_image_metrics["naturalHeight"] == 1374
+        assert creator_image_metrics["renderedWidth"] < sensei_page.locator(".sensei-card img").first.evaluate("image => image.getBoundingClientRect().width") * 0.5
+        creator.scroll_into_view_if_needed()
         page.wait_for_timeout(900)
         assert all(float(opacity) == 1 for opacity in sensei_page.locator(".sensei-card").evaluate_all("cards => cards.map(card => getComputedStyle(card).opacity)"))
         if label == "desktop":

@@ -142,6 +142,17 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
 .sensei-card figcaption>span { color:#75e2e6;font:400 .47rem/1.5 "Press Start 2P","Courier New",monospace;letter-spacing:.08em; }
 .sensei-card h2 { margin:12px 0 8px;color:#fffdf0;font:700 clamp(1.35rem,2vw,2rem)/1.08 Georgia,serif;letter-spacing:-.025em; }
 .sensei-card figcaption>p { margin:0;color:#ffc45e;font:700 clamp(.75rem,1vw,.92rem)/1.45 "Avenir Next",Avenir,sans-serif;letter-spacing:.025em; }
+.sensei-creator { width:min(850px,100%);margin:clamp(54px,7vw,92px) auto 0;padding:clamp(22px,3vw,30px);display:grid;grid-template-columns:clamp(112px,12vw,148px) minmax(0,1fr);align-items:center;gap:clamp(22px,3.5vw,40px);border-top:1px solid rgba(117,226,230,.26);border-bottom:1px solid rgba(255,196,94,.18);background:linear-gradient(105deg,rgba(8,27,38,.72),rgba(4,13,20,.42));box-shadow:0 18px 50px rgba(0,0,0,.2); }
+.sensei-creator-portrait { position:relative;overflow:hidden;aspect-ratio:5/6;border:1px solid rgba(255,196,94,.3);background:#111;box-shadow:5px 5px 0 rgba(125,23,71,.34); }
+.sensei-creator-portrait::after { position:absolute;inset:7px;border:1px solid rgba(255,255,255,.13);content:"";pointer-events:none; }
+.sensei-creator-portrait>img { display:block;width:100%;height:100%;object-fit:cover;filter:grayscale(1); }
+.sensei-creator-copy>span { color:#75e2e6;font:400 .47rem/1.5 "Press Start 2P","Courier New",monospace;letter-spacing:.09em; }
+.sensei-creator-copy h2 { margin:10px 0 5px;color:#fffdf0;font:700 clamp(1.35rem,2.2vw,1.85rem)/1.12 Georgia,serif;letter-spacing:-.025em; }
+.sensei-creator-role { margin:0 0 13px;color:#ffc45e;font:700 clamp(.7rem,.9vw,.8rem)/1.45 "Avenir Next",Avenir,sans-serif;letter-spacing:.025em; }
+.sensei-creator-copy>p:last-of-type { max-width:610px;margin:0;color:#bfd1d6;font:500 clamp(.85rem,1vw,.97rem)/1.65 "Avenir Next",Avenir,sans-serif; }
+.sensei-creator-copy>a { width:max-content;margin-top:16px;display:inline-flex;align-items:center;gap:8px;color:#fffdf0;text-decoration:none;text-transform:uppercase;font:400 .47rem/1.4 "Press Start 2P","Courier New",monospace;border-bottom:1px solid rgba(117,226,230,.48);padding-bottom:5px;transition:color .16s ease,border-color .16s ease; }
+.sensei-creator-copy>a b { color:#ffc45e;font:800 .9rem/1 "Courier New",monospace; }
+.sensei-creator-copy>a:is(:hover,:focus-visible) { color:#75e2e6;border-color:#ffc45e; }
 @keyframes sensei-card-arrive { from { opacity:0;transform:translateY(24px); } to { opacity:1;transform:none; } }
 
 .eyebrow, .quest-kicker { color: var(--berry); font: 850 .7rem/1 "Courier New", monospace; letter-spacing: .18em; text-transform: uppercase; }
@@ -616,6 +627,10 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
   .sensei-card figcaption { min-height:130px;padding:19px 20px 22px; }
   .sensei-card figcaption::after { left:20px; }
   .sensei-card h2 { font-size:clamp(1.55rem,7vw,2rem); }
+  .sensei-creator { max-width:520px;margin-top:48px;grid-template-columns:92px minmax(0,1fr);gap:18px;padding:19px 18px;align-items:start; }
+  .sensei-creator-copy h2 { margin-top:8px;font-size:1.35rem; }
+  .sensei-creator-role { font-size:.68rem; }
+  .sensei-creator-copy>p:last-of-type { font-size:.84rem;line-height:1.58; }
   .brand-pull-tab { --brand-drawer-width:calc(100vw - 56px);top:82px;width:48px;height:48px; }
   .brand-star-coin { width:44px;height:44px; }
   .brand-drawer-scrim { inset-block-start:72px; }
@@ -718,6 +733,11 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
   .sensei-page { padding-inline:16px; }
   .sensei-page-intro h1 { font-size:1.65rem; }
   .sensei-card figcaption { padding-inline:17px; }
+  .sensei-creator { grid-template-columns:76px minmax(0,1fr);gap:15px;padding:16px 14px; }
+  .sensei-creator-copy>span { font-size:.4rem; }
+  .sensei-creator-copy h2 { font-size:1.14rem; }
+  .sensei-creator-role { font-size:.62rem; }
+  .sensei-creator-copy>p:last-of-type { font-size:.79rem; }
 }
 
 @media (hover: none) {
