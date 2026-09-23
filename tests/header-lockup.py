@@ -170,7 +170,9 @@ with sync_playwright() as playwright:
         expect(sensei_page.get_by_role("heading", name="Melissa Aboytes")).to_be_visible()
         expect(sensei_page.get_by_role("heading", name="Rahul Parikh, MD")).to_be_visible()
         assert sensei_page.locator(".sensei-card").count() == 3
-        sensei_images = sensei_page.locator(".sensei-card > img").evaluate_all(
+        portrait_stages = sensei_page.locator(".sensei-portrait-stage")
+        assert portrait_stages.count() == 3
+        sensei_images = portrait_stages.locator("> img").evaluate_all(
             """images => images.map(image => ({
               complete: image.complete,
               naturalWidth: image.naturalWidth,
@@ -181,6 +183,15 @@ with sync_playwright() as playwright:
         assert [image["naturalWidth"] for image in sensei_images] == [1000, 1000, 998]
         page.wait_for_timeout(900)
         assert all(float(opacity) == 1 for opacity in sensei_page.locator(".sensei-card").evaluate_all("cards => cards.map(card => getComputedStyle(card).opacity)"))
+        if label == "desktop":
+            first_card = sensei_page.locator(".sensei-card").first
+            first_card.hover(position={"x": 92, "y": 138})
+            first_light = first_card.evaluate("card => [card.style.getPropertyValue('--sensei-light-x'), card.style.getPropertyValue('--sensei-light-y')]")
+            assert all(value.endswith("px") for value in first_light)
+            assert sensei_page.locator(".sensei-gallery").get_attribute("data-light-active") == "true"
+            page.mouse.move(1, viewport["height"] - 1)
+            assert sensei_page.locator(".sensei-gallery").get_attribute("data-light-active") is None
+        assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
         sensei_page.screenshot(path=output / f"senseis-{label}.png")
         sensei_page.get_by_role("button", name="Return to the Nine Chambers").click()
         expect(page.locator(".a3-home")).to_be_visible()

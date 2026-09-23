@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
 import * as THREE from "three";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
@@ -1677,6 +1677,22 @@ function GembaLensMap({
 }
 
 function SenseiTeamPage({ onBack }: { onBack: () => void }) {
+  const movePortraitLight = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.pointerType !== "mouse" || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const gallery = event.currentTarget;
+    gallery.dataset.lightActive = "true";
+    gallery.querySelectorAll<HTMLElement>(".sensei-card").forEach((card) => {
+      const bounds = card.getBoundingClientRect();
+      card.style.setProperty("--sensei-light-x", `${event.clientX - bounds.left}px`);
+      card.style.setProperty("--sensei-light-y", `${event.clientY - bounds.top}px`);
+    });
+  };
+
+  const restPortraitLight = (event: ReactPointerEvent<HTMLDivElement>) => {
+    delete event.currentTarget.dataset.lightActive;
+  };
+
   return <section className="sensei-page" id="sensei-team-page" aria-labelledby="sensei-team-title">
     <header className="sensei-page-intro">
       <span className="sensei-page-kicker">CAREER BOOTH · PERFORMANCE IMPROVEMENT TEAM</span>
@@ -1686,11 +1702,13 @@ function SenseiTeamPage({ onBack }: { onBack: () => void }) {
         <b aria-hidden="true">←</b><span>Return to the Nine Chambers</span>
       </button>
     </header>
-    <div className="sensei-gallery">
+    <div className="sensei-gallery" onPointerMove={movePortraitLight} onPointerLeave={restPortraitLight}>
       {SENSEIS.map((sensei, index) => <figure className="sensei-card" key={sensei.name} style={{ "--sensei-delay": `${index * 90}ms` } as CSSProperties}>
-        {/* Supplied career-booth portraits are preserved without compositional edits. */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={sensei.image} alt={`Portrait of ${sensei.name}`} width="1000" height="1200" loading={index === 0 ? "eager" : "lazy"} decoding="async" />
+        <div className="sensei-portrait-stage">
+          {/* Supplied career-booth portraits are preserved without compositional edits. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={sensei.image} alt={`Portrait of ${sensei.name}`} width="1000" height="1200" loading={index === 0 ? "eager" : "lazy"} decoding="async" />
+        </div>
         <figcaption>
           <span>{String(index + 1).padStart(2, "0")} · SENSEI</span>
           <h2>{sensei.name}</h2>
