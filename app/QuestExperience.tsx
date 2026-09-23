@@ -15,7 +15,7 @@ import { GembaLensPanel } from "./GembaLensPanel";
 import { isBoothBoxNumber, type BoothBoxNumber } from "./boothAtlasData";
 import { ForgeInstrument } from "./ForgeInstrument";
 
-type Stage = "cover" | "atlas" | "forge-intro" | "forge-game" | "forge-complete" | "keep-intro" | "keep-lens" | "keep-game" | "keep-complete" | "remaining" | "threshold" | "questions" | "complete";
+type Stage = "cover" | "senseis" | "atlas" | "forge-intro" | "forge-game" | "forge-complete" | "keep-intro" | "keep-lens" | "keep-game" | "keep-complete" | "remaining" | "threshold" | "questions" | "complete";
 
 type Question = {
   known: string;
@@ -169,6 +169,24 @@ const A3_BOXES = [
 ] as const;
 
 const CHAMBERS = A3_BOXES.map(({ label }) => label);
+
+const SENSEIS = [
+  {
+    name: "Kelly McGann-Teidt",
+    title: "Consulting Director",
+    image: "senseis/kelly-mcgann-teidt.jpg",
+  },
+  {
+    name: "Melissa Aboytes",
+    title: "Senior Manager, Process Improvement",
+    image: "senseis/melissa-aboytes.jpg",
+  },
+  {
+    name: "Rahul Parikh, MD",
+    title: "APIC",
+    image: "senseis/rahul-parikh.jpg",
+  },
+] as const;
 
 const CHAMBER_QUEST_NAMES: Record<number, string> = {
   1: "THE HERALD'S FORGE",
@@ -1658,6 +1676,31 @@ function GembaLensMap({
   </div>;
 }
 
+function SenseiTeamPage({ onBack }: { onBack: () => void }) {
+  return <section className="sensei-page" id="sensei-team-page" aria-labelledby="sensei-team-title">
+    <header className="sensei-page-intro">
+      <span className="sensei-page-kicker">CAREER BOOTH · PERFORMANCE IMPROVEMENT TEAM</span>
+      <h1 id="sensei-team-title">Meet Our <em>Senseis</em></h1>
+      <p>Meet the people behind our Performance Improvement career booth.</p>
+      <button className="sensei-return-button" type="button" onClick={onBack}>
+        <b aria-hidden="true">←</b><span>Return to the Nine Chambers</span>
+      </button>
+    </header>
+    <div className="sensei-gallery">
+      {SENSEIS.map((sensei, index) => <figure className="sensei-card" key={sensei.name} style={{ "--sensei-delay": `${index * 90}ms` } as CSSProperties}>
+        {/* Supplied career-booth portraits are preserved without compositional edits. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={sensei.image} alt={`Portrait of ${sensei.name}`} width="1000" height="1200" loading={index === 0 ? "eager" : "lazy"} decoding="async" />
+        <figcaption>
+          <span>{String(index + 1).padStart(2, "0")} · SENSEI</span>
+          <h2>{sensei.name}</h2>
+          <p>{sensei.title}</p>
+        </figcaption>
+      </figure>)}
+    </div>
+  </section>;
+}
+
 export function QuestExperience() {
   const [stage, setStage] = useState<Stage>("cover");
   const [questionIndex, setQuestionIndex] = useState(0);
@@ -1827,6 +1870,13 @@ export function QuestExperience() {
     if (brandPanelOpen) playUiSound("close", sound);
     setBrandPanelOpen(false);
   };
+  const openSenseiTeam = () => {
+    playUiSound("select", sound);
+    setBrandPanelOpen(false);
+    setMenuOpen(false);
+    setStage("senseis");
+    window.scrollTo({ top: 0, behavior: "auto" });
+  };
   const discoverKeep = (observationId: string) => {
     const index = KEEP_OBSERVATIONS.findIndex(({ id }) => id === observationId);
     if (index < 0) return;
@@ -1972,9 +2022,9 @@ export function QuestExperience() {
             className="header-icon-button about-button"
             type="button"
             aria-label="ABOUT US"
-            aria-controls="dsa-way-overview"
-            aria-expanded={brandPanelOpen}
-            onClick={toggleBrandPanel}
+            aria-controls="sensei-team-page"
+            aria-current={stage === "senseis" ? "page" : undefined}
+            onClick={openSenseiTeam}
           >
             <span className="header-icon-tooltip" aria-hidden="true">About Us</span>
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -2029,6 +2079,8 @@ export function QuestExperience() {
         })}</ol>
         <p>Select any box to inspect its original 4K artifact and discover the meaning carried by each object.</p>
       </aside>
+
+      {stage === "senseis" && <SenseiTeamPage onBack={returnHome} />}
 
       {stage === "atlas" && atlasBoxNumber && <BoxArtifactAtlas key={atlasBoxNumber} boxNumber={atlasBoxNumber} onBack={returnHome} onChooseBox={openBoxAtlas} onEnterQuest={enterBox} />}
 

@@ -71,7 +71,9 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
 .header-icon-tooltip::before { top:-10px;width:14px;height:10px;background:#30b5e6; }
 .header-icon-tooltip::after { top:-6px;right:16px;width:8px;height:6px;background:#061b2b; }
 .header-icon-button:is(:hover,:focus-visible) .header-icon-tooltip { opacity:1;visibility:visible;transform:translateY(0);transition-delay:0s; }
-.about-button[aria-expanded="true"] .header-icon-tooltip,.map-button[aria-expanded="true"] .header-icon-tooltip { opacity:0;visibility:hidden; }
+.map-button[aria-expanded="true"] .header-icon-tooltip { opacity:0;visibility:hidden; }
+.about-button[aria-current="page"] { border-color:#ffc45e;background:rgba(58,42,22,.9);box-shadow:inset 0 0 0 2px rgba(5,13,20,.82),4px 4px 0 rgba(152,31,89,.64),0 0 18px rgba(255,196,94,.22); }
+.about-button[aria-current="page"] .header-icon-tooltip { opacity:0;visibility:hidden; }
 
 .brand-pull-tab { --brand-drawer-width:min(1180px,calc(100vw - 58px));position:fixed;z-index:75;left:3px;top:94px;width:52px;height:52px;padding:2px;border:0;background:transparent;cursor:pointer;transition:transform .5s cubic-bezier(.2,.8,.2,1); }
 .brand-pull-tab::before { content:"";position:absolute;z-index:-1;left:-3px;top:12px;width:20px;height:28px;background:linear-gradient(180deg,var(--berry),var(--ember),var(--orange),var(--green),var(--cyan));box-shadow:3px 3px 0 #02080c; }
@@ -110,6 +112,30 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
 .quest-map li.ready { color: rgba(255,255,255,.82); }
 .quest-map li button:hover,.quest-map li button:focus-visible{outline:none;color:#fff;background:linear-gradient(90deg,rgba(48,181,230,.17),transparent);padding-left:10px}
 .quest-map > p { color: rgba(255,255,255,.58); font-size: .76rem; line-height: 1.55; margin-top: 24px; }
+
+/* Career-booth sensei gallery */
+.sensei-page { position:relative;isolation:isolate;min-height:calc(100svh - 82px);padding:clamp(44px,5vw,78px) clamp(22px,5vw,78px) clamp(70px,8vw,118px);overflow:hidden;background:radial-gradient(circle at 50% -8%,rgba(255,196,94,.17),transparent 34%),radial-gradient(circle at 8% 64%,rgba(152,31,89,.19),transparent 30%),linear-gradient(145deg,#06131d,#02080d 74%); }
+.sensei-page::before { position:absolute;z-index:-1;inset:0;background:linear-gradient(90deg,rgba(255,196,94,.035) 1px,transparent 1px),linear-gradient(rgba(255,196,94,.035) 1px,transparent 1px);background-size:36px 36px;content:"";mask-image:linear-gradient(to bottom,black,transparent 88%); }
+.sensei-page::after { position:absolute;z-index:-1;width:min(70vw,980px);height:min(70vw,980px);left:50%;top:30%;border:1px solid rgba(255,196,94,.08);border-radius:50%;box-shadow:0 0 0 42px rgba(48,181,230,.025),0 0 0 84px rgba(152,31,89,.02);content:"";transform:translate(-50%,-50%); }
+.sensei-page-intro { max-width:940px;margin:0 auto clamp(34px,4.5vw,60px);display:grid;justify-items:center;text-align:center; }
+.sensei-page-kicker { color:#75e2e6;font:400 clamp(.52rem,.7vw,.7rem)/1.7 "Press Start 2P","Courier New",monospace;letter-spacing:.08em;text-shadow:2px 2px 0 #061b2b; }
+.sensei-page-intro h1 { margin:18px 0 15px;color:#fffdf0;font:400 clamp(2.1rem,5vw,4.6rem)/1.04 "Press Start 2P","Courier New",monospace;letter-spacing:-.055em;text-transform:uppercase;text-shadow:4px 4px 0 #7d1747,8px 8px 0 #061b2b; }
+.sensei-page-intro h1 em { color:#ffc45e;font-style:normal; }
+.sensei-page-intro>p { max-width:660px;margin:0;color:#bfd1d6;font:italic clamp(1rem,1.5vw,1.3rem)/1.55 Georgia,serif; }
+.sensei-return-button { min-height:44px;margin-top:25px;padding:0 17px;display:inline-flex;align-items:center;gap:11px;border:1px solid rgba(117,226,230,.48);background:#071923;color:#fffdf0;box-shadow:4px 4px 0 #02080c;cursor:pointer;font:400 .55rem/1.45 "Press Start 2P","Courier New",monospace;text-transform:uppercase;transition:transform .14s steps(2,end),border-color .14s ease,background .14s ease; }
+.sensei-return-button b { color:#ffc45e;font:800 1.1rem/1 "Courier New",monospace; }
+.sensei-return-button:is(:hover,:focus-visible) { border-color:#ffc45e;background:#102936;transform:translateY(-2px); }
+.sensei-gallery { width:min(1420px,100%);margin:0 auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(18px,2.4vw,36px);align-items:start; }
+.sensei-card { position:relative;margin:0;overflow:hidden;border:1px solid rgba(255,196,94,.38);background:linear-gradient(155deg,rgba(21,42,54,.96),rgba(5,13,20,.98));box-shadow:0 22px 56px rgba(0,0,0,.48),6px 6px 0 rgba(125,23,71,.45);animation:sensei-card-arrive .55s cubic-bezier(.18,.82,.28,1) both;animation-delay:var(--sensei-delay);transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease; }
+.sensei-card::before { position:absolute;z-index:2;inset:8px;border:1px solid rgba(255,239,178,.24);content:"";pointer-events:none; }
+.sensei-card:is(:hover,:focus-within) { z-index:2;border-color:rgba(255,196,94,.78);box-shadow:0 30px 70px rgba(0,0,0,.58),7px 7px 0 rgba(152,31,89,.72),0 0 30px rgba(255,196,94,.12);transform:translateY(-7px); }
+.sensei-card>img { display:block;width:100%;height:auto;aspect-ratio:5/6;object-fit:cover;background:#08131b; }
+.sensei-card figcaption { position:relative;min-height:148px;padding:22px 23px 24px;border-top:1px solid rgba(255,196,94,.28);background:linear-gradient(135deg,rgba(16,41,54,.98),rgba(5,13,20,.98)); }
+.sensei-card figcaption::after { position:absolute;width:58px;height:4px;left:23px;bottom:0;background:linear-gradient(90deg,#ffc45e,#f08f24,#981f59);content:""; }
+.sensei-card figcaption>span { color:#75e2e6;font:400 .47rem/1.5 "Press Start 2P","Courier New",monospace;letter-spacing:.08em; }
+.sensei-card h2 { margin:12px 0 8px;color:#fffdf0;font:700 clamp(1.35rem,2vw,2rem)/1.08 Georgia,serif;letter-spacing:-.025em; }
+.sensei-card figcaption>p { margin:0;color:#ffc45e;font:700 clamp(.75rem,1vw,.92rem)/1.45 "Avenir Next",Avenir,sans-serif;letter-spacing:.025em; }
+@keyframes sensei-card-arrive { from { opacity:0;transform:translateY(24px); } to { opacity:1;transform:none; } }
 
 .eyebrow, .quest-kicker { color: var(--berry); font: 850 .7rem/1 "Courier New", monospace; letter-spacing: .18em; text-transform: uppercase; }
 .eyebrow { display: flex; align-items: center; gap: 13px; margin-bottom: 24px; }
@@ -573,6 +599,16 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
 @media (max-width: 680px) {
   .sensei-message{grid-template-columns:66px minmax(0,1fr);gap:9px;margin:15px 0 17px}.sensei-bubble{min-height:72px;padding:11px 12px}.sensei-bubble::before{left:-10px;bottom:15px;width:14px;height:14px}.sensei-bubble p{font-size:.68rem;line-height:1.42}.sensei-portrait span{padding:4px 2px;font-size:.31rem}.incantation-scroll{grid-template-columns:12px minmax(0,1fr) 12px;margin:14px 0 17px}.incantation-scroll>div{min-height:64px;padding:10px 13px}.incantation-scroll span{font-size:.4rem}.incantation-scroll p{font-size:.93rem;line-height:1.28}
   .quest-header { height: 72px; padding: 12px 18px 12px 25px; }
+  .sensei-page { min-height:calc(100svh - 72px);padding:40px 22px 72px; }
+  .sensei-page-intro { margin-bottom:32px; }
+  .sensei-page-kicker { max-width:310px;font-size:.46rem; }
+  .sensei-page-intro h1 { margin-block:16px 13px;font-size:clamp(1.8rem,9vw,2.8rem);line-height:1.22;letter-spacing:-.055em;text-shadow:3px 3px 0 #7d1747,6px 6px 0 #061b2b; }
+  .sensei-page-intro>p { font-size:1rem; }
+  .sensei-return-button { width:100%;max-width:310px;justify-content:center;padding-inline:12px;font-size:.48rem; }
+  .sensei-gallery { max-width:520px;grid-template-columns:1fr;gap:24px; }
+  .sensei-card figcaption { min-height:130px;padding:19px 20px 22px; }
+  .sensei-card figcaption::after { left:20px; }
+  .sensei-card h2 { font-size:clamp(1.55rem,7vw,2rem); }
   .brand-pull-tab { --brand-drawer-width:calc(100vw - 56px);top:82px;width:48px;height:48px; }
   .brand-star-coin { width:44px;height:44px; }
   .brand-drawer-scrim { inset-block-start:72px; }
@@ -672,6 +708,9 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
   .header-subtitle { height:10px; }
   .header-subtitle-art { width:82px; }
   .header-pixel-hero { width:24px;height:24px; }
+  .sensei-page { padding-inline:16px; }
+  .sensei-page-intro h1 { font-size:1.65rem; }
+  .sensei-card figcaption { padding-inline:17px; }
 }
 
 @media (hover: none) {

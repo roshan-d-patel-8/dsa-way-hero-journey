@@ -162,6 +162,29 @@ with sync_playwright() as playwright:
         if label == "desktop":
             page.locator(".quest-header").screenshot(path=output / "desktop-sword-swing.png")
 
+        about_button.click()
+        sensei_page = page.get_by_role("region", name="Meet Our Senseis")
+        expect(sensei_page).to_be_visible()
+        expect(about_tooltip).to_be_hidden()
+        expect(sensei_page.get_by_role("heading", name="Kelly McGann-Teidt")).to_be_visible()
+        expect(sensei_page.get_by_role("heading", name="Melissa Aboytes")).to_be_visible()
+        expect(sensei_page.get_by_role("heading", name="Rahul Parikh, MD")).to_be_visible()
+        assert sensei_page.locator(".sensei-card").count() == 3
+        sensei_images = sensei_page.locator(".sensei-card > img").evaluate_all(
+            """images => images.map(image => ({
+              complete: image.complete,
+              naturalWidth: image.naturalWidth,
+              naturalHeight: image.naturalHeight,
+            }))"""
+        )
+        assert all(image["complete"] and image["naturalHeight"] == 1200 for image in sensei_images)
+        assert [image["naturalWidth"] for image in sensei_images] == [1000, 1000, 998]
+        page.wait_for_timeout(900)
+        assert all(float(opacity) == 1 for opacity in sensei_page.locator(".sensei-card").evaluate_all("cards => cards.map(card => getComputedStyle(card).opacity)"))
+        sensei_page.screenshot(path=output / f"senseis-{label}.png")
+        sensei_page.get_by_role("button", name="Return to the Nine Chambers").click()
+        expect(page.locator(".a3-home")).to_be_visible()
+
         map_button.click()
         map_drawer = page.locator(".quest-map")
         expect(map_drawer).to_have_class("quest-map is-open")
@@ -225,9 +248,6 @@ with sync_playwright() as playwright:
             map_button.click()
             expect(page.locator(".quest-map")).to_have_class("quest-map is-open")
             page.get_by_role("button", name="Close quest map", exact=True).click()
-            about_button.click()
-            expect(page.locator("#dsa-way-overview")).to_have_attribute("aria-hidden", "false")
-            page.locator("#dsa-way-overview").get_by_role("button", name="Close the DSA Way overview").click()
             coin_button = page.get_by_role("button", name="Open the DSA Way mission, vision, and values")
             coin_button.click()
             expect(page.locator("#dsa-way-overview")).to_have_attribute("aria-hidden", "false")
