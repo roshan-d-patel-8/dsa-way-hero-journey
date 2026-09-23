@@ -150,9 +150,6 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
 .sensei-creator-copy h2 { margin:10px 0 5px;color:#fffdf0;font:700 clamp(1.35rem,2.2vw,1.85rem)/1.12 Georgia,serif;letter-spacing:-.025em; }
 .sensei-creator-role { margin:0 0 13px;color:#ffc45e;font:700 clamp(.7rem,.9vw,.8rem)/1.45 "Avenir Next",Avenir,sans-serif;letter-spacing:.025em; }
 .sensei-creator-copy>p:last-of-type { max-width:610px;margin:0;color:#bfd1d6;font:500 clamp(.85rem,1vw,.97rem)/1.65 "Avenir Next",Avenir,sans-serif; }
-.sensei-creator-copy>a { width:max-content;margin-top:16px;display:inline-flex;align-items:center;gap:8px;color:#fffdf0;text-decoration:none;text-transform:uppercase;font:400 .47rem/1.4 "Press Start 2P","Courier New",monospace;border-bottom:1px solid rgba(117,226,230,.48);padding-bottom:5px;transition:color .16s ease,border-color .16s ease; }
-.sensei-creator-copy>a b { color:#ffc45e;font:800 .9rem/1 "Courier New",monospace; }
-.sensei-creator-copy>a:is(:hover,:focus-visible) { color:#75e2e6;border-color:#ffc45e; }
 @keyframes sensei-card-arrive { from { opacity:0;transform:translateY(24px); } to { opacity:1;transform:none; } }
 
 .eyebrow, .quest-kicker { color: var(--berry); font: 850 .7rem/1 "Courier New", monospace; letter-spacing: .18em; text-transform: uppercase; }
