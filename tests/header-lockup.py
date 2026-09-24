@@ -169,9 +169,16 @@ with sync_playwright() as playwright:
         expect(sensei_page.get_by_role("heading", name="Kelly McGann-Teidt")).to_be_visible()
         expect(sensei_page.get_by_role("heading", name="Melissa Aboytes")).to_be_visible()
         expect(sensei_page.get_by_role("heading", name="Rahul Parikh, MD")).to_be_visible()
-        assert sensei_page.locator(".sensei-card").count() == 3
+        expect(sensei_page.get_by_role("heading", name="Phil Strazzula")).to_be_visible()
+        assert sensei_page.locator(".sensei-card").count() == 4
         portrait_stages = sensei_page.locator(".sensei-portrait-stage")
-        assert portrait_stages.count() == 3
+        assert portrait_stages.count() == 4
+        page.wait_for_function(
+            """() => {
+              const images = Array.from(document.querySelectorAll('#sensei-team-page .sensei-portrait-stage > img'));
+              return images.length === 4 && images.every(image => image.complete && image.naturalHeight === 1200);
+            }"""
+        )
         sensei_images = portrait_stages.locator("> img").evaluate_all(
             """images => images.map(image => ({
               complete: image.complete,
@@ -180,7 +187,24 @@ with sync_playwright() as playwright:
             }))"""
         )
         assert all(image["complete"] and image["naturalHeight"] == 1200 for image in sensei_images)
-        assert [image["naturalWidth"] for image in sensei_images] == [1000, 1000, 998]
+        assert [image["naturalWidth"] for image in sensei_images] == [1000, 1000, 998, 998]
+        purpose = page.get_by_role("region", name="Who We Are")
+        expect(purpose).to_be_visible()
+        expect(purpose).to_contain_text("OUR SHARED PURPOSE")
+        expect(purpose).to_contain_text("As trusted Performance Improvement partners, we inspire and empower leaders and their teams to apply continuous improvement and turn insight into action to solve meaningful problems. Together, we build lasting capability and accountability to sustain improvements that transform care across the Diablo Service Area.")
+        purpose_art = purpose.locator(".sensei-purpose-art img")
+        purpose_art.scroll_into_view_if_needed()
+        page.wait_for_function(
+            """() => {
+              const image = document.querySelector('.sensei-purpose-art img');
+              return image && image.complete && image.naturalWidth > 0;
+            }"""
+        )
+        purpose_art_metrics = purpose_art.evaluate(
+            "image => ({naturalWidth:image.naturalWidth,naturalHeight:image.naturalHeight,currentSrc:image.currentSrc})"
+        )
+        expected_scroll_size = (1024, 1536) if label in {"mobile", "narrow"} else (1672, 940)
+        assert (purpose_art_metrics["naturalWidth"], purpose_art_metrics["naturalHeight"]) == expected_scroll_size
         creator = sensei_page.locator(".sensei-creator")
         expect(creator.get_by_role("heading", name="Roshan Patel, MD", exact=True)).to_be_visible()
         expect(creator).to_contain_text("Creator of the Hero's Journey game")

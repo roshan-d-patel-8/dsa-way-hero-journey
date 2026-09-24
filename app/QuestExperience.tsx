@@ -186,6 +186,11 @@ const SENSEIS = [
     title: "APIC",
     image: "senseis/rahul-parikh.jpg",
   },
+  {
+    name: "Phil Strazzula",
+    title: "Associate Chief Administrative Officer",
+    image: "senseis/phil-strazzula.jpg",
+  },
 ] as const;
 
 const CHAMBER_QUEST_NAMES: Record<number, string> = {
@@ -1716,6 +1721,18 @@ function SenseiTeamPage({ onBack }: { onBack: () => void }) {
         </figcaption>
       </figure>)}
     </div>
+    <section className="sensei-purpose" aria-labelledby="sensei-purpose-title">
+      <picture className="sensei-purpose-art">
+        <source media="(max-width: 680px)" srcSet="senseis/who-we-are-scroll-mobile.png" />
+        {/* Generated parchment artwork is decorative; the exact statement remains accessible HTML. */}
+        <img src="senseis/who-we-are-scroll.png" alt="" width="1672" height="940" loading="lazy" decoding="async" aria-hidden="true" />
+      </picture>
+      <div className="sensei-purpose-copy">
+        <span>OUR SHARED PURPOSE</span>
+        <h2 id="sensei-purpose-title">Who We Are</h2>
+        <p>As trusted Performance Improvement partners, we inspire and empower leaders and their teams to apply continuous improvement and turn insight into action to solve meaningful problems. Together, we build lasting capability and accountability to sustain improvements that transform care across the Diablo Service Area.</p>
+      </div>
+    </section>
     <aside className="sensei-creator" aria-labelledby="sensei-creator-title">
       <div className="sensei-creator-portrait">
         {/* eslint-disable-next-line @next/next/no-img-element */}
