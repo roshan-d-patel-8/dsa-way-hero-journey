@@ -112,6 +112,13 @@ button:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
 .quest-map li.ready { color: rgba(255,255,255,.82); }
 .quest-map li button:hover,.quest-map li button:focus-visible{outline:none;color:#fff;background:linear-gradient(90deg,rgba(48,181,230,.17),transparent);padding-left:10px}
 .quest-map > p { color: rgba(255,255,255,.58); font-size: .76rem; line-height: 1.55; margin-top: 24px; }
+.map-youtube-link { display: grid; justify-items: start; gap: 14px; margin-top: 28px; padding: 22px 20px; border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.025); color: #fff; text-decoration: none; box-shadow: 4px 4px 0 #02080c; }
+.map-youtube-link:hover { border-color: #ff6b7c; background: rgba(255,0,51,.07); }
+.map-youtube-link:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
+.map-youtube-icon { display: block; width: 64px; height: 48px; filter: drop-shadow(3px 3px 0 #02080c); }
+.map-youtube-title { color: #ffc45e; font: 400 .65rem/1.8 "Press Start 2P", "Courier New", monospace; }
+.map-youtube-description { color: #bfd1d6; font-size: .82rem; line-height: 1.6; }
+.map-youtube-action { display: flex; align-items: center; gap: 10px; color: #fff; font-size: .8rem; font-weight: 800; }
 
 /* Career-booth sensei gallery */
 .sensei-page { position:relative;isolation:isolate;min-height:calc(100svh - 82px);padding:clamp(44px,5vw,78px) clamp(22px,5vw,78px) clamp(70px,8vw,118px);overflow:hidden;background:radial-gradient(circle at 50% -8%,rgba(255,196,94,.17),transparent 34%),radial-gradient(circle at 8% 64%,rgba(152,31,89,.19),transparent 30%),linear-gradient(145deg,#06131d,#02080d 74%); }

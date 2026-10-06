@@ -2125,6 +2125,23 @@ export function QuestExperience() {
           return <li className={active ? "active" : "ready"} key={chamber}><button type="button" onClick={() => openBoxAtlas(index + 1)} aria-label={`Open the annotated 4K artwork for Box ${index + 1}: ${chamber}`}><span>{String(index + 1).padStart(2, "0")}</span><b>{chamber}</b></button></li>;
         })}</ol>
         <p>Select any box to inspect its original 4K artifact and discover the meaning carried by each object.</p>
+        <a
+          className="map-youtube-link"
+          href="https://youtube.com/playlist?list=PLRzRKnXvUQF4&si=DNo5pnZRci4s5eFb"
+          target="_blank"
+          rel="noopener noreferrer"
+          tabIndex={menuOpen ? 0 : -1}
+        >
+          <svg className="map-youtube-icon" viewBox="0 0 32 24" width="64" height="48" aria-hidden="true" focusable="false" shapeRendering="crispEdges">
+            <path fill="#9c1822" d="M4 3h24v2h2v16h-2v2H4v-2H2V5h2z" />
+            <path fill="#ff0033" d="M4 1h24v2h2v2h2v14h-2v2h-2v2H4v-2H2v-2H0V5h2V3h2z" />
+            <path fill="#ff6b7c" d="M4 3h24v2H4z" />
+            <path fill="#fff" d="M12 7h2v1h2v1h2v1h2v1h2v2h-2v1h-2v1h-2v1h-2v1h-2z" />
+          </svg>
+          <strong className="map-youtube-title">Continue the adventure</strong>
+          <span className="map-youtube-description">Learn more about each box of the A3 in our YouTube series.</span>
+          <span className="map-youtube-action">Watch the series <span aria-hidden="true">↗</span><span className="sr-only"> (opens in a new tab)</span></span>
+        </a>
       </aside>
 
       {stage === "senseis" && <SenseiTeamPage onBack={returnHome} />}
